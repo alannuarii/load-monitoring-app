@@ -80,7 +80,16 @@ const expandedGroups = ref([])
 // Menu Configuration
 const menuItems = [
   { path: '/', icon: '🏠', label: 'Home' },
-  { path: '/preventive', icon: '📅', label: 'Preventive' },
+  { path: '/profile', icon: '🏭', label: 'Profile' },
+  { 
+    path: '/preventive', 
+    icon: '📅', 
+    label: 'Preventive',
+    children: [
+      { path: '/preventive', icon: '📅', label: 'Jadwal' },
+      { path: '/preventive/realisasi', icon: '✅', label: 'Realisasi' }
+    ]
+  },
   { 
     path: '/material', 
     icon: '📦', 

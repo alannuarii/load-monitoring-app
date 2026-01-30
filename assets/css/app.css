@@ -163,6 +163,7 @@ h4 { font-size: var(--font-size-lg); }
 .font-medium { font-weight: 500; }
 .font-semibold { font-weight: 600; }
 .font-bold { font-weight: 700; }
+.opacity-0 { opacity: 0; }
 
 /* -------------------------
    Layout Utilities

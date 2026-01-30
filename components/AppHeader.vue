@@ -29,6 +29,7 @@
                 :src="user.picture" 
                 :alt="user.name" 
                 class="header-user-avatar"
+                referrerpolicy="no-referrer"
               />
               <span v-else class="header-user-avatar-placeholder">
                 {{ user.name?.charAt(0) || '?' }}
@@ -44,6 +45,7 @@
                   :src="user.picture" 
                   :alt="user.name" 
                   class="dropdown-avatar"
+                  referrerpolicy="no-referrer"
                 />
                 <div class="dropdown-user-info">
                   <span class="dropdown-user-name">{{ user.name }}</span>
