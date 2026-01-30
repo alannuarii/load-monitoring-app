@@ -1,6 +1,6 @@
 <template>
   <div class="animate-fade-in">
-    <h1 class="home-title">PLTD Tahuna Maintenance App</h1>
+    <h1 class="home-title">Dashboard Utama</h1>
     
     <div v-if="isLoading" class="text-center py-4">
       <div class="spinner spinner-lg"></div>

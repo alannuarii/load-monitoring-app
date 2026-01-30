@@ -1,22 +1,23 @@
 <template>
   <header class="app-header">
     <div class="container header-content">
-      <NuxtLink to="/" class="header-logo">
-        <span class="header-logo-icon">⚙️</span>
-        <span>PLTD Tahuna</span>
-      </NuxtLink>
-      
-      <nav class="header-nav">
-        <NuxtLink to="/" class="header-nav-link" :class="{ active: route.path === '/' }">
-          🏠 Home
+      <div class="header-left">
+        <!-- Hamburger Menu (Mobile/Tablet) -->
+        <button class="btn-menu" @click="$emit('toggleSidebar')">
+          ☰
+        </button>
+
+        <!-- Logo (Visible on Mobile/Tablet when sidebar hidden, or always if design preference) -->
+        <NuxtLink to="/" class="header-logo mobile-only">
+          <img src="/images/npblue.png" alt="PLTD Tahuna" class="header-logo-img" />
         </NuxtLink>
-        <NuxtLink to="/preventive" class="header-nav-link" :class="{ active: route.path.startsWith('/preventive') }">
-          📅 Preventive
-        </NuxtLink>
-        <NuxtLink to="/material" class="header-nav-link" :class="{ active: route.path.startsWith('/material') }">
-          📦 Material
-        </NuxtLink>
-      </nav>
+      </div>
+
+      <!-- Center Title & Caption -->
+      <div class="header-center desktop-only">
+        <h1 class="app-brand-title">SENTRA-DIGITAL</h1>
+        <p class="app-brand-caption">Sistem Terpadu Digital Untuk Preventive Maintenance Di Pltd Isolated System</p>
+      </div>
       
       <!-- User section with logout -->
       <div class="header-user-section">
@@ -71,6 +72,8 @@ const route = useRoute()
 const { user, logout } = useAuth()
 const isDropdownOpen = ref(false)
 
+defineEmits(['toggleSidebar'])
+
 const toggleDropdown = () => {
   isDropdownOpen.value = !isDropdownOpen.value
 }
@@ -91,6 +94,115 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.app-header {
+  position: fixed;
+  top: 0;
+  left: 0; /* Will be adjusted by layout when sidebar is present */
+  right: 0;
+  height: var(--header-height);
+  background: white; /* Changed to white for dashboard look */
+  border-bottom: 1px solid var(--gray-200);
+  z-index: 90; /* Below sidebar (100) */
+  transition: left var(--transition-base);
+}
+
+/* When sidebar is persistent (desktop), header might shift. 
+   Currently designed to span full width, sitting on top of content area but right of sidebar if sidebar pushes content.
+   However, common dashboard pattern: Header spans full width (above sidebar) or starts after sidebar.
+   Here we'll let Layout handle the positioning context.
+*/
+
+.header-content {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--space-4);
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.btn-menu {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--gray-600);
+  padding: var(--space-1);
+  border-radius: var(--radius-md);
+  display: flex; /* Always visible for toggling */
+}
+
+.btn-menu:hover {
+  background: var(--gray-100);
+  color: var(--primary-600);
+}
+
+/* Hide menu button on desktop if we want persistent sidebar */
+@media (min-width: 1024px) {
+  .btn-menu {
+    display: none; /* Sidebar always visible on desktop */
+  }
+}
+
+.header-logo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--primary-600);
+  font-weight: 700;
+  font-size: var(--font-size-lg);
+  text-decoration: none;
+}
+
+.header-logo-img {
+  height: 32px;
+  width: auto;
+}
+
+@media (min-width: 1024px) {
+  .mobile-only {
+    display: none;
+  }
+}
+
+.header-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  flex: 1;
+}
+
+.app-brand-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--primary-600);
+  margin: 0;
+  line-height: 1.2;
+  letter-spacing: 0.05em;
+}
+
+.app-brand-caption {
+  font-size: 0.7rem;
+  color: var(--gray-500);
+  margin: 0;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+@media (max-width: 1023px) {
+  .desktop-only {
+    display: none;
+  }
+}
+
 .header-user-section {
   display: flex;
   align-items: center;
@@ -101,31 +213,37 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  padding: var(--space-2);
-  background: rgba(255, 255, 255, 0.1);
+  padding: var(--space-1) var(--space-2);
+  background: transparent;
   border: none;
   border-radius: var(--radius-lg);
-  color: white;
+  color: var(--gray-700);
   cursor: pointer;
   transition: background var(--transition-fast);
 }
 
 .header-user:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: var(--gray-100);
+}
+
+.header-user.open {
+  background: var(--gray-100);
 }
 
 .header-user-avatar {
   width: 32px;
   height: 32px;
   border-radius: var(--radius-full);
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  border: 2px solid white;
+  box-shadow: var(--shadow-sm);
 }
 
 .header-user-avatar-placeholder {
   width: 32px;
   height: 32px;
   border-radius: var(--radius-full);
-  background: var(--primary-700);
+  background: var(--primary-100);
+  color: var(--primary-700);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -144,7 +262,7 @@ onMounted(() => {
 
 .dropdown-arrow {
   font-size: 10px;
-  opacity: 0.7;
+  opacity: 0.5;
 }
 
 /* Dropdown menu */
@@ -160,6 +278,7 @@ onMounted(() => {
   background: white;
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-xl);
+  border: 1px solid var(--gray-100);
   opacity: 0;
   visibility: hidden;
   transform: translateY(-10px);
@@ -178,6 +297,8 @@ onMounted(() => {
   align-items: center;
   gap: var(--space-3);
   padding: var(--space-4);
+  background: var(--gray-50);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
 }
 
 .dropdown-avatar {
@@ -240,17 +361,18 @@ onMounted(() => {
   width: 36px;
   height: 36px;
   padding: 0;
-  background: rgba(255, 255, 255, 0.1);
+  background: transparent;
   border: none;
   border-radius: var(--radius-md);
-  color: white;
+  color: var(--gray-600);
   cursor: pointer;
   font-size: 1.25rem;
   transition: background var(--transition-fast);
 }
 
 .btn-logout-mobile:hover {
-  background: rgba(239, 68, 68, 0.3);
+  background: var(--gray-100);
+  color: var(--danger);
 }
 
 /* Hide name on small screens */

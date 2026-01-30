@@ -1,10 +1,12 @@
 <template>
-  <div>
+  <div class="login-wrapper">
     <AuthCard>
       <template #header>
-        <div class="auth-logo">⚙️</div>
-        <h2>PLTD Tahuna</h2>
-        <p class="text-muted text-sm mt-2">Maintenance App</p>
+        <div class="auth-logo-container">
+          <img src="/images/npblue.png" alt="PLTD Tahuna" class="auth-logo-img" />
+        </div>
+        <!-- <h2>PLTD Tahuna</h2> -->
+        <p class="text-muted text-sm mt-2 font-medium">Maintenance App</p>
       </template>
       
       <div class="flex flex-col gap-4">
@@ -42,3 +44,33 @@ const getErrorMessage = (err) => {
   return messages[err] || 'Terjadi kesalahan'
 }
 </script>
+
+<style scoped>
+.login-wrapper {
+  background-image: url('/images/bg.png');
+  background-size: cover;
+  background-position: center;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+}
+
+.auth-logo-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: var(--space-4);
+}
+
+.auth-logo-img {
+  height: 80px;
+  width: auto;
+}
+
+/* Override default auth card container if needed */
+:deep(.auth-container) {
+  background: transparent !important; /* Let wrapper handle bg */
+  padding: 0;
+}
+</style>
