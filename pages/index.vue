@@ -155,8 +155,8 @@ onMounted(() => {
   display: flex;
   align-items: baseline;
   gap: var(--space-2);
-  background: white;
-  border: 1px solid var(--gray-200);
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
   padding: 0.25rem 1.5rem; /* Reduced padding */
   border-radius: var(--radius-full);
   box-shadow: var(--shadow-sm);
@@ -185,8 +185,8 @@ onMounted(() => {
   display: flex;
   align-items: baseline;
   gap: var(--space-2);
-  background: var(--gray-50);
-  border: 1px solid var(--gray-200);
+  background: var(--bg-hover);
+  border: 1px solid var(--border-color);
   padding: 0.5rem 1.25rem;
   border-radius: var(--radius-md);
 }
@@ -228,8 +228,9 @@ onMounted(() => {
 }
 
 .error-card {
-  background: #FEF2F2;
-  border: 1px solid #FECACA;
+  background: var(--bg-card);
+  border: 1px solid var(--danger);
+  color: var(--danger);
   border-radius: var(--radius-lg);
   padding: var(--space-6);
   text-align: center;

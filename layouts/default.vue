@@ -1,12 +1,9 @@
 <template>
-  <div class="app-layout">
-    <!-- Sidebar (Left) -->
-    <AppSidebar :is-open="isSidebarOpen" @close="closeSidebar" />
-
+  <div class="app-layout" :class="{ 'dark-mode': isDark }">
     <!-- Main Content Area -->
     <div class="main-wrapper">
       <!-- Header (Top) -->
-      <AppHeader @toggle-sidebar="toggleSidebar" />
+      <AppHeader />
       
       <!-- Page Content -->
       <main class="app-content">
@@ -19,31 +16,22 @@
 </template>
 
 <script setup>
-const { checkAuth, user } = useAuth()
-const isSidebarOpen = ref(false)
+const { initAuth, user } = useAuth()
+const { isDark, initTheme } = useTheme()
 
-// Check auth on every page load
+// Check auth and theme on every page load
 onMounted(async () => {
-  await checkAuth()
+  initTheme()
+  await initAuth()
 })
 
 // Also check auth when navigating
 const route = useRoute()
 watch(() => route.path, async () => {
   if (!user.value) {
-    await checkAuth()
+    await initAuth()
   }
-  // Close sidebar on navigation (mobile)
-  closeSidebar()
 })
-
-const toggleSidebar = () => {
-  isSidebarOpen.value = !isSidebarOpen.value
-}
-
-const closeSidebar = () => {
-  isSidebarOpen.value = false
-}
 </script>
 
 <style scoped>
@@ -56,28 +44,11 @@ const closeSidebar = () => {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  transition: padding-left var(--transition-base);
 }
 
 .app-content {
   flex: 1;
   padding-top: calc(var(--header-height) + var(--space-6));
   padding-bottom: var(--space-8);
-}
-
-@media (min-width: 1024px) {
-  .main-wrapper {
-    padding-left: var(--sidebar-width, 280px);
-  }
-
-  /* Adjust AppHeader position when sidebar is present */
-  :deep(.app-header) {
-    left: var(--sidebar-width, 280px);
-    width: calc(100% - var(--sidebar-width, 280px));
-  }
-  
-  :deep(.header-logo.mobile-only) {
-    display: none;
-  }
 }
 </style>

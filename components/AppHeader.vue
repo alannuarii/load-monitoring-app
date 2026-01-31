@@ -2,25 +2,33 @@
   <header class="app-header">
     <div class="container header-content">
       <div class="header-left">
-        <!-- Hamburger Menu (Mobile/Tablet) -->
-        <button class="btn-menu" @click="$emit('toggleSidebar')">
-          ☰
-        </button>
-
-        <!-- Logo (Visible on Mobile/Tablet when sidebar hidden, or always if design preference) -->
-        <NuxtLink to="/" class="header-logo mobile-only">
+        <!-- Logo -->
+        <NuxtLink to="/" class="header-logo">
           <img src="/images/npblue.png" alt="PLTD Tahuna" class="header-logo-img" />
+          <div class="brand-text">
+            <h1 class="app-brand-title">MONITORING PEMBEBANAN ONLINE</h1>
+            <span class="app-brand-subtitle">PLTD TAHUNA</span>
+          </div>
         </NuxtLink>
       </div>
 
-      <!-- Center Title & Caption -->
-      <div class="header-center desktop-only">
-        <h1 class="app-brand-title">SENTRA-DIGITAL</h1>
-        <p class="app-brand-caption">Sistem Terpadu Digital Untuk Preventive Maintenance Di Pltd Isolated System</p>
-      </div>
+      <!-- Navigation Menu -->
+      <nav class="header-nav">
+        <NuxtLink to="/" class="nav-link" :class="{ active: route.path === '/' }">
+          <span class="nav-icon">🏠</span> Home
+        </NuxtLink>
+        <NuxtLink to="/profile" class="nav-link" :class="{ active: route.path === '/profile' }">
+          <span class="nav-icon">🏭</span> Profile
+        </NuxtLink>
+      </nav>
       
       <!-- User section with logout -->
       <div class="header-user-section">
+        <!-- Theme Toggle -->
+        <button class="btn-theme-toggle" @click="toggleTheme" :title="isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'">
+          {{ isDark ? '🌞' : '🌙' }}
+        </button>
+
         <template v-if="user">
           <div class="user-dropdown" :class="{ open: isDropdownOpen }">
             <button class="header-user" @click="toggleDropdown">
@@ -72,9 +80,8 @@
 <script setup>
 const route = useRoute()
 const { user, logout } = useAuth()
+const { isDark, toggleTheme } = useTheme()
 const isDropdownOpen = ref(false)
-
-defineEmits(['toggleSidebar'])
 
 const toggleDropdown = () => {
   isDropdownOpen.value = !isDropdownOpen.value
@@ -99,20 +106,13 @@ onMounted(() => {
 .app-header {
   position: fixed;
   top: 0;
-  left: 0; /* Will be adjusted by layout when sidebar is present */
+  left: 0;
   right: 0;
   height: var(--header-height);
-  background: white; /* Changed to white for dashboard look */
-  border-bottom: 1px solid var(--gray-200);
-  z-index: 90; /* Below sidebar (100) */
-  transition: left var(--transition-base);
+  background: var(--bg-header);
+  border-bottom: 1px solid var(--border-color);
+  z-index: 100;
 }
-
-/* When sidebar is persistent (desktop), header might shift. 
-   Currently designed to span full width, sitting on top of content area but right of sidebar if sidebar pushes content.
-   However, common dashboard pattern: Header spans full width (above sidebar) or starts after sidebar.
-   Here we'll let Layout handle the positioning context.
-*/
 
 .header-content {
   height: 100%;
@@ -125,84 +125,121 @@ onMounted(() => {
 .header-left {
   display: flex;
   align-items: center;
-  gap: var(--space-3);
-}
-
-.btn-menu {
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  cursor: pointer;
-  color: var(--gray-600);
-  padding: var(--space-1);
-  border-radius: var(--radius-md);
-  display: flex; /* Always visible for toggling */
-}
-
-.btn-menu:hover {
-  background: var(--gray-100);
-  color: var(--primary-600);
-}
-
-/* Hide menu button on desktop if we want persistent sidebar */
-@media (min-width: 1024px) {
-  .btn-menu {
-    display: none; /* Sidebar always visible on desktop */
-  }
+  gap: var(--space-4);
 }
 
 .header-logo {
   display: flex;
   align-items: center;
-  gap: var(--space-2);
-  color: var(--primary-600);
-  font-weight: 700;
-  font-size: var(--font-size-lg);
+  gap: var(--space-3);
   text-decoration: none;
 }
 
 .header-logo-img {
-  height: 32px;
+  height: 40px;
   width: auto;
 }
 
-@media (min-width: 1024px) {
-  .mobile-only {
-    display: none;
-  }
-}
-
-.header-center {
+.brand-text {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  flex: 1;
 }
 
 .app-brand-title {
-  font-size: 1.25rem;
+  font-size: 1rem;
   font-weight: 800;
   color: var(--primary-600);
   margin: 0;
-  line-height: 1.2;
-  letter-spacing: 0.05em;
-}
-
-.app-brand-caption {
-  font-size: 0.7rem;
-  color: var(--gray-500);
-  margin: 0;
-  font-weight: 500;
-  text-transform: uppercase;
+  line-height: 1.1;
   letter-spacing: 0.02em;
 }
 
-@media (max-width: 1023px) {
-  .desktop-only {
-    display: none;
+.app-brand-subtitle {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--gray-500);
+  letter-spacing: 0.05em;
+}
+
+/* Navigation Menu */
+.header-nav {
+  display: flex;
+  gap: var(--space-1);
+  margin: 0 var(--space-4);
+  flex: 1;
+  justify-content: center;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0.5rem 1rem;
+  color: var(--gray-600);
+  text-decoration: none;
+  font-weight: 500;
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+}
+
+.nav-link:hover {
+  background: var(--bg-hover);
+  color: var(--primary-600);
+}
+
+.nav-link.active {
+  background: var(--primary-50);
+  color: var(--primary-700);
+  font-weight: 600;
+}
+
+.nav-icon {
+  font-size: 1.1em;
+}
+
+.header-user-section {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.btn-theme-toggle {
+  background: transparent;
+  border: none;
+  font-size: 1.25rem;
+  cursor: pointer;
+  padding: var(--space-2);
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--transition-fast);
+  color: var(--gray-600);
+}
+
+.btn-theme-toggle:hover {
+  background: var(--bg-hover);
+}
+
+@media (max-width: 768px) {
+  .app-brand-title {
+    font-size: 0.8rem;
   }
+  
+  .header-nav {
+    display: none; /* Consider a mobile menu if needed, or keeping it simple for now */
+    border-top: 1px solid var(--gray-200);
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    flex-direction: column;
+    padding: var(--space-2);
+    box-shadow: var(--shadow-md);
+  }
+  
+  /* Show nav if needed, but for now simple header */
 }
 
 .header-user-section {
@@ -225,18 +262,18 @@ onMounted(() => {
 }
 
 .header-user:hover {
-  background: var(--gray-100);
+  background: var(--bg-hover);
 }
 
 .header-user.open {
-  background: var(--gray-100);
+  background: var(--bg-hover);
 }
 
 .header-user-avatar {
   width: 32px;
   height: 32px;
   border-radius: var(--radius-full);
-  border: 2px solid white;
+  border: 2px solid var(--border-color);
   box-shadow: var(--shadow-sm);
 }
 
@@ -277,10 +314,10 @@ onMounted(() => {
   top: calc(100% + 8px);
   right: 0;
   min-width: 240px;
-  background: white;
+  background: var(--bg-dropdown);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-xl);
-  border: 1px solid var(--gray-100);
+  border: 1px solid var(--border-color);
   opacity: 0;
   visibility: hidden;
   transform: translateY(-10px);
@@ -299,7 +336,7 @@ onMounted(() => {
   align-items: center;
   gap: var(--space-3);
   padding: var(--space-4);
-  background: var(--gray-50);
+  background: var(--bg-hover);
   border-radius: var(--radius-lg) var(--radius-lg) 0 0;
 }
 
@@ -317,36 +354,38 @@ onMounted(() => {
 .dropdown-user-name {
   font-size: var(--font-size-sm);
   font-weight: 600;
-  color: var(--gray-800);
+  color: var(--text-main);
 }
 
 .dropdown-user-email {
   font-size: var(--font-size-xs);
-  color: var(--gray-500);
+  color: var(--text-muted);
 }
 
 .user-dropdown-divider {
   height: 1px;
-  background: var(--gray-100);
+  background: var(--border-color);
 }
 
 .user-dropdown-item {
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  width: 100%;
+  width: auto;
+  margin: var(--space-2);
   padding: var(--space-3) var(--space-4);
   font-size: var(--font-size-sm);
-  color: var(--gray-700);
+  color: var(--text-main);
   background: none;
   border: none;
+  border-radius: var(--radius-md);
   cursor: pointer;
-  transition: background var(--transition-fast);
+  transition: all var(--transition-fast);
   text-align: left;
 }
 
 .user-dropdown-item:hover {
-  background: var(--gray-50);
+  background: var(--bg-hover);
 }
 
 .user-dropdown-item.danger {
@@ -354,7 +393,8 @@ onMounted(() => {
 }
 
 .user-dropdown-item.danger:hover {
-  background: var(--danger-light);
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--danger);
 }
 
 /* Mobile logout button */

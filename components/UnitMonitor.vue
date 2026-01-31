@@ -106,7 +106,7 @@ const statusBadgeClass = computed(() => {
 
 <style scoped>
 .unit-card {
-  background: white;
+  background: var(--bg-card);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-md);
   overflow: hidden;
@@ -132,7 +132,7 @@ const statusBadgeClass = computed(() => {
 
 .unit-header {
   padding: var(--space-3) var(--space-4);
-  background: var(--gray-50);
+  background: var(--bg-hover);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -142,7 +142,7 @@ const statusBadgeClass = computed(() => {
   font-size: var(--font-size-lg);
   font-weight: 700;
   margin: 0;
-  color: var(--gray-800);
+  color: var(--text-main);
   text-decoration: none;
 }
 
@@ -185,25 +185,25 @@ const statusBadgeClass = computed(() => {
   justify-content: space-between;
   align-items: center;
   padding: var(--space-2) var(--space-3);
-  background: var(--gray-50);
+  background: var(--bg-hover);
   border-radius: var(--radius-md);
 }
 
 .metric-label {
   font-size: var(--font-size-sm);
-  color: var(--gray-600);
+  color: var(--text-muted);
   font-weight: 500;
 }
 
 .metric-value {
   font-size: var(--font-size-lg);
   font-weight: 700;
-  color: var(--gray-800);
+  color: var(--text-main);
 }
 
 .metric-unit {
   font-size: var(--font-size-sm);
   font-weight: 400;
-  color: var(--gray-500);
+  color: var(--text-muted);
 }
 </style>

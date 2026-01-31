@@ -43,10 +43,15 @@ export default defineNuxtConfig({
         influxToken: process.env.INFLUX_TOKEN,
         influxOrg: process.env.INFLUX_ORG,
         influxBucket: process.env.INFLUX_BUCKET,
+        // BetterAuth
+        databaseUrl: process.env.DATABASE_URL,
+        betterAuthSecret: process.env.BETTER_AUTH_SECRET,
+        betterAuthUrl: process.env.BETTER_AUTH_URL || 'http://localhost:3000',
 
         // Public environment variables (exposed to client)
         public: {
-            googleClientId: process.env.GOOGLE_CLIENT_ID
+            googleClientId: process.env.GOOGLE_CLIENT_ID,
+            betterAuthUrl: process.env.BETTER_AUTH_URL || 'http://localhost:3000'
         }
     },
 

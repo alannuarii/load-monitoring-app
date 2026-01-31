@@ -99,6 +99,60 @@
     --sidebar-width: 280px;
     --menu-height: 72px; /* Kept for reference/fallback */
     --container-max: 1200px;
+
+    /* Semantic Variables (Default/Light) */
+    --bg-body: var(--gray-50);
+    --bg-card: #ffffff;
+    --bg-header: #ffffff;
+    --bg-input: #ffffff;
+    --bg-dropdown: #ffffff;
+    --bg-hover: var(--gray-50);
+    --border-color: var(--gray-200);
+    --text-main: var(--gray-800);
+    --text-muted: var(--gray-500);
+}
+
+/* Dark Mode Overrides */
+.dark-mode {
+    /* Colors - Neutral (Inverted for Dark Mode) */
+    --gray-50: #0f172a;  /* Darkest (Background) */
+    --gray-100: #1e293b; /* Card Bg */
+    --gray-200: #334155; /* Border */
+    --gray-300: #4b5563; /* Muted Text */
+    --gray-400: #64748b;
+    --gray-500: #94a3b8;
+    --gray-600: #cbd5e1;
+    --gray-700: #e2e8f0;
+    --gray-800: #f1f5f9; /* Main Text */
+    --gray-900: #ffffff; /* Emphasized Text */
+
+    /* Semantic Overrides */
+    --bg-body: #0f172a;
+    --bg-card: #1e293b;
+    --bg-header: #1e293b;
+    --bg-input: #334155;
+    --bg-dropdown: #1e293b;
+    --bg-hover: #334155;
+    --border-color: #4b5563;
+    --text-main: #f1f5f9;
+    --text-muted: #94a3b8;
+
+    /* Primary Colors (Adjusted for Dark Mode contrast) */
+    --primary-50: #1e293b;
+    --primary-100: #0c4a6e;
+    --primary-500: #38bdf8;
+    --primary-600: #7dd3fc;
+    --primary-700: #bae6fd;
+    
+    /* Backgrounds */
+    background: var(--bg-body);
+    color: var(--text-main);
+}
+
+/* Ensure body background adapts */
+.dark-mode body {
+    background: var(--bg-body);
+    color: var(--text-main);
 }
 
 /* -------------------------
@@ -122,8 +176,8 @@ body {
     font-family: var(--font-family);
     font-size: var(--font-size-base);
     line-height: 1.6;
-    color: var(--gray-800);
-    background: var(--gray-50);
+    color: var(--text-main);
+    background: var(--bg-body);
     min-height: 100vh;
 }
 
@@ -247,6 +301,8 @@ h4 { font-size: var(--font-size-lg); }
     cursor: pointer;
     transition: all var(--transition-base);
     text-decoration: none;
+    background: transparent;
+    color: var(--text-main);
 }
 
 .btn:disabled {
@@ -267,24 +323,24 @@ h4 { font-size: var(--font-size-lg); }
 }
 
 .btn-secondary {
-    background: white;
-    color: var(--gray-700);
-    border: 1px solid var(--gray-200);
+    background: var(--bg-card);
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
 }
 
 .btn-secondary:hover:not(:disabled) {
-    background: var(--gray-50);
+    background: var(--bg-hover);
     border-color: var(--gray-300);
 }
 
 .btn-ghost {
     background: transparent;
-    color: var(--gray-600);
+    color: var(--text-muted);
 }
 
 .btn-ghost:hover:not(:disabled) {
-    background: var(--gray-100);
-    color: var(--gray-800);
+    background: var(--bg-hover);
+    color: var(--text-main);
 }
 
 .btn-sm {
@@ -303,17 +359,18 @@ h4 { font-size: var(--font-size-lg); }
    Cards
    ------------------------- */
 .card {
-    background: white;
+    background: var(--bg-card);
     border-radius: var(--radius-xl);
     box-shadow: var(--shadow-md);
     overflow: hidden;
+    color: var(--text-main);
 }
 
 .card-header {
     padding: var(--space-4) var(--space-5);
-    border-bottom: 1px solid var(--gray-100);
+    border-bottom: 1px solid var(--border-color);
     font-weight: 600;
-    color: var(--gray-800);
+    color: var(--text-main);
     display: flex;
     align-items: center;
     gap: var(--space-2);
@@ -325,15 +382,16 @@ h4 { font-size: var(--font-size-lg); }
 
 .card-footer {
     padding: var(--space-4) var(--space-5);
-    border-top: 1px solid var(--gray-100);
-    background: var(--gray-50);
+    border-top: 1px solid var(--border-color);
+    background: var(--bg-hover);
 }
 
 /* Glass Card */
+/* Glass Card */
 .card-glass {
-    background: rgba(255, 255, 255, 0.8);
+    background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.5);
+    border: 1px solid clearfix(255, 255, 255, 0.1);
 }
 
 /* -------------------------
@@ -348,7 +406,7 @@ h4 { font-size: var(--font-size-lg); }
     margin-bottom: var(--space-2);
     font-size: var(--font-size-sm);
     font-weight: 500;
-    color: var(--gray-700);
+    color: var(--text-main);
 }
 
 .form-input,
@@ -357,9 +415,9 @@ h4 { font-size: var(--font-size-lg); }
     padding: var(--space-2) var(--space-3);
     font-family: var(--font-family);
     font-size: var(--font-size-sm);
-    color: var(--gray-800);
-    background: white;
-    border: 1px solid var(--gray-300);
+    color: var(--text-main);
+    background: var(--bg-input);
+    border: 1px solid var(--border-color);
     border-radius: var(--radius-md);
     transition: all var(--transition-fast);
 }
@@ -388,21 +446,22 @@ h4 { font-size: var(--font-size-lg); }
 .table {
     width: 100%;
     border-collapse: collapse;
-    background: white;
+    background: var(--bg-card);
     font-size: var(--font-size-sm);
+    color: var(--text-main);
 }
 
 .table th,
 .table td {
     padding: var(--space-3) var(--space-4);
     text-align: left;
-    border-bottom: 1px solid var(--gray-100);
+    border-bottom: 1px solid var(--border-color);
 }
 
 .table th {
-    background: var(--gray-50);
+    background: var(--bg-hover);
     font-weight: 600;
-    color: var(--gray-600);
+    color: var(--text-muted);
     font-size: var(--font-size-xs);
     text-transform: uppercase;
     letter-spacing: 0.05em;
@@ -413,7 +472,7 @@ h4 { font-size: var(--font-size-lg); }
 }
 
 .table tbody tr:hover {
-    background: var(--gray-50);
+    background: var(--bg-hover);
 }
 
 .table tbody tr:last-child td {
@@ -517,6 +576,7 @@ h4 { font-size: var(--font-size-lg); }
     border-radius: var(--radius-2xl);
     padding: var(--space-8);
     box-shadow: var(--shadow-xl);
+    color: var(--gray-800);
 }
 
 .auth-logo {
@@ -557,10 +617,11 @@ h4 { font-size: var(--font-size-lg); }
    Custom Calendar
    ------------------------- */
 .calendar {
-    background: white;
+    background: var(--bg-card);
     border-radius: var(--radius-xl);
     box-shadow: var(--shadow-md);
     overflow: hidden;
+    color: var(--text-main);
 }
 
 .calendar-header {

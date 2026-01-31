@@ -231,7 +231,7 @@ const selectUnit = (unit) => {
 .pltd-summary-card {
   display: flex;
   gap: var(--space-6);
-  background: white;
+  background: var(--bg-card);
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-md);
   overflow: hidden;
@@ -270,7 +270,7 @@ const selectUnit = (unit) => {
 .pltd-name {
   font-size: 1.75rem;
   font-weight: 700;
-  color: var(--gray-800);
+  color: var(--text-main);
   margin: 0 0 var(--space-1) 0;
 }
 
@@ -360,7 +360,7 @@ const selectUnit = (unit) => {
 }
 
 .unit-card {
-  background: white;
+  background: var(--bg-card);
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-md);
   overflow: hidden;
@@ -402,12 +402,12 @@ const selectUnit = (unit) => {
   font-size: var(--font-size-xl);
   font-weight: 700;
   margin: 0 0 var(--space-1) 0;
-  color: var(--gray-800);
+  color: var(--text-main);
 }
 
 .unit-card-subtitle {
   font-size: var(--font-size-sm);
-  color: var(--gray-500);
+  color: var(--text-muted);
   margin: 0 0 var(--space-3) 0;
 }
 
@@ -426,11 +426,11 @@ const selectUnit = (unit) => {
 }
 
 .spec-item .spec-label {
-  color: var(--gray-500);
+  color: var(--text-muted);
 }
 
 .spec-item .spec-value {
-  color: var(--gray-800);
+  color: var(--text-main);
   font-weight: 600;
 }
 
@@ -450,7 +450,7 @@ const selectUnit = (unit) => {
 }
 
 .modal {
-  background: white;
+  background: var(--bg-card);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-xl);
   width: 100%;
@@ -464,7 +464,7 @@ const selectUnit = (unit) => {
 
 .modal-header {
   padding: var(--space-4);
-  border-bottom: 1px solid var(--gray-200);
+  border-bottom: 1px solid var(--border-color);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -480,7 +480,7 @@ const selectUnit = (unit) => {
   border: none;
   font-size: 1.25rem;
   cursor: pointer;
-  color: var(--gray-500);
+  color: var(--text-muted);
   padding: 0;
   line-height: 1;
 }
@@ -497,7 +497,7 @@ const selectUnit = (unit) => {
 
 .modal-footer {
   padding: var(--space-4);
-  border-top: 1px solid var(--gray-200);
+  border-top: 1px solid var(--border-color);
   display: flex;
   justify-content: flex-end;
   gap: var(--space-2);
@@ -505,7 +505,7 @@ const selectUnit = (unit) => {
 
 /* Section Cards */
 .section-card {
-  background: var(--gray-50);
+  background: var(--bg-hover);
   border-radius: var(--radius-lg);
   padding: var(--space-4);
   margin-bottom: var(--space-4);
@@ -518,7 +518,7 @@ const selectUnit = (unit) => {
 .section-title {
   font-size: var(--font-size-base);
   font-weight: 600;
-  color: var(--gray-700);
+  color: var(--text-main);
   margin: 0 0 var(--space-3) 0;
 }
 
@@ -538,17 +538,18 @@ const selectUnit = (unit) => {
   display: flex;
   justify-content: space-between;
   padding: var(--space-2);
-  background: white;
+  background: var(--bg-input);
   border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
 }
 
 .spec-row .spec-label {
-  color: var(--gray-500);
+  color: var(--text-muted);
   font-size: var(--font-size-sm);
 }
 
 .spec-row .spec-value {
-  color: var(--gray-800);
+  color: var(--text-main);
   font-weight: 500;
   font-size: var(--font-size-sm);
 }

@@ -647,6 +647,8 @@ const chartData = computed(() => {
     }
 })
 
+const { isDark } = useTheme()
+
 const chartOptions = computed(() => ({
     responsive: true,
     maintainAspectRatio: false,
@@ -656,21 +658,29 @@ const chartOptions = computed(() => ({
             position: 'top',
             labels: {
                 usePointStyle: true,
-                padding: 20
+                padding: 20,
+                color: isDark.value ? '#cbd5e1' : '#64748b'
             }
         },
         tooltip: {
             mode: 'index',
             intersect: false,
+            backgroundColor: isDark.value ? '#1e293b' : '#ffffff',
+            titleColor: isDark.value ? '#f1f5f9' : '#1f2937',
+            bodyColor: isDark.value ? '#cbd5e1' : '#4b5563',
+            borderColor: isDark.value ? '#334155' : '#e2e8f0',
+            borderWidth: 1
         }
     },
     scales: {
         y: {
-            grid: { color: '#f1f5f9' },
-            beginAtZero: false
+            grid: { color: isDark.value ? '#334155' : '#f1f5f9' },
+            beginAtZero: false,
+            ticks: { color: isDark.value ? '#94a3b8' : '#64748b' }
         },
         x: {
-            grid: { display: false }
+            grid: { display: false },
+            ticks: { color: isDark.value ? '#94a3b8' : '#64748b' }
         }
     },
     elements: {
@@ -721,7 +731,7 @@ const exportCSV = () => {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    color: var(--gray-600);
+    color: var(--text-muted);
     text-decoration: none;
     font-weight: 500;
     transition: color 0.2s;
@@ -733,7 +743,7 @@ const exportCSV = () => {
 
 .divider-vertical {
     width: 1px;
-    background-color: var(--gray-300);
+    background-color: var(--border-color);
     height: 1.5rem;
 }
 
@@ -753,7 +763,7 @@ const exportCSV = () => {
 .frequency-display {
     font-size: 2rem;
     font-weight: 800;
-    color: var(--gray-800);
+    color: var(--text-main);
     line-height: 1;
     letter-spacing: -0.02em;
 }
@@ -767,7 +777,7 @@ const exportCSV = () => {
 }
 
 .metric-card {
-    background: var(--gray-50);
+    background: var(--bg-hover);
     border-radius: var(--radius-md);
     padding: var(--space-4);
     text-align: center;
@@ -776,7 +786,7 @@ const exportCSV = () => {
 .metric-label {
     display: block;
     font-size: 0.75rem;
-    color: var(--gray-500);
+    color: var(--text-muted);
     margin-bottom: 0.5rem;
     text-transform: uppercase;
     letter-spacing: 0.05em;
@@ -785,18 +795,18 @@ const exportCSV = () => {
 .metric-value-primary {
     font-size: 1.5rem;
     font-weight: 700;
-    color: var(--gray-800);
+    color: var(--text-main);
 }
 
 .metric-value-primary small {
     font-size: 0.875rem;
     font-weight: 400;
-    color: var(--gray-500);
+    color: var(--text-muted);
 }
 
 /* Detail Sections */
 .detail-section {
-    background: var(--gray-50);
+    background: var(--bg-hover);
     border-radius: var(--radius-md);
     padding: var(--space-4);
 }
@@ -810,7 +820,7 @@ const exportCSV = () => {
 
 .section-title {
     font-weight: 500;
-    color: var(--gray-700);
+    color: var(--text-main);
 }
 
 .icon-box {
@@ -819,7 +829,7 @@ const exportCSV = () => {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: white;
+    background: var(--bg-card);
     border-radius: 0.375rem;
     font-size: 1rem;
 }
@@ -837,7 +847,7 @@ const exportCSV = () => {
 .value-label {
     display: block;
     font-size: 0.7rem;
-    color: var(--gray-500);
+    color: var(--text-muted);
     margin-bottom: 0.25rem;
 }
 
@@ -845,12 +855,12 @@ const exportCSV = () => {
     font-family: monospace;
     font-size: 1.125rem;
     font-weight: 600;
-    color: var(--gray-800);
+    color: var(--text-main);
 }
 
 .value-number small {
     font-size: 0.75rem;
-    color: var(--gray-500);
+    color: var(--text-muted);
 }
 
 /* Power Quality Styles */
@@ -861,7 +871,7 @@ const exportCSV = () => {
 }
 
 .pq-item {
-    background: white;
+    background: var(--bg-hover);
     border-radius: var(--radius-sm);
     padding: var(--space-3);
     text-align: center;
@@ -869,7 +879,7 @@ const exportCSV = () => {
 
 .pq-label {
     font-size: 0.75rem;
-    color: var(--gray-500);
+    color: var(--text-muted);
     margin-bottom: 0.5rem;
     text-transform: uppercase;
     letter-spacing: 0.03em;
@@ -886,7 +896,7 @@ const exportCSV = () => {
 .pq-value {
     font-size: 1.25rem;
     font-weight: 700;
-    color: var(--gray-800);
+    color: var(--text-main);
 }
 
 .pq-status-badge {
@@ -898,17 +908,17 @@ const exportCSV = () => {
 }
 
 .pq-good {
-    background: #dcfce7;
+    background: var(--success-light);
     color: #166534;
 }
 
 .pq-warning {
-    background: #fef3c7;
+    background: var(--warning-light);
     color: #92400e;
 }
 
 .pq-poor {
-    background: #fee2e2;
+    background: var(--danger-light);
     color: #991b1b;
 }
 
@@ -932,23 +942,23 @@ const exportCSV = () => {
 }
 
 .pq-overall-good {
-    background: #dcfce7;
+    background: var(--success-light);
     color: #166534;
 }
 
 .pq-overall-warning {
-    background: #fef3c7;
+    background: var(--warning-light);
     color: #92400e;
 }
 
 .pq-overall-poor {
-    background: #fee2e2;
+    background: var(--danger-light);
     color: #991b1b;
 }
 
 .pq-overall-neutral {
-    background: var(--gray-200);
-    color: var(--gray-600);
+    background: var(--bg-hover);
+    color: var(--text-muted);
 }
 
 /* Chart Controls */
@@ -970,10 +980,10 @@ const exportCSV = () => {
 .param-select {
     padding: 0.5rem 1rem;
     border-radius: 0.375rem;
-    border: 1px solid var(--gray-300);
-    background: white;
+    border: 1px solid var(--border-color);
+    background: var(--bg-input);
     font-size: 0.875rem;
-    color: var(--gray-700);
+    color: var(--text-main);
     cursor: pointer;
     min-width: 180px;
 }
@@ -986,10 +996,10 @@ const exportCSV = () => {
 .range-select {
     padding: 0.4rem 0.75rem;
     border-radius: 0.375rem;
-    border: 1px solid var(--gray-300);
-    background: white;
+    border: 1px solid var(--border-color);
+    background: var(--bg-input);
     font-size: 0.8rem;
-    color: var(--gray-700);
+    color: var(--text-main);
     cursor: pointer;
 }
 
@@ -1001,7 +1011,7 @@ const exportCSV = () => {
 /* Custom Date Range Picker */
 .custom-range-picker {
     padding: var(--space-4);
-    background: var(--gray-50);
+    background: var(--bg-hover);
     border-radius: var(--radius-md);
 }
 
@@ -1014,10 +1024,10 @@ const exportCSV = () => {
 .date-input {
     padding: 0.4rem 0.75rem;
     border-radius: 0.375rem;
-    border: 1px solid var(--gray-300);
-    background: white;
+    border: 1px solid var(--border-color);
+    background: var(--bg-input);
     font-size: 0.8rem;
-    color: var(--gray-700);
+    color: var(--text-main);
 }
 
 .date-input:focus {
@@ -1046,9 +1056,9 @@ const exportCSV = () => {
     border-radius: 0.375rem;
     font-size: 0.8rem;
     font-weight: 500;
-    color: var(--gray-600);
-    background: var(--gray-100);
-    border: 1px solid var(--gray-200);
+    color: var(--text-muted);
+    background: var(--bg-hover);
+    border: 1px solid var(--border-color);
     cursor: pointer;
     transition: all 0.2s;
 }
@@ -1063,8 +1073,8 @@ const exportCSV = () => {
     border-radius: 0.375rem;
     font-size: 0.8rem;
     font-weight: 500;
-    color: var(--gray-500);
-    background: var(--gray-100);
+    color: var(--text-muted);
+    background: var(--bg-hover);
     border: 1px solid transparent;
     transition: all 0.2s;
     white-space: nowrap;
@@ -1092,7 +1102,7 @@ const exportCSV = () => {
     justify-content: center;
     gap: 3rem;
     padding: var(--space-4);
-    background: var(--gray-50);
+    background: var(--bg-hover);
     border-radius: var(--radius-md);
 }
 
@@ -1112,7 +1122,7 @@ const exportCSV = () => {
     font-family: monospace;
     font-size: 1.125rem;
     font-weight: 600;
-    color: var(--gray-800);
+    color: var(--text-main);
 }
 
 @media (max-width: 768px) {
