@@ -206,4 +206,22 @@ const statusBadgeClass = computed(() => {
   font-weight: 400;
   color: var(--text-muted);
 }
+@media (max-width: 640px) {
+  .unit-body {
+    padding: var(--space-3);
+    gap: var(--space-2);
+  }
+
+  .metric-card {
+    padding: var(--space-2);
+  }
+
+  .metric-label {
+    font-size: var(--font-size-xs);
+  }
+
+  .metric-value {
+    font-size: 1rem;
+  }
+}
 </style>

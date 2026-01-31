@@ -1,7 +1,7 @@
 -- BetterAuth Tables (camelCase column names required by default)
 
 -- Create Users Table
-CREATE TABLE IF NOT EXISTS "user" (
+CREATE TABLE "user" (
     id TEXT PRIMARY KEY,
     name TEXT NOT NULL,
     email TEXT NOT NULL UNIQUE,
@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS "user" (
 );
 
 -- Create Sessions Table
-CREATE TABLE IF NOT EXISTS "session" (
+CREATE TABLE "session" (
     id TEXT PRIMARY KEY,
     "userId" TEXT NOT NULL REFERENCES "user"(id) ON DELETE CASCADE,
     token TEXT NOT NULL UNIQUE,
@@ -23,14 +23,15 @@ CREATE TABLE IF NOT EXISTS "session" (
     "updatedAt" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
--- Create Accounts Table
-CREATE TABLE IF NOT EXISTS "account" (
+-- Create Accounts Table (with idToken)
+CREATE TABLE "account" (
     id TEXT PRIMARY KEY,
     "userId" TEXT NOT NULL REFERENCES "user"(id) ON DELETE CASCADE,
     "accountId" TEXT NOT NULL,
     "providerId" TEXT NOT NULL,
     "accessToken" TEXT,
     "refreshToken" TEXT,
+    "idToken" TEXT,
     "accessTokenExpiresAt" TIMESTAMP,
     "refreshTokenExpiresAt" TIMESTAMP,
     scope TEXT,
@@ -40,7 +41,7 @@ CREATE TABLE IF NOT EXISTS "account" (
 );
 
 -- Create Verifications Table
-CREATE TABLE IF NOT EXISTS "verification" (
+CREATE TABLE "verification" (
     id TEXT PRIMARY KEY,
     identifier TEXT NOT NULL,
     value TEXT NOT NULL,

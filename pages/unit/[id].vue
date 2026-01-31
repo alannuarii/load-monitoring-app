@@ -1,18 +1,25 @@
 <template>
-  <div class="animate-fade-in">
+  <div class="animate-fade-in unit-container">
     <!-- Header -->
     <div class="page-header mb-6">
-      <div class="flex items-center gap-4">
-        <NuxtLink to="/" class="btn-back">
-          <span class="icon">←</span> Kembali
-        </NuxtLink>
-        <div class="divider-vertical"></div>
-        <h1 class="page-title m-0">Unit {{ unitId }} Detail</h1>
+      <div class="header-top-row">
+        <div class="header-left-group">
+          <NuxtLink to="/" class="btn-back">
+            <span class="icon">←</span> <span class="back-text">Kembali</span>
+          </NuxtLink>
+          <div class="divider-vertical"></div>
+          <h1 class="page-title m-0">Unit {{ unitId }}</h1>
+        </div>
+        
+        <!-- Date/Time Display (Desktop) -->
+        <div class="header-date-desktop">
+          <p class="text-sm text-muted font-medium">{{ currentDate }}</p>
+        </div>
       </div>
-      
-      <!-- Date/Time Display -->
-      <div class="text-right hidden md:block">
-        <p class="text-sm text-muted font-medium">{{ currentDate }}</p>
+
+      <!-- Date/Time Display (Mobile) -->
+      <div class="header-date-mobile">
+        <p class="text-xs text-muted font-medium">{{ currentDate }}</p>
       </div>
     </div>
 
@@ -23,7 +30,7 @@
     </div>
 
     <!-- Loading State -->
-    <div v-if="loading && !realtimeData.length" class="text-center py-12">
+    <div v-if="loading && !realtimeData.length" class="loading-state">
       <div class="spinner spinner-lg"></div>
       <p class="mt-4 text-muted">Loading Unit Data...</p>
     </div>
@@ -362,12 +369,13 @@ onMounted(() => {
     updateDate()
     refreshData()
     
-    setInterval(updateDate, 60000)
+    const dateInterval = setInterval(updateDate, 1000)
     
     const realtimeInterval = setInterval(fetchRealtime, 2000)
     const historyInterval = setInterval(fetchHistory, 30000)
     
     onUnmounted(() => {
+        clearInterval(dateInterval)
         clearInterval(realtimeInterval)
         clearInterval(historyInterval)
     })
@@ -376,12 +384,17 @@ onMounted(() => {
 // Helpers
 const updateDate = () => {
     const now = new Date()
-    currentDate.value = now.toLocaleDateString('id-ID', { 
+    const options = { 
         weekday: 'long', 
         year: 'numeric', 
         month: 'long', 
-        day: 'numeric' 
-    })
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+    }
+    currentDate.value = now.toLocaleString('id-ID', options).replace(/\./g, ':') + ' WITA'
 }
 
 const getValue = (fieldName) => {
@@ -680,7 +693,11 @@ const chartOptions = computed(() => ({
         },
         x: {
             grid: { display: false },
-            ticks: { color: isDark.value ? '#94a3b8' : '#64748b' }
+            ticks: { 
+                color: isDark.value ? '#94a3b8' : '#64748b',
+                maxRotation: 45,
+                minRotation: 45
+            }
         }
     },
     elements: {
@@ -1143,6 +1160,92 @@ const exportCSV = () => {
     
     .stats-bar {
         gap: 1.5rem;
+        flex-wrap: wrap;
+    }
+    
+    .pq-grid {
+        grid-template-columns: 1fr;
+        gap: var(--space-4);
+    }
+}
+
+@media (max-width: 480px) {
+    .stats-bar {
+        gap: 1rem;
+        justify-content: space-around;
+        padding: var(--space-3);
+    }
+    
+    .stat-value {
+        font-size: 1rem;
+    }
+    
+    .pq-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .pq-card {
+        padding: var(--space-3);
+    }
+}
+
+
+.unit-container {
+    min-height: calc(100vh - 140px);
+    display: flex;
+    flex-direction: column;
+}
+
+/* Loading State */
+.loading-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 60vh; /* Fixed height to ensure centering */
+    width: 100%;
+    text-align: center;
+}
+
+/* Header Responsiveness */
+.header-top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.header-left-group {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+}
+
+.header-date-mobile {
+    display: none;
+    text-align: center;
+    margin-top: var(--space-2);
+    width: 100%;
+}
+
+@media (max-width: 768px) {
+    .header-date-desktop {
+        display: none;
+    }
+
+    .header-date-mobile {
+        display: none;
+
+    }
+
+    .back-text,
+    .divider-vertical {
+        display: none;
+    }
+    
+    .header-left-group {
+        width: 100%;
+        /* justify-content: center; If we wanted title centered, but user asked for date centered only */
     }
 }
 </style>

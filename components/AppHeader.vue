@@ -4,7 +4,7 @@
       <div class="header-left">
         <!-- Logo -->
         <NuxtLink to="/" class="header-logo">
-          <img src="/images/npblue.png" alt="PLTD Tahuna" class="header-logo-img" />
+          <img :src="isDark ? '/images/npwhite.png' : '/images/npblue.png'" alt="PLTD Tahuna" class="header-logo-img" />
           <div class="brand-text">
             <h1 class="app-brand-title">MONITORING PEMBEBANAN ONLINE</h1>
             <span class="app-brand-subtitle">PLTD TAHUNA</span>
@@ -12,8 +12,8 @@
         </NuxtLink>
       </div>
 
-      <!-- Navigation Menu -->
-      <nav class="header-nav">
+      <!-- Desktop Navigation -->
+      <nav class="header-nav hidden-mobile">
         <NuxtLink to="/" class="nav-link" :class="{ active: route.path === '/' }">
           <span class="nav-icon">🏠</span> Home
         </NuxtLink>
@@ -22,11 +22,16 @@
         </NuxtLink>
       </nav>
       
-      <!-- User section with logout -->
+      <!-- User section -->
       <div class="header-user-section">
         <!-- Theme Toggle -->
         <button class="btn-theme-toggle" @click="toggleTheme" :title="isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'">
           {{ isDark ? '🌞' : '🌙' }}
+        </button>
+
+        <!-- Mobile Menu Toggle -->
+        <button class="btn-mobile-menu visible-mobile" @click="toggleMobileMenu">
+          <span class="hamburger-icon">☰</span>
         </button>
 
         <template v-if="user">
@@ -68,11 +73,21 @@
           </div>
         </template>
         
-        <!-- Logout button always visible on mobile -->
-        <button v-if="user" class="btn-logout-mobile" @click="handleLogout" title="Logout">
-          🚪
-        </button>
       </div>
+    </div>
+
+    <!-- Mobile Navigation Menu (Slide down) -->
+    <div class="mobile-nav-menu" :class="{ open: isMobileMenuOpen }">
+      <NuxtLink to="/" class="mobile-nav-link" :class="{ active: route.path === '/' }" @click="closeMobileMenu">
+        <span class="nav-icon">🏠</span> Home
+      </NuxtLink>
+      <NuxtLink to="/profile" class="mobile-nav-link" :class="{ active: route.path === '/profile' }" @click="closeMobileMenu">
+        <span class="nav-icon">🏭</span> Profile
+      </NuxtLink>
+      <div class="mobile-nav-divider"></div>
+      <button class="mobile-nav-link danger" @click="handleLogout">
+        <span class="nav-icon">🚪</span> Keluar
+      </button>
     </div>
   </header>
 </template>
@@ -82,6 +97,15 @@ const route = useRoute()
 const { user, logout } = useAuth()
 const { isDark, toggleTheme } = useTheme()
 const isDropdownOpen = ref(false)
+const isMobileMenuOpen = ref(false)
+
+const toggleMobileMenu = () => {
+  isMobileMenuOpen.value = !isMobileMenuOpen.value
+}
+
+const closeMobileMenu = () => {
+  isMobileMenuOpen.value = false
+}
 
 const toggleDropdown = () => {
   isDropdownOpen.value = !isDropdownOpen.value
@@ -222,6 +246,10 @@ onMounted(() => {
 }
 
 @media (max-width: 768px) {
+  .brand-text {
+    display: none;
+  }
+  
   .app-brand-title {
     font-size: 0.8rem;
   }
@@ -427,6 +455,16 @@ onMounted(() => {
   .user-dropdown {
     display: none;
   }
+}
+@media (max-width: 768px) {
+  .header-user-name,
+  .dropdown-arrow {
+    display: none;
+  }
+  
+  .user-dropdown {
+    display: none;
+  }
   
   .btn-logout-mobile {
     display: flex;
@@ -435,9 +473,90 @@ onMounted(() => {
   }
 }
 
-@media (min-width: 769px) {
-  .btn-logout-mobile {
-    display: none;
+/* Mobile Navigation Styles */
+.btn-mobile-menu {
+  display: none;
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  padding: var(--space-2);
+  cursor: pointer;
+  color: var(--gray-600);
+}
+
+.mobile-nav-menu {
+  display: none;
+  background: var(--bg-header);
+  border-top: 1px solid var(--border-color);
+  padding: var(--space-2);
+  flex-direction: column;
+  gap: var(--space-1);
+  box-shadow: var(--shadow-md);
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  transform: translateY(-100%);
+  opacity: 0;
+  z-index: -1;
+  transition: all var(--transition-base);
+}
+
+.mobile-nav-menu.open {
+  transform: translateY(0);
+  opacity: 1;
+  z-index: 90;
+}
+
+.mobile-nav-link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  color: var(--gray-600);
+  text-decoration: none;
+  font-weight: 500;
+  border-radius: var(--radius-md);
+}
+
+.mobile-nav-link:hover,
+.mobile-nav-link.active {
+  background: var(--bg-hover);
+  color: var(--primary-600);
+}
+
+.mobile-nav-divider {
+  height: 1px;
+  background: var(--border-color);
+  margin: var(--space-1) 0;
+}
+
+.mobile-nav-link.danger {
+  color: var(--danger);
+  width: 100%;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+}
+
+.mobile-nav-link.danger:hover {
+  background: rgba(239, 68, 68, 0.1);
+}
+
+@media (max-width: 768px) {
+  .btn-mobile-menu {
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
+
+  .mobile-nav-menu {
+    display: flex;
+  }
+}
+
+@media (min-width: 769px) {
+  /* No special styles needed for desktop regarding mobile menu hidden elements */
 }
 </style>

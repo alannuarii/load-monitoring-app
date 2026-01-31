@@ -353,9 +353,15 @@ const selectUnit = (unit) => {
   }
 }
 
+@media (max-width: 480px) {
+  .pltd-stat-value {
+    font-size: 1.5rem;
+  }
+}
+
 .units-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   gap: var(--space-4);
 }
 
@@ -456,6 +462,18 @@ const selectUnit = (unit) => {
   width: 100%;
   max-width: 400px;
   margin: var(--space-4);
+}
+
+@media (max-width: 640px) {
+  .modal {
+    margin: var(--space-2);
+    width: calc(100% - var(--space-4));
+    max-height: 85vh;
+  }
+
+  .modal-body {
+    max-height: 60vh;
+  }
 }
 
 .modal-xl {

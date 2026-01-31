@@ -1,16 +1,31 @@
 <template>
   <div class="animate-fade-in dashboard-container">
     <!-- Header with System Frequency & Total Power -->
-    <div class="dashboard-header">
-      <div class="header-stats">
-        <div v-if="systemFrequency > 0" class="system-frequency">
+    <!-- Header Card -->
+    <div class="dashboard-header-card mb-6 animate-slide-down">
+      <!-- Left: Total Power -->
+      <div class="header-section left">
+        <div class="power-metric">
+          <span class="metric-label">Total Active Power</span>
+          <div class="metric-value-group">
+            <span class="metric-value">{{ totalActivePower }}</span>
+            <span class="metric-unit">kW</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Center: Frequency -->
+      <div class="header-section center">
+        <div v-if="systemFrequency > 0" class="frequency-display">
           <span class="freq-value">{{ systemFrequency.toFixed(2) }}</span>
           <span class="freq-unit">Hz</span>
         </div>
-        <div class="total-power">
-          <span class="power-label">Total Active Power:</span>
-          <span class="power-value">{{ totalActivePower }}</span>
-          <span class="power-unit">kW</span>
+      </div>
+      
+      <!-- Right: Date Display -->
+      <div class="header-section right">
+        <div class="header-date">
+          <p class="text-sm text-muted font-medium m-0">{{ currentDate }}</p>
         </div>
       </div>
     </div>
@@ -23,13 +38,13 @@
     </div>
 
     <!-- Loading State -->
-    <div v-else-if="loading" class="text-center py-8">
+    <div v-else-if="loading" class="loading-state">
       <div class="spinner spinner-lg"></div>
       <p class="mt-4 text-muted">Menghubungkan ke sistem monitoring...</p>
     </div>
 
     <!-- Units Grid -->
-    <div v-else class="units-grid">
+    <div v-else class="units-grid grid-cols-1-mobile gap-mobile-4">
       <!-- Upper Row -->
       <UnitMonitor :unit="1" :data="dg1Data" />
       <UnitMonitor :unit="4" :data="[]" />
@@ -52,6 +67,22 @@ const dg8Data = ref([])
 const dg9Data = ref([])
 const error = ref(null)
 const loading = ref(true)
+const currentDate = ref('')
+
+const updateDate = () => {
+    const now = new Date()
+    const options = { 
+        weekday: 'long', 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+    }
+    currentDate.value = now.toLocaleString('id-ID', options).replace(/\./g, ':') + ' WITA'
+}
 
 // Calculate system frequency from first available unit
 const systemFrequency = computed(() => {
@@ -122,12 +153,15 @@ const fetchAllData = async () => {
 // Initial fetch
 onMounted(() => {
   fetchAllData()
+  updateDate()
   
   // Auto-refresh every 1 second
   const interval = setInterval(fetchAllData, 1000)
+  const dateInterval = setInterval(updateDate, 1000)
   
   onUnmounted(() => {
     clearInterval(interval)
+    clearInterval(dateInterval)
   })
 })
 </script>
@@ -135,76 +169,143 @@ onMounted(() => {
 <style scoped>
 /* Force compact sizing for dashboard */
 .dashboard-container {
-  height: calc(100vh - 65px); /* Adjusted for better fit */
+  min-height: calc(100vh - 140px); /* Fill available space */
   display: flex;
   flex-direction: column;
-  overflow: hidden;
   padding: 0 var(--space-6); /* Increased horizontal padding */
 }
 
-.dashboard-header {
-  display: flex;
-  justify-content: center;
+/* Dashboard Header Card */
+.dashboard-header-card {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  margin-top: var(--space-2);
-  margin-bottom: var(--space-3);
-  flex-shrink: 0;
-}
-
-.system-frequency {
-  display: flex;
-  align-items: baseline;
-  gap: var(--space-2);
   background: var(--bg-card);
   border: 1px solid var(--border-color);
-  padding: 0.25rem 1.5rem; /* Reduced padding */
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-xl);
+  padding: var(--space-4) var(--space-6);
   box-shadow: var(--shadow-sm);
-  color: var(--primary-600);
+  margin-top: var(--space-2);
 }
 
-.freq-value {
-  font-size: 2rem; /* Reduced from 2.5rem */
-  font-weight: 800;
+.header-section {
+  display: flex;
+  align-items: center;
+}
+
+.header-section.left {
+  justify-content: flex-start;
+}
+
+.header-section.center {
+  justify-content: center;
+}
+
+.header-section.right {
+  justify-content: flex-end;
+}
+
+/* Power Metric (Left) */
+.power-metric {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  align-items: center; /* Centered as requested */
+}
+
+.metric-label {
+  font-size: 0.75rem;
+  color: var(--gray-500);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+
+.metric-value-group {
+  display: flex;
+  align-items: baseline;
+  gap: 0.25rem;
+}
+
+.metric-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-main);
   line-height: 1;
 }
 
+.metric-unit {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--gray-500);
+}
+
+/* Frequency Display (Center) */
+.frequency-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-hover); /* Subtle background circle/box */
+  padding: 0.5rem 1.5rem;
+  border-radius: var(--radius-lg);
+  position: relative;
+}
+
+.freq-value {
+  font-size: 2.5rem;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--primary-600);
+  font-variant-numeric: tabular-nums;
+}
+
 .freq-unit {
-  font-size: 1rem; /* Reduced from 1.25rem */
+  font-size: 0.875rem;
   font-weight: 600;
   color: var(--gray-500);
+  margin-top: -0.25rem;
 }
 
-.header-stats {
+/* Date (Right) */
+.header-date {
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* Loading State */
+.loading-state {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: var(--space-6);
+  justify-content: center;
+  height: 60vh; /* Fixed height to ensure centering */
+  width: 100%;
+  text-align: center;
 }
 
-.total-power {
-  display: flex;
-  align-items: baseline;
-  gap: var(--space-2);
-  background: var(--bg-hover);
-  border: 1px solid var(--border-color);
-  padding: 0.5rem 1.25rem;
-  border-radius: var(--radius-md);
-}
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .dashboard-header-card {
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+    text-align: center;
+    padding: var(--space-4);
+  }
 
-.power-label {
-  font-size: 0.875rem;
-  color: var(--gray-500);
-}
+  .header-section {
+    justify-content: center !important;
+  }
+  
+  /* Order: Frequency first, then power */
+  .header-section.center {
+    order: -1;
+    margin-bottom: var(--space-2);
+  }
 
-.power-value {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--gray-800);
-}
-
-.power-unit {
-  font-size: 0.875rem;
-  color: var(--gray-500);
+  .header-date {
+    display: none;
+  }
 }
 
 /* Updated Grid Layout - Left Aligned */

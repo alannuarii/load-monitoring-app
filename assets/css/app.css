@@ -1030,3 +1030,69 @@ h4 { font-size: var(--font-size-lg); }
 ::-webkit-scrollbar-thumb:hover {
     background: var(--gray-400);
 }
+
+/* =====================================================
+   Mobile Responsiveness & Utilities
+   ===================================================== */
+
+/* Container Adjustments */
+@media (max-width: 640px) {
+    .container {
+        padding: 0 var(--space-3);
+    }
+    
+    :root {
+        --header-height: 56px;
+        --space-4: 0.75rem;
+        --space-6: 1rem;
+        --space-8: 1.5rem;
+        --font-size-base: 0.9375rem; /* 15px */
+    }
+}
+
+/* Fluid Typography for Headings */
+@media (max-width: 768px) {
+    h1 { font-size: 1.5rem; }
+    h2 { font-size: 1.25rem; }
+    h3 { font-size: 1.125rem; }
+    h4 { font-size: 1rem; }
+    
+    .text-sm { font-size: 0.8125rem; }
+    .text-xs { font-size: 0.7rem; }
+}
+
+/* Visibility Utilities */
+.hidden-mobile { display: inherit; }
+.visible-mobile { display: none; }
+
+@media (max-width: 768px) {
+    .hidden-mobile { display: none !important; }
+    .visible-mobile { display: inherit !important; }
+    
+    /* Flex Utilities */
+    .flex-col-mobile { flex-direction: column; }
+    .items-start-mobile { align-items: flex-start; }
+    .w-full-mobile { width: 100%; }
+    
+    /* Grid Utilities */
+    .grid-cols-1-mobile { grid-template-columns: 1fr; }
+    .grid-cols-2-mobile { grid-template-columns: repeat(2, 1fr); }
+    
+    /* Spacing */
+    .mt-mobile-2 { margin-top: var(--space-2); }
+    .mb-mobile-2 { margin-bottom: var(--space-2); }
+    .p-mobile-2 { padding: var(--space-2); }
+    .gap-mobile-2 { gap: var(--space-2); }
+}
+
+/* Touch Targets */
+@media (pointer: coarse) {
+    .btn, 
+    .nav-link, 
+    .form-input, 
+    .form-select,
+    .calendar-day,
+    .calendar-event {
+        min-height: 44px; /* Apple's recommended minimum */
+    }
+}
