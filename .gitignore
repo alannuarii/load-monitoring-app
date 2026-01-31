@@ -33,3 +33,6 @@ coverage/
 
 # Misc
 *.local
+
+# Reference projects (for analysis only)
+.reference/

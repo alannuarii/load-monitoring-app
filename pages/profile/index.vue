@@ -4,6 +4,49 @@
       <h1 class="home-title m-0">Profil Unit Pembangkit</h1>
     </div>
 
+    <!-- PLTD Summary Card -->
+    <div class="pltd-summary-card mb-6">
+      <!-- Left: Photo Placeholder -->
+      <div class="pltd-photo-placeholder">
+        <span class="pltd-photo-icon">🏭</span>
+        <span class="pltd-photo-text">Foto PLTD Tahuna</span>
+      </div>
+      
+      <!-- Center: Info -->
+      <div class="pltd-info">
+        <h2 class="pltd-name">PLTD Tahuna</h2>
+        <p class="pltd-location">📍 Kabupaten Kepulauan Sangihe, Sulawesi Utara</p>
+        <div class="pltd-stats-grid">
+          <div class="pltd-stat">
+            <span class="pltd-stat-label">DAYA TERPASANG</span>
+            <div class="pltd-stat-row">
+              <span class="pltd-stat-value">{{ totalDayaTerpasang.toLocaleString('id-ID') }}</span>
+              <span class="pltd-stat-unit">kW</span>
+            </div>
+          </div>
+          <div class="pltd-stat">
+            <span class="pltd-stat-label">DAYA MAMPU</span>
+            <div class="pltd-stat-row">
+              <span class="pltd-stat-value">{{ totalDayaMampu.toLocaleString('id-ID') }}</span>
+              <span class="pltd-stat-unit">kW</span>
+            </div>
+          </div>
+          <div class="pltd-stat">
+            <span class="pltd-stat-label">JUMLAH MESIN</span>
+            <div class="pltd-stat-row">
+              <span class="pltd-stat-value">{{ jumlahMesin }}</span>
+              <span class="pltd-stat-unit">Unit</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Right: Map Snapshot -->
+      <div class="pltd-map-container">
+        <img src="/images/sangihe_map.png" alt="Peta Pulau Sangihe" class="pltd-map-image" />
+      </div>
+    </div>
+
     <!-- Units Grid -->
     <div class="units-grid">
       <div 
@@ -163,6 +206,20 @@ import { unitsProfile } from '~/server/lib/data/unitsProfile'
 const showDetailModal = ref(false)
 const selectedUnit = ref(null)
 
+// PLTD Summary computed values
+const totalDayaTerpasang = computed(() => {
+  return unitsProfile.reduce((sum, unit) => sum + (unit.mesin.dayaTerpasang || 0), 0)
+})
+
+const totalDayaMampu = computed(() => {
+  return unitsProfile.reduce((sum, unit) => sum + (unit.mesin.dayaMampu || 0), 0)
+})
+
+const jumlahMesin = computed(() => unitsProfile.length)
+
+// Map image exists flag
+const mapImageExists = ref(true)
+
 const selectUnit = (unit) => {
   selectedUnit.value = unit
   showDetailModal.value = true
@@ -170,6 +227,132 @@ const selectUnit = (unit) => {
 </script>
 
 <style scoped>
+/* PLTD Summary Card */
+.pltd-summary-card {
+  display: flex;
+  gap: var(--space-6);
+  background: white;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+}
+
+.pltd-photo-placeholder {
+  width: 280px;
+  min-height: 200px;
+  background: linear-gradient(135deg, var(--gray-200), var(--gray-300));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
+.pltd-photo-icon {
+  font-size: 4rem;
+  opacity: 0.5;
+}
+
+.pltd-photo-text {
+  font-size: 0.875rem;
+  color: var(--gray-500);
+}
+
+.pltd-info {
+  flex: 1;
+  padding: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.pltd-name {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--gray-800);
+  margin: 0 0 var(--space-1) 0;
+}
+
+.pltd-location {
+  font-size: 0.9rem;
+  color: var(--gray-500);
+  margin: 0 0 var(--space-4) 0;
+}
+
+.pltd-stats-grid {
+  display: flex;
+  gap: var(--space-8);
+}
+
+.pltd-stat {
+  display: flex;
+  flex-direction: column;
+}
+
+.pltd-stat-label {
+  font-size: 0.7rem;
+  color: var(--gray-600);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-bottom: var(--space-1);
+  font-weight: 700;
+}
+
+.pltd-stat-row {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-1);
+}
+
+.pltd-stat-value {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--primary-600);
+  line-height: 1;
+}
+
+.pltd-stat-unit {
+  font-size: 0.875rem;
+  color: var(--gray-500);
+}
+
+.pltd-map-container {
+  width: 200px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #87CEEB;
+}
+
+.pltd-map-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+@media (max-width: 768px) {
+  .pltd-summary-card {
+    flex-direction: column;
+  }
+  
+  .pltd-photo-placeholder {
+    width: 100%;
+    min-height: 150px;
+  }
+  
+  .pltd-map-container {
+    width: 100%;
+    height: 150px;
+  }
+  
+  .pltd-stats-grid {
+    flex-wrap: wrap;
+    gap: var(--space-4);
+  }
+}
+
 .units-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));

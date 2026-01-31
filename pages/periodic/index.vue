@@ -116,6 +116,7 @@
                   <div class="point-label">
                     <div class="cycle-name">{{ point.cycles }}</div>
                     <div class="cycle-interval">{{ formatNumber2(point.interval) }}</div>
+                    <div class="cycle-duration">{{ point.duration }} hari</div>
                   </div>
                 </div>
                 
@@ -514,6 +515,13 @@ const submitRealization = async () => {
   padding: 2px 6px;
   border-radius: var(--radius-full);
   display: inline-block;
+  margin-top: 2px;
+}
+
+.cycle-duration {
+  font-size: 0.7rem;
+  color: var(--primary-600);
+  font-weight: 500;
   margin-top: 2px;
 }
 

@@ -38,6 +38,11 @@ export default defineNuxtConfig({
         googleClientId: process.env.GOOGLE_CLIENT_ID,
         googleClientSecret: process.env.GOOGLE_CLIENT_SECRET,
         jwtSecret: process.env.JWT_SECRET || 'default-secret-change-me',
+        // InfluxDB
+        influxUrl: process.env.INFLUX_URL,
+        influxToken: process.env.INFLUX_TOKEN,
+        influxOrg: process.env.INFLUX_ORG,
+        influxBucket: process.env.INFLUX_BUCKET,
 
         // Public environment variables (exposed to client)
         public: {
