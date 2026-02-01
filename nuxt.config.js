@@ -61,6 +61,9 @@ export default defineNuxtConfig({
             background_color: '#ffffff',
             display: 'standalone',
             orientation: 'portrait',
+            start_url: '/',
+            scope: '/',
+            id: '/',
             icons: [
                 {
                     src: 'pwa-192x192.png',
@@ -93,7 +96,8 @@ export default defineNuxtConfig({
             suppressWarnings: true,
             navigateFallbackAllowlist: [/^\/$/],
             type: 'module'
-        }
+        },
+        injectRegister: 'auto'
     },
 
     compatibilityDate: '2024-11-01'

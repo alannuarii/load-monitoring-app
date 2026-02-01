@@ -20,5 +20,7 @@ export const auth = betterAuth({
   trustedOrigins: [
     config.betterAuthUrl,
     "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "http://localhost:3001", // In case port is taken
   ],
 });

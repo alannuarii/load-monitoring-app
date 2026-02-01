@@ -7,8 +7,10 @@ let authClient: ReturnType<typeof createAuthClient> | null = null;
 const getAuthClient = () => {
     if (!authClient && typeof window !== 'undefined') {
         const config = useRuntimeConfig();
+        // Use the configured URL if available, otherwise default to current origin
+        const baseURL = config.public.betterAuthUrl || window.location.origin;
         authClient = createAuthClient({
-            baseURL: config.public.betterAuthUrl || window.location.origin
+            baseURL: baseURL
         });
     }
     return authClient;
