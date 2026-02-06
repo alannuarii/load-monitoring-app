@@ -3,6 +3,10 @@ FROM node:22-alpine AS builder
 
 WORKDIR /app
 
+# Build args for public config (must be set at build time)
+ARG BETTER_AUTH_URL=http://localhost:3000
+ENV BETTER_AUTH_URL=${BETTER_AUTH_URL}
+
 COPY package*.json ./
 RUN npm ci  # Changed back to ci for reproducible builds
 
