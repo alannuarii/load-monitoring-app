@@ -19,17 +19,14 @@
 const { initAuth, user } = useAuth()
 const { isDark, initTheme } = useTheme()
 
-// Check auth and theme on every page load
+// Initialize theme and auth on mount
 onMounted(async () => {
   initTheme()
-  await initAuth()
-})
-
-// Also check auth when navigating
-const route = useRoute()
-watch(() => route.path, async () => {
-  if (!user.value) {
+  
+  try {
     await initAuth()
+  } catch (error) {
+    console.error('Failed to initialize auth:', error)
   }
 })
 </script>

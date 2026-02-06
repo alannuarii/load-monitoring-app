@@ -1,6 +1,12 @@
 <template>
   <div class="animate-fade-in dashboard-container">
     <!-- Header with System Frequency & Total Power -->
+    
+    <!-- Mobile Date Display (Visible only on mobile) -->
+    <div class="mobile-header-date">
+      {{ currentDate }}
+    </div>
+
     <!-- Header Card -->
     <div class="dashboard-header-card mb-6 animate-slide-down">
       <!-- Left: Total Power -->
@@ -16,9 +22,10 @@
 
       <!-- Center: Frequency -->
       <div class="header-section center">
+        <span class="metric-label">Frequency</span>
         <div v-if="systemFrequency > 0" class="frequency-display">
           <span class="freq-value">{{ systemFrequency.toFixed(2) }}</span>
-          <span class="freq-unit">Hz</span>
+          <span class="metric-unit">Hz</span>
         </div>
       </div>
       
@@ -175,6 +182,27 @@ onMounted(() => {
   padding: 0 var(--space-6); /* Increased horizontal padding */
 }
 
+/* Mobile Header Date */
+.mobile-header-date {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .mobile-header-date {
+    display: block;
+    text-align: right;
+    width: 100%;
+    margin-bottom: var(--space-1);
+    margin-top: var(--space-1);
+    padding-right: 1rem;
+    color: var(--text-muted);
+    font-size: 0.6rem;
+    font-weight: 400;
+  }
+
+  
+}
+
 /* Dashboard Header Card */
 .dashboard-header-card {
   display: grid;
@@ -219,6 +247,7 @@ onMounted(() => {
   text-transform: uppercase;
   letter-spacing: 0.05em;
   font-weight: 600;
+  margin-bottom: 0.45rem;
 }
 
 .metric-value-group {
@@ -228,14 +257,14 @@ onMounted(() => {
 }
 
 .metric-value {
-  font-size: 1.5rem;
+  font-size: 1.5rem !important;
   font-weight: 700;
   color: var(--text-main);
   line-height: 1;
 }
 
 .metric-unit {
-  font-size: 0.875rem;
+  font-size: 1rem !important;
   font-weight: 500;
   color: var(--gray-500);
 }
@@ -250,6 +279,11 @@ onMounted(() => {
   padding: 0.5rem 1.5rem;
   border-radius: var(--radius-lg);
   position: relative;
+}
+
+/* Hide metric label for frequency on desktop */
+.header-section.center .metric-label {
+  display: none;
 }
 
 .freq-value {
@@ -287,24 +321,119 @@ onMounted(() => {
 /* Mobile Responsiveness */
 @media (max-width: 768px) {
   .dashboard-header-card {
-    grid-template-columns: 1fr;
-    gap: var(--space-4);
-    text-align: center;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
     padding: var(--space-4);
+    align-items: center; /* Center items vertically */
+    background: var(--bg-card); /* Use theme variable for dark mode support */
+    border: 1px solid var(--border-color); /* standardized border */
+    position: relative;
+    box-shadow: var(--shadow-sm); /* Use theme shadow */
   }
 
+  /* Vertical Divider */
+  .dashboard-header-card::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 20%;
+    bottom: 20%;
+    width: 1px;
+    background: var(--border-color); /* Use theme border color */
+  }
+
+  /* Reset header sections */
   .header-section {
+    padding: 0 var(--space-2);
+    display: flex;
+    flex-direction: column;
     justify-content: center !important;
+    align-items: center;
+    text-align: center;
+    height: 100%; /* Fill height */
   }
   
-  /* Order: Frequency first, then power */
+  /* Frequency (Left Col) */
   .header-section.center {
-    order: -1;
-    margin-bottom: var(--space-2);
+    grid-column: 1;
+    grid-row: 1;
+    margin: 0;
+    order: unset; /* Use grid-column instead */
+  }
+
+  /* Show metric label for frequency regarding mobile */
+  .header-section.center .metric-label {
+    display: block;
+    margin-top: 0;
+    margin-bottom: 0.25rem;
+  }
+
+  /* Power (Right Col) */
+  .header-section.left {
+    grid-column: 2;
+    grid-row: 1;
+    order: unset;
   }
 
   .header-date {
     display: none;
+  }
+
+  /* Frequency Styling */
+  .frequency-display {
+    background: transparent;
+    padding: 0;
+    box-shadow: none;
+    border: none;
+  }
+
+  .freq-value {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: var(--primary-600);
+    line-height: 1.1;
+  }
+
+  .freq-unit {
+    font-size: 0.875rem;
+    color: var(--text-muted); /* Use theme color */
+    font-weight: 600;
+  }
+
+  /* Power Styling */
+  .power-metric {
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+  }
+
+  .metric-value-group {
+    display: flex;
+    flex-direction: column; /* Stack value and unit */
+    align-items: center;
+    line-height: 1;
+    margin-bottom: 0.25rem;
+  }
+
+  .metric-value {
+    font-size: 1.75rem !important;
+    font-weight: 700;
+    color: var(--text-main); /* Ensure visible in dark mode */
+  }
+
+  .metric-unit {
+    font-size: 1rem !important;
+    color: var(--text-muted); /* Ensure visible in dark mode */
+    font-weight: 500;
+  }
+
+  .metric-label {
+    font-size: 0.65rem;
+    color: var(--text-muted); /* Ensure visible in dark mode */
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+    margin-top: 0;
   }
 }
 
@@ -392,10 +521,17 @@ onMounted(() => {
   .dashboard-container {
     height: auto;
     overflow: auto;
+    padding: 0 var(--space-4); /* Slightly reduced padding for mobile */
+  }
+  
+  .units-grid {
+    column-gap: var(--space-2); /* Smaller gap for mobile grid */
+    row-gap: var(--space-3);
   }
   
   .units-grid > * {
-    width: 100%;
+    /* 2 columns on mobile: (100% - gap) / 2 */
+    width: calc((100% - var(--space-2)) / 2);
   }
 }
 </style>

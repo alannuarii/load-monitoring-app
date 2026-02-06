@@ -206,22 +206,51 @@ const statusBadgeClass = computed(() => {
   font-weight: 400;
   color: var(--text-muted);
 }
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   .unit-body {
     padding: var(--space-3);
-    gap: var(--space-2);
+    gap: 0; /* Removing gap since we only show one item */
+  }
+
+  /* Hide Reactive Power (2nd) and Power Factor (3rd) on mobile */
+  .metric-card:nth-child(2),
+  .metric-card:nth-child(3) {
+    display: none;
   }
 
   .metric-card {
-    padding: var(--space-2);
+    padding: 0;
+    background: transparent; /* Remove background for cleaner look on mobile */
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.1rem;
   }
 
   .metric-label {
-    font-size: var(--font-size-xs);
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
   }
 
   .metric-value {
-    font-size: 1rem;
+    font-size: 1.125rem; /* Larger value for readability */
+  }
+  
+  .unit-header {
+    padding: 0.5rem 0.75rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+  
+  .status-badge {
+    font-size: 0.6rem;
+    padding: 0.1rem 0.4rem;
+    align-self: flex-start;
+  }
+  
+  .unit-title {
+    font-size: 0.875rem;
   }
 }
 </style>

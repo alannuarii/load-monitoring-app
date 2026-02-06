@@ -43,6 +43,16 @@ const getErrorMessage = (err) => {
   }
   return messages[err] || 'Terjadi kesalahan'
 }
+
+// Redirect if already authenticated
+const { user, initAuth } = useAuth()
+
+onMounted(async () => {
+  await initAuth()
+  if (user.value) {
+    await navigateTo('/')
+  }
+})
 </script>
 
 <style scoped>

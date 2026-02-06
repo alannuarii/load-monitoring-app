@@ -1,24 +1,21 @@
 import { betterAuth } from "better-auth";
 import pkg from "pg";
 const { Pool } = pkg;
-import { useRuntimeConfig } from "#imports";
-
-const config = useRuntimeConfig();
 
 export const auth = betterAuth({
   database: new Pool({
-    connectionString: config.databaseUrl,
+    connectionString: process.env.DATABASE_URL || "",
   }),
-  secret: config.betterAuthSecret,
-  baseURL: config.betterAuthUrl,
+  secret: process.env.BETTER_AUTH_SECRET || "",
+  baseURL: process.env.BETTER_AUTH_URL || "http://localhost:3000",
   socialProviders: {
     google: {
-      clientId: config.googleClientId,
-      clientSecret: config.googleClientSecret,
+      clientId: process.env.GOOGLE_CLIENT_ID || "",
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
     },
   },
   trustedOrigins: [
-    config.betterAuthUrl,
+    process.env.BETTER_AUTH_URL || "http://localhost:3000",
     "http://localhost:3000",
     "http://127.0.0.1:3000",
     "http://localhost:3001", // In case port is taken

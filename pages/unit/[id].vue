@@ -1143,9 +1143,14 @@ const exportCSV = () => {
 }
 
 @media (max-width: 768px) {
-    .metrics-grid,
-    .values-grid {
+    .metrics-grid {
         grid-template-columns: 1fr;
+    }
+
+    /* User requested Voltage/Current parameters to be inline (sejajar) on mobile */
+    .values-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.5rem; /* Tighter gap for mobile */
     }
     
     .chart-controls {

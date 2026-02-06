@@ -45,12 +45,24 @@ export const useAuth = () => {
 
     const loginWithGoogle = async () => {
         const client = getAuthClient();
-        if (!client) return;
+        if (!client) {
+            console.error('Auth client not initialized');
+            return;
+        }
         
-        await client.signIn.social({
-            provider: "google",
-            callbackURL: "/"
-        });
+        try {
+            // Use full URL for better redirect handling
+            const callbackURL = typeof window !== 'undefined' 
+                ? window.location.origin + '/' 
+                : '/';
+            
+            await client.signIn.social({
+                provider: "google",
+                callbackURL: callbackURL
+            });
+        } catch (error) {
+            console.error('Google login error:', error);
+        }
     };
 
     const logout = async () => {
