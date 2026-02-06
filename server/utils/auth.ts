@@ -19,5 +19,6 @@ export const auth = betterAuth({
     "http://localhost:3000",
     "http://127.0.0.1:3000",
     "http://localhost:3001", // In case port is taken
+    "https://loadmonitoring.serveer.biz.id", // Production
   ],
 });
