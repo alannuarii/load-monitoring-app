@@ -71,9 +71,9 @@
         
         <!-- Two Columns: Feeder 1 & Feeder 2 -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <!-- Feeder 1 (IT1) -->
+          <!-- Feeder 1 -->
           <div class="feeder-block">
-            <h4 class="feeder-title">Feeder 1 (IT1)</h4>
+            <h4 class="feeder-title">Feeder 1</h4>
             <div class="metrics-grid-2">
                <div class="metric-card-sm">
                  <span class="metric-label">Active Power</span>
@@ -88,9 +88,9 @@
             </div>
           </div>
 
-          <!-- Feeder 2 (IT2) -->
+          <!-- Feeder 2 -->
           <div class="feeder-block">
-            <h4 class="feeder-title">Feeder 2 (IT2)</h4>
+            <h4 class="feeder-title">Feeder 2</h4>
             <div class="metrics-grid-2">
                <div class="metric-card-sm">
                  <span class="metric-label">Active Power</span>
@@ -622,7 +622,7 @@ const exportCSV = () => {
 .metric-value-primary { font-size: 1.5rem; font-weight: 700; color: var(--text-main); }
 .metric-value-primary small { font-size: 0.875rem; font-weight: 400; color: var(--text-muted); }
 .metric-value { font-size: 1.25rem; font-weight: 700; color: var(--text-main); }
-.metric-value small { font-size: 0.875rem; }
+.metric-value small { font-size: 0.875rem; font-weight: 400; color: var(--text-muted);}
 
 .feeder-block { background: var(--bg-subtle); padding: var(--space-4); border-radius: var(--radius-md); border: 1px solid var(--border-color); }
 .feeder-title { font-size: 1rem; font-weight: 600; margin-bottom: var(--space-4); color: var(--text-main); text-align: center; }
