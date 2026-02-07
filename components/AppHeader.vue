@@ -6,7 +6,7 @@
         <NuxtLink to="/" class="header-logo">
           <img :src="isDark ? '/images/npwhite.png' : '/images/npblue.png'" alt="PLTD Tahuna" class="header-logo-img" />
           <div class="brand-text">
-            <h1 class="app-brand-title">MONITORING PEMBEBANAN ONLINE</h1>
+            <h1 class="app-brand-title">DASHBOARD PEMBEBANAN ONLINE</h1>
             <span class="app-brand-subtitle">PLTD TAHUNA</span>
           </div>
         </NuxtLink>

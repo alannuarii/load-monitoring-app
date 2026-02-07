@@ -6,7 +6,7 @@
           <img src="/images/npblue.png" alt="PLTD Tahuna" class="auth-logo-img" />
         </div>
         <!-- <h2>PLTD Tahuna</h2> -->
-        <p class="text-muted text-sm mt-2 font-medium">Maintenance App</p>
+        <p class="text-muted text-sm mt-2 font-medium">Dashboard Pembebanan Online</p>
       </template>
       
       <div class="flex flex-col gap-4">
