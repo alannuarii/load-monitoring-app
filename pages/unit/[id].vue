@@ -5,7 +5,7 @@
       <div class="header-top-row">
         <div class="header-left-group">
           <NuxtLink to="/" class="btn-back">
-            <span class="icon">←</span> <span class="back-text">Kembali</span>
+            <span class="icon">←</span>
           </NuxtLink>
           <div class="divider-vertical"></div>
           <h1 class="page-title m-0">Unit {{ unitId }}</h1>

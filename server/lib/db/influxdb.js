@@ -43,6 +43,18 @@ export const buildDGQuery = (bucket, measurement) => {
     `
 }
 
+// Build generic query for any measurement and fields
+export const buildGenericQuery = (bucket, measurement, fields) => {
+    const fieldFilters = fields.map(f => `r._field == "${f}"`).join(' or ')
+    return `
+        from(bucket: "${bucket}")
+          |> range(start: -1m)
+          |> filter(fn: (r) => r._measurement == "${measurement}")
+          |> filter(fn: (r) => ${fieldFilters})
+          |> last()
+    `
+}
+
 // Build query for historical data (for charts)
 export const buildHistoryQuery = (bucket, measurement, field, range = '-30m') => {
     const aggregateWindow = getAggregateWindow(range)

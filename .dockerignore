@@ -10,3 +10,5 @@ Dockerfile
 README.md
 *.log
 .DS_Store
+.referensi/
+

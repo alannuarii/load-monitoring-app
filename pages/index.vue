@@ -62,6 +62,13 @@
       <UnitMonitor :unit="7" :data="dg7Data" />
       <UnitMonitor :unit="8" :data="dg8Data" />
       <UnitMonitor :unit="9" :data="dg9Data" />
+      
+      <!-- PLTS Card -->
+      <PLTSMonitor 
+        :lvsw1Data="lvsw1Data"
+        :lvsw2Data="lvsw2Data"
+        :weatherData="weatherData"
+      />
     </div>
   </div>
 </template>
@@ -72,6 +79,13 @@ const dg6Data = ref([])
 const dg7Data = ref([])
 const dg8Data = ref([])
 const dg9Data = ref([])
+// New PLTS refs
+const it1Data = ref([])
+const it2Data = ref([])
+const lvsw1Data = ref([])
+const lvsw2Data = ref([])
+const weatherData = ref([])
+
 const error = ref(null)
 const loading = ref(true)
 const currentDate = ref('')
@@ -106,11 +120,12 @@ const systemFrequency = computed(() => {
   return 0
 })
 
-// Calculate total active power from all operating units
+// Calculate total active power from all operating units (including PLTS)
 const totalActivePower = computed(() => {
   const datasets = [dg1Data.value, dg6Data.value, dg7Data.value, dg8Data.value, dg9Data.value]
   
   let total = 0
+  // DG Units
   for (const data of datasets) {
     if (data && data.length > 0) {
       const powerItem = data.find(d => d._field === 'Active Power')
@@ -119,6 +134,17 @@ const totalActivePower = computed(() => {
       }
     }
   }
+  
+  // Add PLTS (LVSW1 + LVSW2)
+  if (lvsw1Data.value && lvsw1Data.value.length > 0) {
+      const p1 = lvsw1Data.value.find(d => d._field === 'Active Power')?._value || 0
+      if (p1 > 0) total += p1
+  }
+  if (lvsw2Data.value && lvsw2Data.value.length > 0) {
+      const p2 = lvsw2Data.value.find(d => d._field === 'Active Power')?._value || 0
+      if (p2 > 0) total += p2
+  }
+
   return Math.round(total)
 })
 
@@ -136,16 +162,32 @@ const fetchAllData = async () => {
       $fetch('/api/monitoring/dg6').catch(() => []),
       $fetch('/api/monitoring/dg7').catch(() => []),
       $fetch('/api/monitoring/dg8').catch(() => []),
-      $fetch('/api/monitoring/dg9').catch(() => [])
+      $fetch('/api/monitoring/dg9').catch(() => []),
+      // Postponed fetching it1/it2 for main dashboard optimization? 
+      // User asked to implement api for it1/it2 for future detail page use.
+      // I can fetch them or just leave them ready.
+      // fetchAllData is specifically for the dashboard state.
+      // If I don't need them for valid display, I might skip fetching to save bandwidth/db load,
+      // but user said "tetap implementasikan it1 dan it2 untuk kebutuhan data pada halaman detail PLTS".
+      // It implies the API implementation, not necessarily fetching in *this* view.
+      // But maybe I should fetch just to be safe if I needed to debug or if logic changes.
+      // However, to keep dashboard fast, I will only fetch what is needed for display: lvsw1, lvsw2, weather.
+      $fetch('/api/monitoring/lvsw1').catch(() => []),
+      $fetch('/api/monitoring/lvsw2').catch(() => []),
+      $fetch('/api/monitoring/weather-station').catch(() => [])
     ])
 
-    const [dg1, dg6, dg7, dg8, dg9] = await Promise.race([fetchPromise, timeoutPromise])
+    const [dg1, dg6, dg7, dg8, dg9, lvsw1, lvsw2, weather] = await Promise.race([fetchPromise, timeoutPromise])
     
     dg1Data.value = dg1
     dg6Data.value = dg6
     dg7Data.value = dg7
     dg8Data.value = dg8
     dg9Data.value = dg9
+    lvsw1Data.value = lvsw1
+    lvsw2Data.value = lvsw2
+    weatherData.value = weather
+    
     loading.value = false
   } catch (err) {
     // Silent fail for polling updates unless it's the first load
