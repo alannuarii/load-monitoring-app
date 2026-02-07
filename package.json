@@ -20,6 +20,7 @@
     "vue-chartjs": "^5.3.3"
   },
   "devDependencies": {
+    "@types/pg": "^8.16.0",
     "vue-tsc": "^2.2.0"
   },
   "engines": {
