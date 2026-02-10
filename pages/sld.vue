@@ -60,6 +60,10 @@
         />
       </div>
 
+      <div class="sld-update-info">
+        <p><em>Terakhir diperbarui: 19 September 2025</em></p>
+      </div>
+
       <div class="sld-instructions">
         <p>💡 <strong>Desktop:</strong> Gunakan scroll mouse untuk zoom, klik dan drag untuk menggeser</p>
         <p>💡 <strong>Mobile:</strong> Pinch untuk zoom, swipe untuk menggeser</p>
@@ -282,6 +286,18 @@ onMounted(() => {
   -webkit-user-drag: none;
 }
 
+.sld-update-info {
+  text-align: center;
+  margin-top: var(--space-3);
+}
+
+.sld-update-info p {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
 .sld-instructions {
   margin-top: var(--space-4);
   padding: var(--space-3);
@@ -326,6 +342,10 @@ onMounted(() => {
 
   .sld-instructions p {
     font-size: var(--font-size-xs);
+  }
+
+  .sld-update-info p {
+    font-size: 0.65rem;
   }
 }
 

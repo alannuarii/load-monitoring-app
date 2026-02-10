@@ -260,6 +260,7 @@ const selectUnit = (unit) => {
 .pltd-summary-card {
   display: flex;
   gap: var(--space-6);
+  margin-bottom: var(--space-4);
   background: var(--bg-card);
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-md);
