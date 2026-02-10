@@ -20,6 +20,9 @@
         <NuxtLink to="/profile" class="nav-link" :class="{ active: route.path === '/profile' }">
           <span class="nav-icon">🏭</span> Profile
         </NuxtLink>
+        <NuxtLink to="/sld" class="nav-link" :class="{ active: route.path === '/sld' }">
+          <span class="nav-icon">🔌</span> SLD
+        </NuxtLink>
       </nav>
       
       <!-- User section -->
@@ -83,6 +86,9 @@
       </NuxtLink>
       <NuxtLink to="/profile" class="mobile-nav-link" :class="{ active: route.path === '/profile' }" @click="closeMobileMenu">
         <span class="nav-icon">🏭</span> Profile
+      </NuxtLink>
+      <NuxtLink to="/sld" class="mobile-nav-link" :class="{ active: route.path === '/sld' }" @click="closeMobileMenu">
+        <span class="nav-icon">🔌</span> SLD
       </NuxtLink>
       <div class="mobile-nav-divider"></div>
       <button class="mobile-nav-link danger" @click="handleLogout">

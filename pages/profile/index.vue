@@ -1,11 +1,12 @@
 <template>
   <div class="animate-fade-in">
-    <div class="flex justify-between items-center mb-6">
-      <h1 class="home-title m-0">Profil Unit Pembangkit</h1>
+    <div class="page-header">
+      <h1 class="page-title">Profil Unit Pembangkit</h1>
+      <p class="page-subtitle">PLTD Tahuna</p>
     </div>
 
     <!-- PLTD Summary Card -->
-    <div class="pltd-summary-card mb-6">
+    <div class="pltd-summary-card">
       <!-- Left: Photo Placeholder -->
       <div class="pltd-photo-placeholder">
         <span class="pltd-photo-icon">🏭</span>
@@ -227,6 +228,34 @@ const selectUnit = (unit) => {
 </script>
 
 <style scoped>
+/* Page Header */
+.page-header {
+  margin-bottom: var(--space-4);
+}
+
+.page-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 0 0 var(--space-1) 0;
+}
+
+.page-subtitle {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  margin: 0 0 var(--space-4) 0;
+}
+
+@media (max-width: 768px) {
+  .page-title {
+    font-size: 1.5rem;
+  }
+  
+  .page-subtitle {
+    font-size: 0.875rem;
+  }
+}
+
 /* PLTD Summary Card */
 .pltd-summary-card {
   display: flex;
