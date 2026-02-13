@@ -667,8 +667,53 @@ const exportCSV = () => {
     .metrics-grid { grid-template-columns: 1fr; }
     .metrics-grid-2 { grid-template-columns: 1fr 1fr; }
     
-    .chart-controls { flex-direction: column; align-items: stretch; }
-    .chart-actions { justify-content: space-between; }
+    .chart-controls { 
+        flex-direction: column; 
+        align-items: stretch; 
+        gap: 1rem;
+    }
+
+    .chart-controls > div:first-child {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .param-select {
+        flex: 1;
+        width: 100%;
+        min-width: 0; /* Allow shrinking if needed */
+    }
+
+    .chart-actions { 
+        justify-content: space-between; 
+        width: 100%;
+    }
+
     .stats-bar { gap: 1.5rem; flex-wrap: wrap; }
+
+    /* Custom Date Picker Mobile Fix */
+    .custom-range-picker .flex {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+    }
+
+    .date-input-group {
+        flex-direction: column;
+        align-items: flex-start;
+        width: 100%;
+        gap: 0.25rem;
+    }
+
+    .date-input {
+        width: 100%;
+    }
+
+    .btn-apply {
+        width: 100%;
+        margin-top: 0.5rem;
+    }
 }
 </style>

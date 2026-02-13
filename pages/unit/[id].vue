@@ -1155,6 +1155,12 @@ const exportCSV = () => {
     
     .chart-controls {
         flex-direction: column;
+        align-items: stretch;
+    }
+
+    .chart-actions {
+        justify-content: space-between;
+        width: 100%;
     }
     
     .tabs-container {
@@ -1171,6 +1177,29 @@ const exportCSV = () => {
     .pq-grid {
         grid-template-columns: 1fr;
         gap: var(--space-4);
+    }
+
+    /* Custom Date Picker Mobile Fix */
+    .custom-range-picker .flex {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+    }
+
+    .date-input-group {
+        flex-direction: column;
+        align-items: flex-start;
+        width: 100%;
+        gap: 0.25rem;
+    }
+
+    .date-input {
+        width: 100%;
+    }
+
+    .btn-apply {
+        width: 100%;
+        margin-top: 0.5rem;
     }
 }
 
