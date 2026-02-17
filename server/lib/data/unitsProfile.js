@@ -39,7 +39,7 @@ export const unitsProfile = [
         image: '/images/placeholder-unit.png',
         mesin: {
             merek: 'DEUTZ MWM',
-            tipe: '616 V12',
+            tipe: 'TBD 616 V12',
             nomorSeri: '61612001309',
             dayaTerpasang: 500,
             dayaMampu: 150,
@@ -71,7 +71,7 @@ export const unitsProfile = [
         image: '/images/placeholder-unit.png',
         mesin: {
             merek: 'DEUTZ MWM',
-            tipe: '616 V12',
+            tipe: 'TBD 616 V12',
             nomorSeri: '61612001248',
             dayaTerpasang: 500,
             dayaMampu: 300,
