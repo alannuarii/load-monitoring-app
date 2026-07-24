@@ -30,23 +30,23 @@ export default defineNuxtConfig({
 
     runtimeConfig: {
         // Server-only environment variables
-        googleClientId: process.env.GOOGLE_CLIENT_ID,
-        googleClientSecret: process.env.GOOGLE_CLIENT_SECRET,
-        // InfluxDB
-        influxUrl: process.env.INFLUX_URL,
-        influxToken: process.env.INFLUX_TOKEN,
-        influxOrg: process.env.INFLUX_ORG,
-        influxBucket: process.env.INFLUX_BUCKET,
+        googleClientId: process.env.GOOGLE_CLIENT_ID || process.env.NUXT_GOOGLE_CLIENT_ID,
+        googleClientSecret: process.env.GOOGLE_CLIENT_SECRET || process.env.NUXT_GOOGLE_CLIENT_SECRET,
+        // InfluxDB (supports INFLUX_* and NUXT_INFLUX_*)
+        influxUrl: process.env.INFLUX_URL || process.env.NUXT_INFLUX_URL,
+        influxToken: process.env.INFLUX_TOKEN || process.env.NUXT_INFLUX_TOKEN,
+        influxOrg: process.env.INFLUX_ORG || process.env.NUXT_INFLUX_ORG,
+        influxBucket: process.env.INFLUX_BUCKET || process.env.NUXT_INFLUX_BUCKET,
         // BetterAuth & Database
-        databaseUrl: process.env.DATABASE_URL,
-        databaseTahunaUrl: process.env.DATABASE_TAHUNA_URL,
-        betterAuthSecret: process.env.BETTER_AUTH_SECRET,
-        betterAuthUrl: process.env.BETTER_AUTH_URL || 'http://localhost:3000',
+        databaseUrl: process.env.DATABASE_URL || process.env.NUXT_DATABASE_URL,
+        databaseTahunaUrl: process.env.DATABASE_TAHUNA_URL || process.env.NUXT_DATABASE_TAHUNA_URL,
+        betterAuthSecret: process.env.BETTER_AUTH_SECRET || process.env.NUXT_BETTER_AUTH_SECRET,
+        betterAuthUrl: process.env.BETTER_AUTH_URL || process.env.NUXT_BETTER_AUTH_URL || 'http://localhost:3000',
 
         // Public environment variables (exposed to client)
         public: {
-            googleClientId: process.env.GOOGLE_CLIENT_ID,
-            betterAuthUrl: process.env.BETTER_AUTH_URL || 'http://localhost:3000'
+            googleClientId: process.env.GOOGLE_CLIENT_ID || process.env.NUXT_GOOGLE_CLIENT_ID,
+            betterAuthUrl: process.env.BETTER_AUTH_URL || process.env.NUXT_BETTER_AUTH_URL || 'http://localhost:3000'
         }
     },
 
