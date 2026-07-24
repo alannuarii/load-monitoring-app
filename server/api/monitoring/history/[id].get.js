@@ -15,6 +15,7 @@ export default defineEventHandler(async (event) => {
     const fieldParam = queryParams.field || 'Active Power'
     const fields = fieldParam.includes(',') ? fieldParam.split(',') : null
     const range = queryParams.range || '-30m'
+    const isRaw = queryParams.raw === 'true' || queryParams.raw === true
 
     // Support absolute time range (for custom date picker)
     const startTime = queryParams.start
@@ -45,12 +46,12 @@ export default defineEventHandler(async (event) => {
     // Use absolute time if start and stop provided, otherwise use relative range
     if (startTime && stopTime) {
         query = fields
-            ? buildMultiFieldHistoryQueryAbsolute(config.influxBucket, measurement, fields, startTime, stopTime)
-            : buildHistoryQueryAbsolute(config.influxBucket, measurement, fieldParam, startTime, stopTime)
+            ? buildMultiFieldHistoryQueryAbsolute(config.influxBucket, measurement, fields, startTime, stopTime, isRaw)
+            : buildHistoryQueryAbsolute(config.influxBucket, measurement, fieldParam, startTime, stopTime, isRaw)
     } else {
         query = fields
-            ? buildMultiFieldHistoryQuery(config.influxBucket, measurement, fields, range)
-            : buildHistoryQuery(config.influxBucket, measurement, fieldParam, range)
+            ? buildMultiFieldHistoryQuery(config.influxBucket, measurement, fields, range, isRaw)
+            : buildHistoryQuery(config.influxBucket, measurement, fieldParam, range, isRaw)
     }
 
     try {

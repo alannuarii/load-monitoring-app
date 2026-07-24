@@ -18,7 +18,8 @@ export const auth = betterAuth({
     process.env.BETTER_AUTH_URL || "http://localhost:3000",
     "http://localhost:3000",
     "http://127.0.0.1:3000",
-    "http://localhost:3001", // In case port is taken
-    "https://loadmonitoring.serveer.biz.id", // Production
+    "http://localhost:3001",
+    "https://dashboard.pltdtahuna.my.id",
+    "https://loadmonitoring.serveer.biz.id",
   ],
 });

@@ -55,9 +55,18 @@ export const buildGenericQuery = (bucket, measurement, fields) => {
     `
 }
 
-// Build query for historical data (for charts)
-export const buildHistoryQuery = (bucket, measurement, field, range = '-30m') => {
-    const aggregateWindow = getAggregateWindow(range)
+// Build query for historical data (for charts and raw exports)
+export const buildHistoryQuery = (bucket, measurement, field, range = '-1h', raw = false) => {
+    const aggregateWindow = raw ? null : getAggregateWindow(range)
+    if (!aggregateWindow) {
+        return `
+            from(bucket: "${bucket}")
+              |> range(start: ${range})
+              |> filter(fn: (r) => r._measurement == "${measurement}")
+              |> filter(fn: (r) => r._field == "${field}")
+              |> yield(name: "raw")
+        `
+    }
     return `
         from(bucket: "${bucket}")
           |> range(start: ${range})
@@ -68,10 +77,19 @@ export const buildHistoryQuery = (bucket, measurement, field, range = '-30m') =>
     `
 }
 
-// Build query for multiple fields (for combined charts)
-export const buildMultiFieldHistoryQuery = (bucket, measurement, fields, range = '-30m') => {
+// Build query for multiple fields (for combined charts and raw exports)
+export const buildMultiFieldHistoryQuery = (bucket, measurement, fields, range = '-1h', raw = false) => {
     const fieldFilters = fields.map(f => `r._field == "${f}"`).join(' or ')
-    const aggregateWindow = getAggregateWindow(range)
+    const aggregateWindow = raw ? null : getAggregateWindow(range)
+    if (!aggregateWindow) {
+        return `
+            from(bucket: "${bucket}")
+              |> range(start: ${range})
+              |> filter(fn: (r) => r._measurement == "${measurement}")
+              |> filter(fn: (r) => ${fieldFilters})
+              |> yield(name: "raw")
+        `
+    }
     return `
         from(bucket: "${bucket}")
           |> range(start: ${range})
@@ -82,9 +100,18 @@ export const buildMultiFieldHistoryQuery = (bucket, measurement, fields, range =
     `
 }
 
-// Build query with absolute time range (for custom date picker)
-export const buildHistoryQueryAbsolute = (bucket, measurement, field, start, stop) => {
-    const aggregateWindow = getAggregateWindowAbsolute(start, stop)
+// Build query with absolute time range (for custom date picker and raw exports)
+export const buildHistoryQueryAbsolute = (bucket, measurement, field, start, stop, raw = false) => {
+    const aggregateWindow = raw ? null : getAggregateWindowAbsolute(start, stop)
+    if (!aggregateWindow) {
+        return `
+            from(bucket: "${bucket}")
+              |> range(start: ${start}, stop: ${stop})
+              |> filter(fn: (r) => r._measurement == "${measurement}")
+              |> filter(fn: (r) => r._field == "${field}")
+              |> yield(name: "raw")
+        `
+    }
     return `
         from(bucket: "${bucket}")
           |> range(start: ${start}, stop: ${stop})
@@ -96,9 +123,18 @@ export const buildHistoryQueryAbsolute = (bucket, measurement, field, start, sto
 }
 
 // Build multi-field query with absolute time range
-export const buildMultiFieldHistoryQueryAbsolute = (bucket, measurement, fields, start, stop) => {
+export const buildMultiFieldHistoryQueryAbsolute = (bucket, measurement, fields, start, stop, raw = false) => {
     const fieldFilters = fields.map(f => `r._field == "${f}"`).join(' or ')
-    const aggregateWindow = getAggregateWindowAbsolute(start, stop)
+    const aggregateWindow = raw ? null : getAggregateWindowAbsolute(start, stop)
+    if (!aggregateWindow) {
+        return `
+            from(bucket: "${bucket}")
+              |> range(start: ${start}, stop: ${stop})
+              |> filter(fn: (r) => r._measurement == "${measurement}")
+              |> filter(fn: (r) => ${fieldFilters})
+              |> yield(name: "raw")
+        `
+    }
     return `
         from(bucket: "${bucket}")
           |> range(start: ${start}, stop: ${stop})
@@ -110,33 +146,35 @@ export const buildMultiFieldHistoryQueryAbsolute = (bucket, measurement, fields,
 }
 
 // Helper: Get aggregate window based on relative range
+// Returns null for range <= 1h to fetch raw 3-second data without mean aggregation
 const getAggregateWindow = (range) => {
-    // Extract numeric value and unit from range string (e.g. "-30m", "-7d")
     const match = range.match(/-(\d+)([mhd])/)
-    if (!match) return '1m'
+    if (!match) return null
 
     const value = parseInt(match[1])
     const unit = match[2]
 
-    if (unit === 'm') return '1m'
-    if (unit === 'h' && value <= 6) return '5m'
-    if (unit === 'h') return '15m'
-    if (unit === 'd' && value <= 1) return '15m'
-    if (unit === 'd' && value <= 7) return '1h'
-    if (unit === 'd' && value <= 14) return '2h'
-    return '4h' // 30 days
+    if (unit === 'm') return null
+    if (unit === 'h' && value <= 1) return null
+    if (unit === 'h' && value <= 6) return '1m'
+    if (unit === 'h') return '5m'
+    if (unit === 'd' && value <= 1) return '5m'
+    if (unit === 'd' && value <= 7) return '15m'
+    if (unit === 'd' && value <= 14) return '1h'
+    return '2h' // 30 days
 }
 
 // Helper: Get aggregate window based on absolute range
+// Returns null for duration <= 1h to fetch raw 3-second data without mean aggregation
 const getAggregateWindowAbsolute = (start, stop) => {
     const startDate = new Date(start)
     const stopDate = new Date(stop)
     const diffMs = stopDate - startDate
-    const diffDays = diffMs / (1000 * 60 * 60 * 24)
+    const diffHours = diffMs / (1000 * 60 * 60)
 
-    if (diffDays <= 1) return '5m'
-    if (diffDays <= 7) return '1h'
-    if (diffDays <= 14) return '2h'
-    return '4h'
+    if (diffHours <= 1) return null
+    if (diffHours <= 6) return '1m'
+    if (diffHours <= 24) return '5m'
+    if (diffHours <= 168) return '15m'
+    return '1h'
 }
-

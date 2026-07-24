@@ -154,6 +154,7 @@
               <optgroup label="Power">
                 <option value="active-power">Active Power</option>
                 <option value="reactive-power">Reactive Power</option>
+                <option value="active-reactive-power">Active & Reactive Power</option>
                 <option value="power-factor">Power Factor</option>
               </optgroup>
               <optgroup label="Frequency">
@@ -183,8 +184,9 @@
             <select v-model="timeRange" class="range-select" @change="onTimeRangeChange">
               <option v-for="r in timeRanges" :key="r.value" :value="r.value">{{ r.label }}</option>
             </select>
-            <button class="btn-export" @click="exportCSV" title="Export CSV">
-              📥 Export
+            <button class="btn-export" @click="exportCSV" :disabled="isExporting" title="Export CSV Data Raw">
+              <span v-if="isExporting">⏳ Exporting Raw...</span>
+              <span v-else>📥 Export CSV</span>
             </button>
           </div>
         </div>
@@ -248,9 +250,12 @@ const loading = ref(true)
 const error = ref(null)
 const currentDate = ref('')
 const activeTab = ref('active-power')
-const timeRange = ref('-30m')
+const timeRange = ref('-1h')
 const customStart = ref('')
 const customStop = ref('')
+const unitDowntime = ref(null)
+const rawTimestamps = ref([])
+const isExporting = ref(false)
 
 // Time Range Options (extended to 30 days + custom)
 const timeRanges = [
@@ -267,22 +272,23 @@ const timeRanges = [
   { value: 'custom', label: 'Custom...' }
 ]
 
-// Tabs Config - All Parameters + Combined
+// Tabs Config - All Parameters + Combined with High-Contrast Colors
 const chartTabs = [
-  { id: 'active-power', label: 'Active Power', field: 'Active Power', unit: 'kW', color: '#3b82f6' },
-  { id: 'reactive-power', label: 'Reactive Power', field: 'Reactive Power', unit: 'kVAR', color: '#6366f1' },
+  { id: 'active-power', label: 'Active Power', field: 'Active Power', unit: 'kW', color: '#0ea5e9' },
+  { id: 'reactive-power', label: 'Reactive Power', field: 'Reactive Power', unit: 'kVAR', color: '#f97316' },
+  { id: 'active-reactive-power', label: 'Active & Reactive Power', fields: ['Active Power', 'Reactive Power'], unit: 'kW / kVAR', colors: ['#0ea5e9', '#f97316'], isMulti: true },
   { id: 'power-factor', label: 'Power Factor', field: 'Power Factor', unit: '', color: '#14b8a6' },
-  { id: 'frequency', label: 'Frequency', field: 'Frequency', unit: 'Hz', color: '#8b5cf6' },
-  // Combined Charts
-  { id: 'all-voltages', label: 'All Voltages', fields: ['Voltage L1 L2', 'Voltage L2 L3', 'Voltage L3 L1'], unit: 'V', colors: ['#10b981', '#22c55e', '#059669'], isMulti: true },
-  { id: 'all-currents', label: 'All Currents', fields: ['Current L1', 'Current L2', 'Current L3'], unit: 'A', colors: ['#f59e0b', '#f97316', '#ef4444'], isMulti: true },
+  { id: 'frequency', label: 'Frequency', field: 'Frequency', unit: 'Hz', color: '#a855f7' },
+  // Combined Charts (High-Contrast Triad Palettes)
+  { id: 'all-voltages', label: 'All Voltages', fields: ['Voltage L1 L2', 'Voltage L2 L3', 'Voltage L3 L1'], unit: 'V', colors: ['#ef4444', '#eab308', '#06b6d4'], isMulti: true },
+  { id: 'all-currents', label: 'All Currents', fields: ['Current L1', 'Current L2', 'Current L3'], unit: 'A', colors: ['#f43f5e', '#10b981', '#3b82f6'], isMulti: true },
   // Individual
-  { id: 'voltage-l1l2', label: 'Voltage L1-L2', field: 'Voltage L1 L2', unit: 'V', color: '#10b981' },
-  { id: 'voltage-l2l3', label: 'Voltage L2-L3', field: 'Voltage L2 L3', unit: 'V', color: '#22c55e' },
-  { id: 'voltage-l3l1', label: 'Voltage L3-L1', field: 'Voltage L3 L1', unit: 'V', color: '#059669' },
-  { id: 'current-l1', label: 'Current L1', field: 'Current L1', unit: 'A', color: '#f59e0b' },
-  { id: 'current-l2', label: 'Current L2', field: 'Current L2', unit: 'A', color: '#f97316' },
-  { id: 'current-l3', label: 'Current L3', field: 'Current L3', unit: 'A', color: '#ef4444' },
+  { id: 'voltage-l1l2', label: 'Voltage L1-L2', field: 'Voltage L1 L2', unit: 'V', color: '#ef4444' },
+  { id: 'voltage-l2l3', label: 'Voltage L2-L3', field: 'Voltage L2 L3', unit: 'V', color: '#eab308' },
+  { id: 'voltage-l3l1', label: 'Voltage L3-L1', field: 'Voltage L3 L1', unit: 'V', color: '#06b6d4' },
+  { id: 'current-l1', label: 'Current L1', field: 'Current L1', unit: 'A', color: '#f43f5e' },
+  { id: 'current-l2', label: 'Current L2', field: 'Current L2', unit: 'A', color: '#10b981' },
+  { id: 'current-l3', label: 'Current L3', field: 'Current L3', unit: 'A', color: '#3b82f6' },
   // Power Quality (calculated values)
   { id: 'voltage-unbalance', label: 'Voltage Unbalance', fields: ['Voltage L1 L2', 'Voltage L2 L3', 'Voltage L3 L1'], unit: '%', color: '#ec4899', isCalculated: 'voltage-unbalance' },
   { id: 'current-unbalance', label: 'Current Unbalance', fields: ['Current L1', 'Current L2', 'Current L3'], unit: '%', color: '#8b5cf6', isCalculated: 'current-unbalance' }
@@ -295,8 +301,12 @@ const activeTabUnit = computed(() => activeTabConfig.value?.unit || '')
 // Data Fetching
 const fetchRealtime = async () => {
     try {
-        const data = await $fetch(`/api/monitoring/unit/${unitId}`)
+        const [data, downtime] = await Promise.all([
+            $fetch(`/api/monitoring/unit/${unitId}`).catch(() => []),
+            $fetch('/api/monitoring/downtime').catch(() => ({}))
+        ])
         realtimeData.value = data
+        unitDowntime.value = downtime ? downtime[unitId] : null
         error.value = null
     } catch (err) {
         console.error('Realtime Fetch Error:', err)
@@ -409,18 +419,27 @@ const formatValue = (val, decimals = 0) => {
 }
 
 // Computed Status
-const status = computed(() => {
-  const power = getValue('Active Power')
-  return power > 0 ? 'operating' : 'standby'
+const statusInfo = computed(() => {
+    const power = getValue('Active Power')
+    if (power > 0) {
+        return { text: 'OPERATING', badgeClass: 'bg-success text-white' }
+    }
+    if (unitDowntime.value && unitDowntime.value.status) {
+        const s = unitDowntime.value.status
+        const lower = s.toLowerCase()
+        if (lower.includes('gangguan')) {
+            return { text: s.toUpperCase(), badgeClass: 'bg-danger text-white' }
+        }
+        if (lower.includes('pemeliharaan') || lower.includes('overhaul')) {
+            return { text: s.toUpperCase(), badgeClass: 'bg-info text-white' }
+        }
+        return { text: s.toUpperCase(), badgeClass: 'bg-warning text-gray-800' }
+    }
+    return { text: 'STANDBY', badgeClass: 'bg-warning text-gray-800' }
 })
 
-const statusText = computed(() => status.value === 'operating' ? 'Operating' : 'Standby')
-
-const statusBadgeClass = computed(() => {
-    return status.value === 'operating' 
-        ? 'bg-success text-white' 
-        : 'bg-warning text-gray-800'
-})
+const statusText = computed(() => statusInfo.value.text)
+const statusBadgeClass = computed(() => statusInfo.value.badgeClass)
 
 // Power Quality Calculations
 // Voltage Unbalance: Max deviation from average / Average × 100
@@ -553,6 +572,26 @@ const chartData = computed(() => {
     if (!config) return null
 
     // Handle calculated Power Quality fields
+    const isMultiDay = computed(() => {
+        const r = timeRange.value
+        if (['-3d', '-7d', '-14d', '-30d'].includes(r)) return true
+        if (r === 'custom' && customStart.value && customStop.value) {
+            const diffMs = new Date(customStop.value) - new Date(customStart.value)
+            return diffMs > 24 * 60 * 60 * 1000
+        }
+        return false
+    })
+
+    const formatLabelDate = (dStr) => {
+        const date = new Date(dStr)
+        if (isMultiDay.value) {
+            const dayMonth = date.toLocaleDateString('id-ID', { day: '2-digit', month: 'short' })
+            const time = date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
+            return `${dayMonth} ${time}`
+        }
+        return date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
+    }
+
     if (config.isCalculated) {
         // Group data by timestamp
         const timeMap = new Map()
@@ -566,10 +605,8 @@ const chartData = computed(() => {
 
         // Calculate unbalance for each timestamp
         const sortedTimes = Array.from(timeMap.keys()).sort()
-        const labels = sortedTimes.map(t => {
-            const date = new Date(t)
-            return date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
-        })
+        rawTimestamps.value = sortedTimes
+        const labels = sortedTimes.map(t => formatLabelDate(t))
 
         const dataPoints = sortedTimes.map(time => {
             const values = timeMap.get(time)
@@ -622,18 +659,14 @@ const chartData = computed(() => {
 
         // Use first field's timestamps for labels
         const firstFieldData = historyData.value.filter(d => d._field === config.fields[0])
-        const labels = firstFieldData.map(d => {
-            const date = new Date(d._time)
-            return date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
-        })
+        rawTimestamps.value = firstFieldData.map(d => d._time)
+        const labels = firstFieldData.map(d => formatLabelDate(d._time))
 
         return { labels, datasets }
     } else {
         // Single line chart
-        const labels = historyData.value.map(d => {
-            const date = new Date(d._time)
-            return date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
-        })
+        rawTimestamps.value = historyData.value.map(d => d._time)
+        const labels = historyData.value.map(d => formatLabelDate(d._time))
         
         const dataPoints = historyData.value.map(d => d._value)
         const color = config.color
@@ -682,13 +715,34 @@ const chartOptions = computed(() => ({
             titleColor: isDark.value ? '#f1f5f9' : '#1f2937',
             bodyColor: isDark.value ? '#cbd5e1' : '#4b5563',
             borderColor: isDark.value ? '#334155' : '#e2e8f0',
-            borderWidth: 1
+            borderWidth: 1,
+            callbacks: {
+                title: (tooltipItems) => {
+                    if (!tooltipItems || !tooltipItems.length) return ''
+                    const idx = tooltipItems[0].dataIndex
+                    const rawTime = rawTimestamps.value[idx]
+                    if (rawTime) {
+                        const date = new Date(rawTime)
+                        const showSeconds = ['-5m', '-15m', '-30m', '-1h'].includes(timeRange.value)
+                        return date.toLocaleString('id-ID', {
+                            day: '2-digit',
+                            month: 'short',
+                            year: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            second: showSeconds ? '2-digit' : undefined,
+                            hour12: false
+                        }).replace(/\./g, ':')
+                    }
+                    return tooltipItems[0].label
+                }
+            }
         }
     },
     scales: {
         y: {
             grid: { color: isDark.value ? '#334155' : '#f1f5f9' },
-            beginAtZero: false,
+            beginAtZero: true,
             ticks: { color: isDark.value ? '#94a3b8' : '#64748b' }
         },
         x: {
@@ -712,28 +766,72 @@ const hexToRgba = (hex, alpha) => {
     return `rgba(${r}, ${g}, ${b}, ${alpha})`
 }
 
-// Export CSV
-const exportCSV = () => {
-    if (!historyData.value || historyData.value.length === 0) return
-    
+// Export CSV (Always fetches raw 3-second interval data from InfluxDB)
+const exportCSV = async () => {
     const config = activeTabConfig.value
-    const rows = [['Time', 'Field', 'Value']]
-    
-    historyData.value.forEach(d => {
-        const time = new Date(d._time).toLocaleString('id-ID')
-        rows.push([time, d._field, d._value])
-    })
-    
-    const csvContent = rows.map(r => r.join(',')).join('\n')
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
-    const url = URL.createObjectURL(blob)
-    
-    const link = document.createElement('a')
-    link.setAttribute('href', url)
-    link.setAttribute('download', `unit${unitId}_${config.label.replace(/\s+/g, '_')}_${timeRange.value}.csv`)
-    link.click()
-    
-    URL.revokeObjectURL(url)
+    if (!config) return
+
+    try {
+        isExporting.value = true
+        
+        let fieldParam
+        if (config.isCalculated || config.isMulti) {
+            fieldParam = config.fields.join(',')
+        } else {
+            fieldParam = config.field
+        }
+        
+        const params = { 
+            field: fieldParam,
+            raw: 'true' // Request unaggregated raw data (3-second interval)
+        }
+        
+        if (timeRange.value === 'custom' && customStart.value && customStop.value) {
+            params.start = new Date(customStart.value).toISOString()
+            params.stop = new Date(customStop.value).toISOString()
+        } else if (timeRange.value !== 'custom') {
+            params.range = timeRange.value
+        } else {
+            alert('Silakan pilih rentang tanggal custom terlebih dahulu.')
+            return
+        }
+        
+        const rawData = await $fetch(`/api/monitoring/history/${unitId}`, { params })
+        if (!rawData || rawData.length === 0) {
+            alert('Tidak ada data raw untuk diexport pada rentang waktu ini.')
+            return
+        }
+        
+        const rows = [['Timestamp', 'Measurement', 'Field', 'Value']]
+        rawData.forEach(d => {
+            const time = new Date(d._time).toLocaleString('id-ID', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false
+            }).replace(/\./g, ':')
+            rows.push([`"${time}"`, `"${d._measurement || ''}"`, `"${d._field || ''}"`, d._value])
+        })
+        
+        const csvContent = rows.map(r => r.join(',')).join('\n')
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+        const url = URL.createObjectURL(blob)
+        
+        const link = document.createElement('a')
+        link.setAttribute('href', url)
+        link.setAttribute('download', `Unit${unitId}_${config.label.replace(/\s+/g, '_')}_RAW_${timeRange.value}.csv`)
+        link.click()
+        
+        URL.revokeObjectURL(url)
+    } catch (err) {
+        console.error('Export CSV Error:', err)
+        alert('Gagal mengunduh data CSV raw.')
+    } finally {
+        isExporting.value = false
+    }
 }
 </script>
 

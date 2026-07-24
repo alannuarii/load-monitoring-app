@@ -37,8 +37,9 @@ export default defineNuxtConfig({
         influxToken: process.env.INFLUX_TOKEN,
         influxOrg: process.env.INFLUX_ORG,
         influxBucket: process.env.INFLUX_BUCKET,
-        // BetterAuth
+        // BetterAuth & Database
         databaseUrl: process.env.DATABASE_URL,
+        databaseTahunaUrl: process.env.DATABASE_TAHUNA_URL,
         betterAuthSecret: process.env.BETTER_AUTH_SECRET,
         betterAuthUrl: process.env.BETTER_AUTH_URL || 'http://localhost:3000',
 

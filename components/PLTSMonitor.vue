@@ -62,7 +62,7 @@ const reactivePower = computed(() => {
   const p1 = getValue(props.lvsw1Data, 'Reactive Power')
   const p2 = getValue(props.lvsw2Data, 'Reactive Power')
   const total = p1 + p2
-  return total > 0 ? Math.round(total) : 0
+  return Math.round(total)
 })
 
 const irradiance = computed(() => {

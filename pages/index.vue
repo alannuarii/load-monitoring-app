@@ -53,15 +53,15 @@
     <!-- Units Grid -->
     <div v-else class="units-grid grid-cols-1-mobile gap-mobile-4">
       <!-- Upper Row -->
-      <UnitMonitor :unit="1" :data="dg1Data" />
+      <UnitMonitor :unit="1" :data="dg1Data" :downtime="downtimeData[1]" />
       <UnitMonitor :unit="4" :data="[]" />
       <UnitMonitor :unit="5" :data="[]" />
-      <UnitMonitor :unit="6" :data="dg6Data" />
+      <UnitMonitor :unit="6" :data="dg6Data" :downtime="downtimeData[6]" />
       
       <!-- Lower Row -->
-      <UnitMonitor :unit="7" :data="dg7Data" />
-      <UnitMonitor :unit="8" :data="dg8Data" />
-      <UnitMonitor :unit="9" :data="dg9Data" />
+      <UnitMonitor :unit="7" :data="dg7Data" :downtime="downtimeData[7]" />
+      <UnitMonitor :unit="8" :data="dg8Data" :downtime="downtimeData[8]" />
+      <UnitMonitor :unit="9" :data="dg9Data" :downtime="downtimeData[9]" />
       
       <!-- PLTS Card -->
       <PLTSMonitor 
@@ -85,6 +85,7 @@ const it2Data = ref([])
 const lvsw1Data = ref([])
 const lvsw2Data = ref([])
 const weatherData = ref([])
+const downtimeData = ref({})
 
 const error = ref(null)
 const loading = ref(true)
@@ -163,21 +164,13 @@ const fetchAllData = async () => {
       $fetch('/api/monitoring/dg7').catch(() => []),
       $fetch('/api/monitoring/dg8').catch(() => []),
       $fetch('/api/monitoring/dg9').catch(() => []),
-      // Postponed fetching it1/it2 for main dashboard optimization? 
-      // User asked to implement api for it1/it2 for future detail page use.
-      // I can fetch them or just leave them ready.
-      // fetchAllData is specifically for the dashboard state.
-      // If I don't need them for valid display, I might skip fetching to save bandwidth/db load,
-      // but user said "tetap implementasikan it1 dan it2 untuk kebutuhan data pada halaman detail PLTS".
-      // It implies the API implementation, not necessarily fetching in *this* view.
-      // But maybe I should fetch just to be safe if I needed to debug or if logic changes.
-      // However, to keep dashboard fast, I will only fetch what is needed for display: lvsw1, lvsw2, weather.
       $fetch('/api/monitoring/lvsw1').catch(() => []),
       $fetch('/api/monitoring/lvsw2').catch(() => []),
-      $fetch('/api/monitoring/weather-station').catch(() => [])
+      $fetch('/api/monitoring/weather-station').catch(() => []),
+      $fetch('/api/monitoring/downtime').catch(() => ({}))
     ])
 
-    const [dg1, dg6, dg7, dg8, dg9, lvsw1, lvsw2, weather] = await Promise.race([fetchPromise, timeoutPromise])
+    const [dg1, dg6, dg7, dg8, dg9, lvsw1, lvsw2, weather, downtime] = await Promise.race([fetchPromise, timeoutPromise])
     
     dg1Data.value = dg1
     dg6Data.value = dg6
@@ -187,6 +180,7 @@ const fetchAllData = async () => {
     lvsw1Data.value = lvsw1
     lvsw2Data.value = lvsw2
     weatherData.value = weather
+    downtimeData.value = downtime || {}
     
     loading.value = false
   } catch (err) {

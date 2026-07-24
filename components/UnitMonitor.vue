@@ -39,6 +39,10 @@ const props = defineProps({
   data: {
     type: Array,
     default: () => []
+  },
+  downtime: {
+    type: Object,
+    default: null
   }
 })
 
@@ -53,55 +57,57 @@ const getValue = (fieldName) => {
 
 // Computed metrics
 const activePower = computed(() => {
-  const val = getValue('Active Power')
-  return val > 0 ? Math.round(val) : 0
+  const item = props.data.find(d => d._field === 'Active Power')
+  if (!item) return 0
+  return item._value > 0 ? Math.round(item._value) : 0
 })
 
 const reactivePower = computed(() => {
-  const val = getValue('Reactive Power')
-  return val > 0 ? Math.round(val) : 0
+  const item = props.data.find(d => d._field === 'Reactive Power')
+  if (!item) return 0
+  return Math.round(item._value)
 })
 
 const powerFactor = computed(() => {
-  const val = getValue('Power Factor')
-  return val > 0 ? val.toFixed(2) : '0.00'
+  if (activePower.value === 0) return '0.00'
+  const item = props.data.find(d => d._field === 'Power Factor')
+  if (!item) return '0.00'
+  return item._value > 0 ? item._value.toFixed(2) : '0.00'
 })
 
-// Status logic
-// - "Not Available" = only for units 4 and 5 (no sensors installed)
-// - "Standby" = units that have no data or power = 0 (machine stopped)
-// - "Operating" = units with power > 0
-const status = computed(() => {
-  // Units 4 and 5 don't have sensors
-  if ([4, 5].includes(props.unit)) return 'unavailable'
-  
-  // For other units, check if data exists and power > 0
-  if (!props.data || props.data.length === 0) return 'standby'
+// Status logic:
+// - Units 4 and 5: ALWAYS "Not Available"
+// - Operating: power > 0
+// - Downtime from db_tahuna (Gangguan / Pemeliharaan / etc) if power == 0 and active downtime exists
+// - Standby: power == 0 and no active downtime record
+const statusInfo = computed(() => {
+  if ([4, 5].includes(props.unit)) {
+    return { key: 'unavailable', text: 'NOT AVAILABLE', badgeClass: 'badge-secondary' }
+  }
   
   const power = getValue('Active Power')
-  if (power > 0) return 'operating'
-  return 'standby'
-})
-
-const statusText = computed(() => {
-  const map = {
-    operating: 'Operating',
-    standby: 'Standby',
-    unavailable: 'Not Available'
+  if (power > 0) {
+    return { key: 'operating', text: 'OPERATING', badgeClass: 'badge-success' }
   }
-  return map[status.value]
-})
-
-const statusClass = computed(() => `status-${status.value}`)
-
-const statusBadgeClass = computed(() => {
-  const map = {
-    operating: 'badge-success',
-    standby: 'badge-warning',
-    unavailable: 'badge-secondary'
+  
+  if (props.downtime && props.downtime.status) {
+    const s = props.downtime.status
+    const lower = s.toLowerCase()
+    let badgeClass = 'badge-warning'
+    if (lower.includes('gangguan')) {
+      badgeClass = 'badge-danger'
+    } else if (lower.includes('pemeliharaan') || lower.includes('overhaul')) {
+      badgeClass = 'badge-info'
+    }
+    return { key: lower.replace(/\s+/g, '-'), text: s.toUpperCase(), badgeClass }
   }
-  return map[status.value]
+  
+  return { key: 'standby', text: 'STANDBY', badgeClass: 'badge-warning' }
 })
+
+const statusText = computed(() => statusInfo.value.text)
+const statusClass = computed(() => `status-${statusInfo.value.key}`)
+const statusBadgeClass = computed(() => statusInfo.value.badgeClass)
 </script>
 
 <style scoped>
@@ -128,6 +134,24 @@ const statusBadgeClass = computed(() => {
 
 .unit-card.status-unavailable {
   border-left: 4px solid var(--gray-400);
+}
+
+.unit-card.status-gangguan {
+  border-left: 4px solid #ef4444;
+}
+
+.unit-card.status-pemeliharaan {
+  border-left: 4px solid #0284c7;
+}
+
+.badge-danger {
+  background: #ef4444;
+  color: white;
+}
+
+.badge-info {
+  background: #0284c7;
+  color: white;
 }
 
 .unit-header {
