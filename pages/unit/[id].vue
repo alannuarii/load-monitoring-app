@@ -425,13 +425,25 @@ const statusInfo = computed(() => {
         return { text: 'OPERATING', badgeClass: 'bg-success text-white' }
     }
     if (unitDowntime.value && unitDowntime.value.status) {
-        const s = unitDowntime.value.status
+        const s = unitDowntime.value.status.trim()
         const lower = s.toLowerCase()
         if (lower.includes('gangguan')) {
-            return { text: s.toUpperCase(), badgeClass: 'bg-danger text-white' }
+            return { text: 'OUTAGE', badgeClass: 'bg-danger text-white' }
         }
-        if (lower.includes('pemeliharaan') || lower.includes('overhaul')) {
-            return { text: s.toUpperCase(), badgeClass: 'bg-info text-white' }
+        if (lower.includes('pemeliharaan')) {
+            return { text: 'MAINTENANCE', badgeClass: 'bg-info text-white' }
+        }
+        if (lower.includes('overhaul')) {
+            return { text: 'OVERHAUL', badgeClass: 'bg-info text-white' }
+        }
+        if (lower.includes('standby')) {
+            return { text: 'STANDBY', badgeClass: 'bg-warning text-gray-800' }
+        }
+        if (lower.includes('offline') || lower.includes('tidak aktif')) {
+            return { text: 'OFFLINE', badgeClass: 'bg-secondary text-white' }
+        }
+        if (lower.includes('not available') || lower.includes('tidak tersedia')) {
+            return { text: 'NOT AVAILABLE', badgeClass: 'bg-secondary text-white' }
         }
         return { text: s.toUpperCase(), badgeClass: 'bg-warning text-gray-800' }
     }

@@ -91,15 +91,39 @@ const statusInfo = computed(() => {
   }
   
   if (props.downtime && props.downtime.status) {
-    const s = props.downtime.status
+    const s = props.downtime.status.trim()
     const lower = s.toLowerCase()
     let badgeClass = 'badge-warning'
+    let text = s.toUpperCase()
+    let key = lower.replace(/\s+/g, '-')
+
     if (lower.includes('gangguan')) {
       badgeClass = 'badge-danger'
-    } else if (lower.includes('pemeliharaan') || lower.includes('overhaul')) {
+      text = 'OUTAGE'
+      key = 'outage'
+    } else if (lower.includes('pemeliharaan')) {
       badgeClass = 'badge-info'
+      text = 'MAINTENANCE'
+      key = 'maintenance'
+    } else if (lower.includes('overhaul')) {
+      badgeClass = 'badge-info'
+      text = 'OVERHAUL'
+      key = 'overhaul'
+    } else if (lower.includes('standby')) {
+      badgeClass = 'badge-warning'
+      text = 'STANDBY'
+      key = 'standby'
+    } else if (lower.includes('offline') || lower.includes('tidak aktif')) {
+      badgeClass = 'badge-secondary'
+      text = 'OFFLINE'
+      key = 'offline'
+    } else if (lower.includes('not available') || lower.includes('tidak tersedia')) {
+      badgeClass = 'badge-secondary'
+      text = 'NOT AVAILABLE'
+      key = 'unavailable'
     }
-    return { key: lower.replace(/\s+/g, '-'), text: s.toUpperCase(), badgeClass }
+
+    return { key, text, badgeClass }
   }
   
   return { key: 'standby', text: 'STANDBY', badgeClass: 'badge-warning' }
@@ -136,11 +160,14 @@ const statusBadgeClass = computed(() => statusInfo.value.badgeClass)
   border-left: 4px solid var(--gray-400);
 }
 
-.unit-card.status-gangguan {
+.unit-card.status-gangguan,
+.unit-card.status-outage {
   border-left: 4px solid #ef4444;
 }
 
-.unit-card.status-pemeliharaan {
+.unit-card.status-pemeliharaan,
+.unit-card.status-maintenance,
+.unit-card.status-overhaul {
   border-left: 4px solid #0284c7;
 }
 

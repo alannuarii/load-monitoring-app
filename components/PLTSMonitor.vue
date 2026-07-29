@@ -108,9 +108,9 @@ const status = computed(() => {
 
 const statusText = computed(() => {
   const map = {
-    operating: 'Operating',
-    standby: 'Standby',
-    offline: 'Offline'
+    operating: 'OPERATING',
+    standby: 'STANDBY',
+    offline: 'OFFLINE'
   }
   return map[status.value]
 })
