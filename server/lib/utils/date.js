@@ -12,7 +12,7 @@ export function convertTime(waktu, format = 3) {
 
     switch (format) {
         case 1:
-            return `${dt.getDate()} ${bulanIndonesia[dt.getMonth()]} ${dt.getFullYear()} Pukul ${dt.getHours()} WITA`
+            return `${dt.getDate()} ${bulanIndonesia[dt.getMonth()]} ${dt.getFullYear()} ${dt.getHours()}:00 WITA`
         case 2:
             return `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}-${String(dt.getDate()).padStart(2, '0')} ${String(dt.getHours()).padStart(2, '0')}:${String(dt.getMinutes()).padStart(2, '0')}:${String(dt.getSeconds()).padStart(2, '0')}`
         case 3:

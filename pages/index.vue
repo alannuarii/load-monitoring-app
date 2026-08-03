@@ -103,7 +103,9 @@ const updateDate = () => {
         second: '2-digit',
         hour12: false
     }
-    currentDate.value = now.toLocaleString('id-ID', options).replace(/\./g, ':') + ' WITA'
+    currentDate.value = now.toLocaleString('id-ID', options)
+        .replace(/\s*pukul\s*/gi, ' ')
+        .replace(/\./g, ':') + ' WITA'
 }
 
 // Calculate system frequency from first available unit

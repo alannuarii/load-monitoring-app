@@ -172,10 +172,6 @@
                 <option value="current-l2">└ Current L2</option>
                 <option value="current-l3">└ Current L3</option>
               </optgroup>
-              <optgroup label="Power Quality">
-                <option value="voltage-unbalance">Voltage Unbalance (%)</option>
-                <option value="current-unbalance">Current Unbalance (%)</option>
-              </optgroup>
             </select>
           </div>
           
@@ -224,10 +220,12 @@
           <div class="stat-item">
             <span class="stat-label">Min</span>
             <span class="stat-value">{{ chartStats.min }}</span>
+            <span v-if="chartStats.minTime" class="stat-time">{{ chartStats.minTime }}</span>
           </div>
           <div class="stat-item">
             <span class="stat-label">Max</span>
             <span class="stat-value">{{ chartStats.max }}</span>
+            <span v-if="chartStats.maxTime" class="stat-time">{{ chartStats.maxTime }}</span>
           </div>
           <div class="stat-item">
             <span class="stat-label">Avg</span>
@@ -256,6 +254,7 @@ const customStop = ref('')
 const unitDowntime = ref(null)
 const rawTimestamps = ref([])
 const isExporting = ref(false)
+const rawStats = ref(null)
 
 // Time Range Options (extended to 30 days + custom)
 const timeRanges = [
@@ -288,10 +287,7 @@ const chartTabs = [
   { id: 'voltage-l3l1', label: 'Voltage L3-L1', field: 'Voltage L3 L1', unit: 'V', color: '#06b6d4' },
   { id: 'current-l1', label: 'Current L1', field: 'Current L1', unit: 'A', color: '#f43f5e' },
   { id: 'current-l2', label: 'Current L2', field: 'Current L2', unit: 'A', color: '#10b981' },
-  { id: 'current-l3', label: 'Current L3', field: 'Current L3', unit: 'A', color: '#3b82f6' },
-  // Power Quality (calculated values)
-  { id: 'voltage-unbalance', label: 'Voltage Unbalance', fields: ['Voltage L1 L2', 'Voltage L2 L3', 'Voltage L3 L1'], unit: '%', color: '#ec4899', isCalculated: 'voltage-unbalance' },
-  { id: 'current-unbalance', label: 'Current Unbalance', fields: ['Current L1', 'Current L2', 'Current L3'], unit: '%', color: '#8b5cf6', isCalculated: 'current-unbalance' }
+  { id: 'current-l3', label: 'Current L3', field: 'Current L3', unit: 'A', color: '#3b82f6' }
 ]
 
 const activeTabConfig = computed(() => chartTabs.find(t => t.id === activeTab.value))
@@ -343,8 +339,12 @@ const fetchHistory = async () => {
             return
         }
         
-        const data = await $fetch(`/api/monitoring/history/${unitId}`, { params })
+        const [data, stats] = await Promise.all([
+            $fetch(`/api/monitoring/history/${unitId}`, { params }),
+            $fetch(`/api/monitoring/stats/${unitId}`, { params }).catch(() => null)
+        ])
         historyData.value = data
+        rawStats.value = stats
     } catch (err) {
         console.error('History Fetch Error:', err)
     }
@@ -404,7 +404,9 @@ const updateDate = () => {
         second: '2-digit',
         hour12: false
     }
-    currentDate.value = now.toLocaleString('id-ID', options).replace(/\./g, ':') + ' WITA'
+    currentDate.value = now.toLocaleString('id-ID', options)
+        .replace(/\s*pukul\s*/gi, ' ')
+        .replace(/\./g, ':') + ' WITA'
 }
 
 const getValue = (fieldName) => {
@@ -547,14 +549,45 @@ const overallPowerQualityClass = computed(() => {
     return 'pq-overall-good'
 })
 
-// Chart Stats
+// Chart Stats (Always using true RAW min, max, avg statistics from InfluxDB)
 const chartStats = computed(() => {
     if (!historyData.value || historyData.value.length === 0) return null
     
     const config = activeTabConfig.value
     if (!config) return null
     
-    // For multi-field, use first field for stats
+    const decimals = config.field === 'Power Factor' ? 2 : 0
+
+    const formatStat = (val) => {
+        if (Math.abs(val) < 0.01) return (0).toFixed(decimals)
+        return val.toFixed(decimals)
+    }
+
+    const formatDateWithSeconds = (dStr) => {
+        if (!dStr) return null
+        const date = new Date(dStr)
+        return date.toLocaleString('id-ID', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false
+        }).replace(/\./g, ':')
+    }
+
+    if (rawStats.value) {
+        return {
+            min: formatStat(rawStats.value.min),
+            minTime: formatDateWithSeconds(rawStats.value.minTime),
+            max: formatStat(rawStats.value.max),
+            maxTime: formatDateWithSeconds(rawStats.value.maxTime),
+            avg: formatStat(rawStats.value.avg)
+        }
+    }
+    
+    // Fallback calculation from historyData
     const targetField = config.isMulti ? config.fields[0] : config.field
     const values = historyData.value
         .filter(d => d._field === targetField)
@@ -567,12 +600,10 @@ const chartStats = computed(() => {
     const max = Math.max(...values)
     const avg = values.reduce((a, b) => a + b, 0) / values.length
     
-    const decimals = config.field === 'Power Factor' ? 2 : 0
-    
     return {
-        min: min.toFixed(decimals),
-        max: max.toFixed(decimals),
-        avg: avg.toFixed(decimals)
+        min: formatStat(min),
+        max: formatStat(max),
+        avg: formatStat(avg)
     }
 })
 
@@ -735,14 +766,13 @@ const chartOptions = computed(() => ({
                     const rawTime = rawTimestamps.value[idx]
                     if (rawTime) {
                         const date = new Date(rawTime)
-                        const showSeconds = ['-5m', '-15m', '-30m', '-1h'].includes(timeRange.value)
                         return date.toLocaleString('id-ID', {
                             day: '2-digit',
                             month: 'short',
                             year: 'numeric',
                             hour: '2-digit',
                             minute: '2-digit',
-                            second: showSeconds ? '2-digit' : undefined,
+                            second: '2-digit',
                             hour12: false
                         }).replace(/\./g, ':')
                     }
@@ -1163,19 +1193,23 @@ const exportCSV = async () => {
 }
 
 .btn-apply {
-    padding: 0.5rem 1rem;
-    border-radius: 0.375rem;
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: white;
-    background: var(--primary-600);
-    border: none;
+    padding: 0.5rem 1.25rem;
+    border-radius: 0.5rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #ffffff;
+    background: #2563eb;
+    border: 1px solid #3b82f6;
+    box-shadow: 0 2px 6px rgba(37, 99, 235, 0.4);
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.2s ease;
 }
 
 .btn-apply:hover {
-    background: var(--primary-700);
+    background: #1d4ed8;
+    border-color: #60a5fa;
+    box-shadow: 0 4px 10px rgba(29, 78, 216, 0.5);
+    transform: translateY(-1px);
 }
 
 .btn-export {
@@ -1252,7 +1286,27 @@ const exportCSV = async () => {
     color: var(--text-main);
 }
 
+.stat-time {
+    display: block;
+    font-size: 0.68rem;
+    color: var(--text-muted);
+    margin-top: 0.2rem;
+    font-weight: 400;
+}
+
 @media (max-width: 768px) {
+    .stats-bar {
+        gap: 1rem;
+        padding: var(--space-3) var(--space-2);
+    }
+
+    .stat-time {
+        font-size: 0.55rem;
+        letter-spacing: -0.02em;
+        line-height: 1.1;
+        margin-top: 0.15rem;
+    }
+
     .metrics-grid {
         grid-template-columns: 1fr;
     }

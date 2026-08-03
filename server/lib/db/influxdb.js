@@ -178,3 +178,35 @@ const getAggregateWindowAbsolute = (start, stop) => {
     if (diffHours <= 168) return '15m'
     return '1h'
 }
+
+// Build query for true RAW min, max, avg statistics over any time range
+export const buildRawStatsQuery = (bucket, measurement, field, range = '-1h') => {
+    return `
+        raw = from(bucket: "${bucket}")
+          |> range(start: ${range})
+          |> filter(fn: (r) => r._measurement == "${measurement}")
+          |> filter(fn: (r) => r._field == "${field}")
+
+        minVal = raw |> min() |> set(key: "stat", value: "min")
+        maxVal = raw |> max() |> set(key: "stat", value: "max")
+        meanVal = raw |> mean() |> set(key: "stat", value: "avg")
+
+        union(tables: [minVal, maxVal, meanVal])
+    `
+}
+
+// Build query for true RAW min, max, avg statistics with absolute time range
+export const buildRawStatsQueryAbsolute = (bucket, measurement, field, start, stop) => {
+    return `
+        raw = from(bucket: "${bucket}")
+          |> range(start: ${start}, stop: ${stop})
+          |> filter(fn: (r) => r._measurement == "${measurement}")
+          |> filter(fn: (r) => r._field == "${field}")
+
+        minVal = raw |> min() |> set(key: "stat", value: "min")
+        maxVal = raw |> max() |> set(key: "stat", value: "max")
+        meanVal = raw |> mean() |> set(key: "stat", value: "avg")
+
+        union(tables: [minVal, maxVal, meanVal])
+    `
+}

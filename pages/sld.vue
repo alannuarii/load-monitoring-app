@@ -229,27 +229,46 @@ onMounted(() => {
 }
 
 .control-btn {
-  padding: var(--space-2) var(--space-4);
-  background: var(--primary-600);
-  color: white;
-  border: none;
+  padding: 0.5rem 1rem;
+  background: #2563eb;
+  color: #ffffff;
+  border: 1px solid #3b82f6;
   border-radius: var(--radius-md);
   font-size: 1rem;
   cursor: pointer;
   transition: all var(--transition-fast);
-  box-shadow: var(--shadow-sm);
-  font-weight: 600;
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3);
+  font-weight: 700;
   min-width: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .control-btn:hover {
-  background: var(--primary-700);
+  background: #1d4ed8;
+  border-color: #60a5fa;
+  color: #ffffff;
   transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 4px 10px rgba(29, 78, 216, 0.5);
 }
 
 .control-btn:active {
   transform: translateY(0);
+}
+
+.dark-mode .control-btn {
+  background: #1e293b;
+  color: #38bdf8;
+  border: 1px solid #334155;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+.dark-mode .control-btn:hover {
+  background: #2563eb;
+  color: #ffffff;
+  border-color: #3b82f6;
+  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.5);
 }
 
 .sld-image-container {
