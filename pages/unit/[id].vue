@@ -381,7 +381,7 @@ onMounted(() => {
     
     const dateInterval = setInterval(updateDate, 1000)
     
-    const realtimeInterval = setInterval(fetchRealtime, 2000)
+    const realtimeInterval = setInterval(fetchRealtime, 1000)
     const historyInterval = setInterval(fetchHistory, 30000)
     
     onUnmounted(() => {
