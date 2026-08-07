@@ -25,7 +25,10 @@ export default defineEventHandler(async (event) => {
         '9': 'PM-DG9'
     }
 
-    const measurement = unitMap[id]
+    const engineFields = ['Oil Pressure', 'Coolant Temp', 'Charge Alt', 'Battery Voltage', 'Engine RPM']
+    const isEngineField = engineFields.includes(field)
+
+    const measurement = isEngineField ? `ENGINE-DG${id}` : unitMap[id]
 
     if (!measurement) {
         if (id === '4' || id === '5') {

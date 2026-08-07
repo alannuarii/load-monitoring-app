@@ -141,6 +141,56 @@
             </div>
           </div>
         </div>
+
+        <!-- Row 6: Engine Parameters (Only for Unit 6 & 7) -->
+        <div v-if="unitId === '6' || unitId === '7'" class="detail-section mt-4">
+          <div class="section-header mb-4">
+            <span class="icon-box">⚙️</span>
+            <span class="section-title">Engine Parameters</span>
+          </div>
+          <div class="engine-grid">
+            <div class="engine-metric">
+              <span class="metric-label">Oil Pressure</span>
+              <div class="pq-value-row">
+                <span class="metric-value">{{ oilPressureStatus.value }} <small>Bar</small></span>
+                <span class="pq-status-badge" :class="oilPressureStatus.class">{{ oilPressureStatus.status }}</span>
+              </div>
+              <div class="pq-threshold">Batas: &gt; 4.0 (Good), 1.5-4.0 (Warning), &lt; 1.5 (Shutdown)</div>
+            </div>
+            <div class="engine-metric">
+              <span class="metric-label">Coolant Temperature</span>
+              <div class="pq-value-row">
+                <span class="metric-value">{{ coolantTempStatus.value }} <small>°C</small></span>
+                <span class="pq-status-badge" :class="coolantTempStatus.class">{{ coolantTempStatus.status }}</span>
+              </div>
+              <div class="pq-threshold">Batas: &lt; 95 (Good), 95-98 (Warning), &gt; 98 (Shutdown)</div>
+            </div>
+            <div class="engine-metric">
+              <span class="metric-label">Charge Alternator</span>
+              <div class="pq-value-row">
+                <span class="metric-value">{{ chargeAltStatus.value }} <small>V</small></span>
+                <span class="pq-status-badge" :class="chargeAltStatus.class">{{ chargeAltStatus.status }}</span>
+              </div>
+              <div class="pq-threshold">Batas: &gt; 19.2 (Good), &lt; 19.2 (Warning)</div>
+            </div>
+            <div class="engine-metric">
+              <span class="metric-label">Battery Voltage</span>
+              <div class="pq-value-row">
+                <span class="metric-value">{{ batteryVoltStatus.value }} <small>V</small></span>
+                <span class="pq-status-badge" :class="batteryVoltStatus.class">{{ batteryVoltStatus.status }}</span>
+              </div>
+              <div class="pq-threshold">Batas: 18.0-31.2 (Good), &lt;18.0 / &gt;31.2 (Warning)</div>
+            </div>
+            <div class="engine-metric engine-metric-full">
+              <span class="metric-label">Engine RPM</span>
+              <div class="pq-value-row">
+                <span class="metric-value">{{ engineRpmStatus.value }} <small>RPM</small></span>
+                <span class="pq-status-badge" :class="engineRpmStatus.class">{{ engineRpmStatus.status }}</span>
+              </div>
+              <div class="pq-threshold">Batas: 1200-1650 (Good), 900-1200 / 1650-1725 (Warning)</div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Chart Card -->
@@ -171,6 +221,13 @@
                 <option value="current-l1">└ Current L1</option>
                 <option value="current-l2">└ Current L2</option>
                 <option value="current-l3">└ Current L3</option>
+              </optgroup>
+              <optgroup label="Engine" v-if="unitId === '6' || unitId === '7'">
+                <option value="engine-rpm">Engine RPM</option>
+                <option value="oil-pressure">Oil Pressure</option>
+                <option value="coolant-temp">Coolant Temp</option>
+                <option value="battery-voltage">Battery Voltage</option>
+                <option value="charge-alt">Charge Alt</option>
               </optgroup>
             </select>
           </div>
@@ -287,7 +344,13 @@ const chartTabs = [
   { id: 'voltage-l3l1', label: 'Voltage L3-L1', field: 'Voltage L3 L1', unit: 'V', color: '#06b6d4' },
   { id: 'current-l1', label: 'Current L1', field: 'Current L1', unit: 'A', color: '#f43f5e' },
   { id: 'current-l2', label: 'Current L2', field: 'Current L2', unit: 'A', color: '#10b981' },
-  { id: 'current-l3', label: 'Current L3', field: 'Current L3', unit: 'A', color: '#3b82f6' }
+  { id: 'current-l3', label: 'Current L3', field: 'Current L3', unit: 'A', color: '#3b82f6' },
+  // Engine Parameters
+  { id: 'engine-rpm', label: 'Engine RPM', field: 'Engine RPM', unit: 'RPM', color: '#8b5cf6' },
+  { id: 'oil-pressure', label: 'Oil Pressure', field: 'Oil Pressure', unit: 'Bar', color: '#eab308' },
+  { id: 'coolant-temp', label: 'Coolant Temp', field: 'Coolant Temp', unit: '°C', color: '#ef4444' },
+  { id: 'battery-voltage', label: 'Battery Voltage', field: 'Battery Voltage', unit: 'V', color: '#3b82f6' },
+  { id: 'charge-alt', label: 'Charge Alt', field: 'Charge Alt', unit: 'V', color: '#10b981' }
 ]
 
 const activeTabConfig = computed(() => chartTabs.find(t => t.id === activeTab.value))
@@ -420,6 +483,13 @@ const formatValue = (val, decimals = 0) => {
     return val.toFixed(decimals)
 }
 
+const getEngineValue = (fieldName, decimals = 1) => {
+    if (!realtimeData.value || !realtimeData.value.length) return 'N/A'
+    const item = realtimeData.value.find(d => d._field === fieldName)
+    if (!item || item._value == null) return 'N/A'
+    return formatValue(item._value, decimals)
+}
+
 // Computed Status
 const statusInfo = computed(() => {
     const power = getValue('Active Power')
@@ -547,6 +617,96 @@ const overallPowerQualityClass = computed(() => {
     if (status === 'Fair') return 'pq-overall-warning'
     if (status === 'N/A') return 'pq-overall-neutral'
     return 'pq-overall-good'
+})
+
+// Engine Parameters Status
+const oilPressureStatus = computed(() => {
+    const val = getEngineValue('Oil Pressure')
+    if (val === 'N/A') return { value: 'N/A', status: 'N/A', class: 'pq-neutral' }
+    
+    const num = parseFloat(val)
+    let status = 'Good'
+    let cssClass = 'pq-good'
+    
+    if (num < 1.5) {
+        status = 'Shutdown'
+        cssClass = 'pq-poor'
+    } else if (num <= 4.0) {
+        status = 'Warning'
+        cssClass = 'pq-warning'
+    }
+    
+    return { value: val, status, class: cssClass }
+})
+
+const coolantTempStatus = computed(() => {
+    const val = getEngineValue('Coolant Temp')
+    if (val === 'N/A') return { value: 'N/A', status: 'N/A', class: 'pq-neutral' }
+    
+    const num = parseFloat(val)
+    let status = 'Good'
+    let cssClass = 'pq-good'
+    
+    if (num > 98) {
+        status = 'Shutdown'
+        cssClass = 'pq-poor'
+    } else if (num >= 95) {
+        status = 'Warning'
+        cssClass = 'pq-warning'
+    }
+    
+    return { value: val, status, class: cssClass }
+})
+
+const engineRpmStatus = computed(() => {
+    const val = getEngineValue('Engine RPM', 0)
+    if (val === 'N/A') return { value: 'N/A', status: 'N/A', class: 'pq-neutral' }
+    
+    const num = parseFloat(val)
+    let status = 'Good'
+    let cssClass = 'pq-good'
+    
+    if (num < 900 || num > 1725) {
+        status = 'Shutdown'
+        cssClass = 'pq-poor'
+    } else if (num <= 1200 || num >= 1650) {
+        status = 'Warning'
+        cssClass = 'pq-warning'
+    }
+    
+    return { value: val, status, class: cssClass }
+})
+
+const batteryVoltStatus = computed(() => {
+    const val = getEngineValue('Battery Voltage')
+    if (val === 'N/A') return { value: 'N/A', status: 'N/A', class: 'pq-neutral' }
+    
+    const num = parseFloat(val)
+    let status = 'Good'
+    let cssClass = 'pq-good'
+    
+    if (num < 18.0 || num > 31.2) {
+        status = 'Warning'
+        cssClass = 'pq-warning'
+    }
+    
+    return { value: val, status, class: cssClass }
+})
+
+const chargeAltStatus = computed(() => {
+    const val = getEngineValue('Charge Alt')
+    if (val === 'N/A') return { value: 'N/A', status: 'N/A', class: 'pq-neutral' }
+    
+    const num = parseFloat(val)
+    let status = 'Good'
+    let cssClass = 'pq-good'
+    
+    if (num < 19.2) {
+        status = 'Warning'
+        cssClass = 'pq-warning'
+    }
+    
+    return { value: val, status, class: cssClass }
 })
 
 // Chart Stats (Always using true RAW min, max, avg statistics from InfluxDB)
@@ -1020,6 +1180,38 @@ const exportCSV = async () => {
     color: var(--text-muted);
 }
 
+.engine-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-4);
+}
+
+.engine-metric {
+    background: var(--bg-hover);
+    padding: var(--space-3);
+    border-radius: var(--radius-md);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.engine-metric-full {
+    grid-column: span 2;
+}
+
+.metric-value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+.metric-value small {
+    font-size: 0.875rem;
+    font-weight: 400;
+    color: var(--text-muted);
+}
+
 /* Power Quality Styles */
 .pq-grid {
     display: grid;
@@ -1035,9 +1227,10 @@ const exportCSV = async () => {
 }
 
 .pq-label {
+    display: block;
     font-size: 0.75rem;
     color: var(--text-muted);
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.25rem;
     text-transform: uppercase;
     letter-spacing: 0.03em;
 }
@@ -1315,6 +1508,14 @@ const exportCSV = async () => {
     .values-grid {
         grid-template-columns: repeat(3, 1fr);
         gap: 0.5rem; /* Tighter gap for mobile */
+    }
+
+    .engine-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .engine-metric-full {
+        grid-column: span 1;
     }
     
     .chart-controls {

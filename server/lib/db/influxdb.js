@@ -43,6 +43,17 @@ export const buildDGQuery = (bucket, measurement) => {
     `
 }
 
+// Build query for Engine parameters
+export const buildEngineQuery = (bucket, measurement) => {
+    return `
+        from(bucket: "${bucket}")
+          |> range(start: -1m)
+          |> filter(fn: (r) => r._measurement == "${measurement}")
+          |> filter(fn: (r) => r._field == "Oil Pressure" or r._field == "Coolant Temp" or r._field == "Charge Alt" or r._field == "Battery Voltage" or r._field == "Engine RPM")
+          |> last()
+    `
+}
+
 // Build generic query for any measurement and fields
 export const buildGenericQuery = (bucket, measurement, fields) => {
     const fieldFilters = fields.map(f => `r._field == "${f}"`).join(' or ')

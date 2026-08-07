@@ -1,4 +1,4 @@
-import { queryInfluxDB, buildDGQuery } from '~/server/lib/db/influxdb'
+import { queryInfluxDB, buildDGQuery, buildEngineQuery } from '~/server/lib/db/influxdb'
 
 export default defineEventHandler(async (event) => {
     const config = useRuntimeConfig()
@@ -26,11 +26,18 @@ export default defineEventHandler(async (event) => {
         })
     }
 
-    const query = buildDGQuery(config.influxBucket, measurement)
-
     try {
-        const result = await queryInfluxDB(config, query)
-        return result
+        const pmQuery = buildDGQuery(config.influxBucket, measurement)
+        const pmResult = await queryInfluxDB(config, pmQuery)
+        
+        if (id === '6' || id === '7') {
+            const engineMeasurement = `ENGINE-DG${id}`
+            const engineQuery = buildEngineQuery(config.influxBucket, engineMeasurement)
+            const engineResult = await queryInfluxDB(config, engineQuery).catch(() => [])
+            return [...pmResult, ...engineResult]
+        }
+
+        return pmResult
     } catch (error) {
         console.error(`Unit ${id} API error:`, error)
         throw createError({
