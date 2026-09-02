@@ -218,6 +218,7 @@ const statusBadgeClass = computed(() => statusInfo.value.badgeClass)
   font-size: var(--font-size-xs);
   font-weight: 600;
   text-transform: uppercase;
+  white-space: nowrap;
 }
 
 .badge-success {
@@ -299,16 +300,18 @@ const statusBadgeClass = computed(() => statusInfo.value.badgeClass)
   }
   
   .unit-header {
-    padding: 0.5rem 0.75rem;
+    padding: 0.5rem 0.6rem;
     flex-direction: column;
     align-items: flex-start;
     gap: 0.25rem;
   }
   
   .status-badge {
-    font-size: 0.6rem;
-    padding: 0.1rem 0.4rem;
+    font-size: 0.52rem;
+    padding: 0.12rem 0.35rem;
     align-self: flex-start;
+    white-space: nowrap;
+    letter-spacing: -0.01em;
   }
   
   .unit-title {

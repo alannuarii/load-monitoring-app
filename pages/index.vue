@@ -526,6 +526,7 @@ onMounted(() => {
 :deep(.status-badge) {
   padding: 0.15rem 0.5rem;
   font-size: 0.7rem;
+  white-space: nowrap;
 }
 
 :deep(.unit-body) {
@@ -570,6 +571,13 @@ onMounted(() => {
   .units-grid > * {
     /* 2 columns on mobile: (100% - gap) / 2 */
     width: calc((100% - var(--space-2)) / 2);
+  }
+
+  :deep(.status-badge) {
+    font-size: 0.52rem;
+    padding: 0.12rem 0.35rem;
+    white-space: nowrap;
+    letter-spacing: -0.01em;
   }
 }
 </style>
