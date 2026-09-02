@@ -476,7 +476,7 @@ const historyData = ref([])
 const loading = ref(true)
 const error = ref(null)
 const currentDate = ref('')
-const activeTab = ref(unitId === '8' || unitId === '9' ? 'pm5-active-power-total' : 'en-active-power-total')
+const activeTab = ref(unitId === '1' ? 'pm-active-power' : (unitId === '8' || unitId === '9' ? 'pm5-active-power-total' : 'en-active-power-total'))
 const timeRange = ref('-1h')
 const customStart = ref('')
 const customStop = ref('')
@@ -1208,6 +1208,9 @@ const exportCSV = async () => {
         const params = { 
             field: fieldParam,
             raw: 'true' // Request unaggregated raw data (3-second interval)
+        }
+        if (config.source) {
+            params.source = config.source
         }
         
         if (timeRange.value === 'custom' && customStart.value && customStop.value) {

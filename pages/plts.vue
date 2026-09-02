@@ -207,8 +207,9 @@
             <select v-model="timeRange" class="range-select" @change="onTimeRangeChange">
               <option v-for="r in timeRanges" :key="r.value" :value="r.value">{{ r.label }}</option>
             </select>
-            <button class="btn-export" @click="exportCSV" title="Export CSV">
-              📥 Export
+            <button class="btn-export" @click="exportCSV" :disabled="isExporting" title="Export CSV Data Raw">
+              <span v-if="isExporting">⏳ Exporting Raw...</span>
+              <span v-else>📥 Export CSV</span>
             </button>
           </div>
         </div>
@@ -276,6 +277,7 @@ const activeTab = ref('plts-total-active')
 const timeRange = ref('-30m')
 const customStart = ref('')
 const customStop = ref('')
+const isExporting = ref(false)
 
 const hasData = computed(() => {
     return lvsw1Data.value.length || lvsw2Data.value.length || it1Data.value.length || it2Data.value.length || weatherData.value.length
@@ -573,27 +575,63 @@ const hexToRgba = (hex, alpha) => {
     return `rgba(${r}, ${g}, ${b}, ${alpha})`
 }
 
-const exportCSV = () => {
-    if (!historyData.value || historyData.value.length === 0) return
-    
+const exportCSV = async () => {
     const config = activeTabConfig.value
-    const rows = [['Time', 'Field', 'Value']]
-    
-    historyData.value.forEach(d => {
-        const time = new Date(d._time).toLocaleString('id-ID')
-        rows.push([time, d._field, d._value])
-    })
-    
-    const csvContent = rows.map(r => r.join(',')).join('\n')
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
-    const url = URL.createObjectURL(blob)
-    
-    const link = document.createElement('a')
-    link.setAttribute('href', url)
-    link.setAttribute('download', `plts_${config.label.replace(/\s+/g, '_')}_${timeRange.value}.csv`)
-    link.click()
-    
-    URL.revokeObjectURL(url)
+    if (!config) return
+
+    try {
+        isExporting.value = true
+        const params = { 
+            field: config.isMulti ? config.fields.join(',') : config.field,
+            raw: 'true' 
+        }
+        
+        if (timeRange.value === 'custom' && customStart.value && customStop.value) {
+            params.start = new Date(customStart.value).toISOString()
+            params.stop = new Date(customStop.value).toISOString()
+        } else if (timeRange.value !== 'custom') {
+            params.range = timeRange.value
+        } else {
+            alert('Silakan pilih rentang tanggal custom terlebih dahulu.')
+            return
+        }
+        
+        const rawData = await $fetch(`/api/monitoring/history/plts`, { params })
+        if (!rawData || rawData.length === 0) {
+            alert('Tidak ada data raw untuk diexport pada rentang waktu ini.')
+            return
+        }
+        
+        const rows = [['Timestamp', 'Measurement', 'Field', 'Value']]
+        rawData.forEach(d => {
+            const time = new Date(d._time).toLocaleString('id-ID', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false
+            }).replace(/\./g, ':')
+            rows.push([`"${time}"`, `"${d._measurement || ''}"`, `"${d._field || ''}"`, d._value])
+        })
+        
+        const csvContent = rows.map(r => r.join(',')).join('\n')
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+        const url = URL.createObjectURL(blob)
+        
+        const link = document.createElement('a')
+        link.setAttribute('href', url)
+        link.setAttribute('download', `PLTS_${config.label.replace(/\s+/g, '_')}_RAW_${timeRange.value}.csv`)
+        link.click()
+        
+        URL.revokeObjectURL(url)
+    } catch (err) {
+        console.error('Export CSV Error:', err)
+        alert('Gagal mengunduh data CSV raw.')
+    } finally {
+        isExporting.value = false
+    }
 }
 
 </script>
