@@ -1014,7 +1014,20 @@ const chartData = computed(() => {
             const time = date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
             return `${dayMonth} ${time}`
         }
-        return date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
+        
+        let showSecs = false
+        if (['-5m', '-15m', '-30m', '-1h'].includes(timeRange.value)) {
+            showSecs = true
+        } else if (timeRange.value === 'custom' && customStart.value && customStop.value) {
+            const diffMs = new Date(customStop.value) - new Date(customStart.value)
+            if (diffMs <= 60 * 60 * 1000) showSecs = true
+        }
+
+        return date.toLocaleTimeString('id-ID', { 
+            hour: '2-digit', 
+            minute: '2-digit', 
+            second: showSecs ? '2-digit' : undefined 
+        })
     }
 
     if (config.isCalculated) {
@@ -1148,13 +1161,21 @@ const chartOptions = computed(() => ({
                     const rawTime = rawTimestamps.value[idx]
                     if (rawTime) {
                         const date = new Date(rawTime)
+                        let showSecs = false
+                        if (['-5m', '-15m', '-30m', '-1h'].includes(timeRange.value)) {
+                            showSecs = true
+                        } else if (timeRange.value === 'custom' && customStart.value && customStop.value) {
+                            const diffMs = new Date(customStop.value) - new Date(customStart.value)
+                            if (diffMs <= 60 * 60 * 1000) showSecs = true
+                        }
+                        
                         return date.toLocaleString('id-ID', {
                             day: '2-digit',
                             month: 'short',
                             year: 'numeric',
                             hour: '2-digit',
                             minute: '2-digit',
-                            second: '2-digit',
+                            second: showSecs ? '2-digit' : undefined,
                             hour12: false
                         }).replace(/\./g, ':')
                     }
