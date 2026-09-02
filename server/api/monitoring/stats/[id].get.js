@@ -19,8 +19,8 @@ export default defineEventHandler(async (event) => {
 
     const unitMap = {
         '1': 'PM-DG1',
-        '6': 'PM-DG6',
-        '7': 'PM-DG7',
+        '6': 'ENGINE-DG6',
+        '7': 'ENGINE-DG7',
         '8': 'PM-DG8',
         '9': 'PM-DG9'
     }

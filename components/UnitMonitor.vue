@@ -86,8 +86,15 @@ const statusInfo = computed(() => {
   }
   
   const power = getValue('Active Power')
-  if (power > 0) {
-    return { key: 'operating', text: 'OPERATING', badgeClass: 'badge-success' }
+  const current = getValue('Current L1')
+  const voltage = getValue('Voltage L1 L2')
+  
+  if (current > 0 || power > 0) {
+    return { key: 'operating-sync', text: 'OPERATING (SYNC)', badgeClass: 'badge-success' }
+  }
+  
+  if (voltage > 100) {
+    return { key: 'operating-noload', text: 'OPERATING (NO LOAD)', badgeClass: 'badge-info' }
   }
   
   if (props.downtime && props.downtime.status) {
@@ -148,8 +155,12 @@ const statusBadgeClass = computed(() => statusInfo.value.badgeClass)
   box-shadow: var(--shadow-lg);
 }
 
-.unit-card.status-operating {
+.unit-card.status-operating-sync {
   border-left: 4px solid var(--success);
+}
+
+.unit-card.status-operating-noload {
+  border-left: 4px solid #0284c7;
 }
 
 .unit-card.status-standby {

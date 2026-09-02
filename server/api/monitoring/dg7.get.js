@@ -3,7 +3,7 @@ import { queryInfluxDB, buildDGQuery } from '~/server/lib/db/influxdb'
 
 export default defineEventHandler(async (event) => {
     const config = useRuntimeConfig()
-    const query = buildDGQuery(config.influxBucket, 'PM-DG7')
+    const query = buildDGQuery(config.influxBucket, 'ENGINE-DG7')
 
     try {
         const result = await queryInfluxDB(config, query)

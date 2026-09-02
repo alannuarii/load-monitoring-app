@@ -38,7 +38,6 @@ export const buildDGQuery = (bucket, measurement) => {
         from(bucket: "${bucket}")
           |> range(start: -1m)
           |> filter(fn: (r) => r._measurement == "${measurement}")
-          |> filter(fn: (r) => r._field == "Current L1" or r._field == "Current L2" or r._field == "Current L3" or r._field == "Voltage L1 L2" or r._field == "Voltage L2 L3" or r._field == "Voltage L3 L1" or r._field == "Frequency" or r._field == "Power Factor" or r._field == "Active Power" or r._field == "Reactive Power")
           |> last()
     `
 }
@@ -49,7 +48,6 @@ export const buildEngineQuery = (bucket, measurement) => {
         from(bucket: "${bucket}")
           |> range(start: -1m)
           |> filter(fn: (r) => r._measurement == "${measurement}")
-          |> filter(fn: (r) => r._field == "Oil Pressure" or r._field == "Coolant Temp" or r._field == "Charge Alt" or r._field == "Battery Voltage" or r._field == "Engine RPM")
           |> last()
     `
 }

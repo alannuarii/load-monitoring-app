@@ -21,18 +21,26 @@ export default defineEventHandler(async (event) => {
     const startTime = queryParams.start
     const stopTime = queryParams.stop
 
+    const source = queryParams.source
+
     const unitMap = {
         '1': 'PM-DG1',
-        '6': 'PM-DG6',
-        '7': 'PM-DG7',
+        '6': 'ENGINE-DG6',
+        '7': 'ENGINE-DG7',
         '8': 'PM-DG8',
         '9': 'PM-DG9'
     }
 
-    const engineFields = ['Oil Pressure', 'Coolant Temp', 'Charge Alt', 'Battery Voltage', 'Engine RPM']
-    const isEngineField = fields ? engineFields.includes(fields[0]) : engineFields.includes(fieldParam)
-
-    const measurement = isEngineField ? `ENGINE-DG${id}` : unitMap[id]
+    let measurement
+    if (source === 'engine') {
+        measurement = `ENGINE-DG${id}`
+    } else if (source === 'pm') {
+        measurement = `PM-DG${id}`
+    } else {
+        const engineFields = ['Oil Pressure', 'Coolant Temp', 'Charge Alt', 'Battery Voltage', 'Engine RPM']
+        const isEngineField = fields ? engineFields.includes(fields[0]) : engineFields.includes(fieldParam)
+        measurement = isEngineField ? `ENGINE-DG${id}` : unitMap[id]
+    }
 
     if (!measurement) {
         if (id === '4' || id === '5') {

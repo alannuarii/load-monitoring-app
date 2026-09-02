@@ -47,7 +47,7 @@
           </div>
         </div>
 
-        <!-- Row 2: Power Metrics -->
+        <!-- Row 2: Total Power & Energy Metrics -->
         <div class="metrics-grid mb-6">
           <div class="metric-card">
             <span class="metric-label">Active Power</span>
@@ -63,35 +63,130 @@
           </div>
         </div>
 
-        <!-- Row 3: Voltage Generator (Line-to-Line) -->
-        <div class="detail-section mb-4">
+        <!-- Row 3: Phase Power Details -->
+        <div class="detail-section mb-6">
           <div class="section-header">
-            <span class="icon-box">⚡</span>
-            <span class="section-title">Voltage Generator</span>
+            <span class="icon-box">🔌</span>
+            <span class="section-title">Phase Power Details</span>
           </div>
-          <div class="values-grid">
-            <div class="value-block">
-              <span class="value-label">L1-L2</span>
-              <span class="value-number">{{ formatValue(getValue('Voltage L1 L2'), 0) }} <small>V</small></span>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 1rem;">
+            <!-- Phase L1 -->
+            <div style="background: var(--bg-hover, #f8f9fa); border: 1px solid var(--border-color, #e5e7eb); padding: 1.25rem; border-radius: 0.75rem; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+              <h4 style="text-align: center; font-size: 0.875rem; font-weight: 700; color: inherit; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid var(--border-color, #e5e7eb); padding-bottom: 0.5rem;">Phase L1</h4>
+              <div class="values-grid">
+                <div class="value-block">
+                  <span class="value-label">Active</span>
+                  <span class="value-number">{{ formatValue(getValue('Active Power L1 kW'), 0) }} <small>kW</small></span>
+                </div>
+                <div class="value-block">
+                  <span class="value-label">Reactive</span>
+                  <span class="value-number">{{ formatValue(getValue('Reactive Power L1 kVAr'), 0) }} <small>kVAR</small></span>
+                </div>
+                <div class="value-block">
+                  <span class="value-label">PF</span>
+                  <span class="value-number">{{ formatValue(getValue('Power Factor L1'), 2) }}</span>
+                </div>
+              </div>
             </div>
-            <div class="value-block">
-              <span class="value-label">L2-L3</span>
-              <span class="value-number">{{ formatValue(getValue('Voltage L2 L3'), 0) }} <small>V</small></span>
+            <!-- Phase L2 -->
+            <div style="background: var(--bg-hover, #f8f9fa); border: 1px solid var(--border-color, #e5e7eb); padding: 1.25rem; border-radius: 0.75rem; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+              <h4 style="text-align: center; font-size: 0.875rem; font-weight: 700; color: inherit; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid var(--border-color, #e5e7eb); padding-bottom: 0.5rem;">Phase L2</h4>
+              <div class="values-grid">
+                <div class="value-block">
+                  <span class="value-label">Active</span>
+                  <span class="value-number">{{ formatValue(getValue('Active Power L2 kW'), 0) }} <small>kW</small></span>
+                </div>
+                <div class="value-block">
+                  <span class="value-label">Reactive</span>
+                  <span class="value-number">{{ formatValue(getValue('Reactive Power L2 kVAr'), 0) }} <small>kVAR</small></span>
+                </div>
+                <div class="value-block">
+                  <span class="value-label">PF</span>
+                  <span class="value-number">{{ formatValue(getValue('Power Factor L2'), 2) }}</span>
+                </div>
+              </div>
             </div>
-            <div class="value-block">
-              <span class="value-label">L3-L1</span>
-              <span class="value-number">{{ formatValue(getValue('Voltage L3 L1'), 0) }} <small>V</small></span>
+            <!-- Phase L3 -->
+            <div style="background: var(--bg-hover, #f8f9fa); border: 1px solid var(--border-color, #e5e7eb); padding: 1.25rem; border-radius: 0.75rem; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+              <h4 style="text-align: center; font-size: 0.875rem; font-weight: 700; color: inherit; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid var(--border-color, #e5e7eb); padding-bottom: 0.5rem;">Phase L3</h4>
+              <div class="values-grid">
+                <div class="value-block">
+                  <span class="value-label">Active</span>
+                  <span class="value-number">{{ formatValue(getValue('Active Power L3 kW'), 0) }} <small>kW</small></span>
+                </div>
+                <div class="value-block">
+                  <span class="value-label">Reactive</span>
+                  <span class="value-number">{{ formatValue(getValue('Reactive Power L3 kVAr'), 0) }} <small>kVAR</small></span>
+                </div>
+                <div class="value-block">
+                  <span class="value-label">PF</span>
+                  <span class="value-number">{{ formatValue(getValue('Power Factor L3'), 2) }}</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
-        <!-- Row 4: Current Generator -->
-        <div class="detail-section">
+        <!-- Row 4: Voltage Generator -->
+        <div class="detail-section mb-6">
+          <div class="section-header">
+            <span class="icon-box">⚡</span>
+            <span class="section-title">Voltage Generator</span>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 1rem;">
+            <div style="background: var(--bg-hover, #f8f9fa); border: 1px solid var(--border-color, #e5e7eb); padding: 1.25rem; border-radius: 0.75rem; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+              <h4 style="text-align: center; font-size: 0.875rem; font-weight: 700; color: inherit; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid var(--border-color, #e5e7eb); padding-bottom: 0.5rem;">Line to Line (L-L)</h4>
+              <div class="values-grid" style="grid-template-columns: repeat(2, 1fr);">
+                <div class="value-block">
+                  <span class="value-label">L1-L2</span>
+                  <span class="value-number">{{ formatValue(getValue('Voltage L1 L2'), 0) }} <small>V</small></span>
+                </div>
+                <div class="value-block">
+                  <span class="value-label">L2-L3</span>
+                  <span class="value-number">{{ formatValue(getValue('Voltage L2 L3'), 0) }} <small>V</small></span>
+                </div>
+                <div class="value-block">
+                  <span class="value-label">L3-L1</span>
+                  <span class="value-number">{{ formatValue(getValue('Voltage L3 L1'), 0) }} <small>V</small></span>
+                </div>
+                <div class="value-block">
+                  <span class="value-label">Average L-L</span>
+                  <span class="value-number">{{ formatValue(getValue('Voltage L L Avg'), 0) }} <small>V</small></span>
+                </div>
+              </div>
+            </div>
+            
+            <div style="background: var(--bg-hover, #f8f9fa); border: 1px solid var(--border-color, #e5e7eb); padding: 1.25rem; border-radius: 0.75rem; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+              <h4 style="text-align: center; font-size: 0.875rem; font-weight: 700; color: inherit; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid var(--border-color, #e5e7eb); padding-bottom: 0.5rem;">Line to Neutral (L-N)</h4>
+              <div class="values-grid" style="grid-template-columns: repeat(2, 1fr);">
+                <div class="value-block">
+                  <span class="value-label">L1-N</span>
+                  <span class="value-number">{{ formatValue(getValue('Voltage L1 N'), 0) }} <small>V</small></span>
+                </div>
+                <div class="value-block">
+                  <span class="value-label">L2-N</span>
+                  <span class="value-number">{{ formatValue(getValue('Voltage L2 N'), 0) }} <small>V</small></span>
+                </div>
+                <div class="value-block">
+                  <span class="value-label">L3-N</span>
+                  <span class="value-number">{{ formatValue(getValue('Voltage L3 N'), 0) }} <small>V</small></span>
+                </div>
+                <div class="value-block">
+                  <span class="value-label">Average L-N</span>
+                  <span class="value-number">{{ formatValue(getValue('Voltage L N Avg'), 0) }} <small>V</small></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Row 5: Current & System -->
+        <div class="detail-section mb-6">
           <div class="section-header">
             <span class="icon-box">🌊</span>
-            <span class="section-title">Current Generator</span>
+            <span class="section-title">Current & System</span>
           </div>
-          <div class="values-grid">
+          <div class="values-grid" style="grid-template-columns: repeat(3, 1fr);">
             <div class="value-block">
               <span class="value-label">L1</span>
               <span class="value-number">{{ formatValue(getValue('Current L1'), 0) }} <small>A</small></span>
@@ -104,10 +199,18 @@
               <span class="value-label">L3</span>
               <span class="value-number">{{ formatValue(getValue('Current L3'), 0) }} <small>A</small></span>
             </div>
+            <div class="value-block">
+              <span class="value-label">Average</span>
+              <span class="value-number">{{ formatValue(getValue('Current Avg'), 0) }} <small>A</small></span>
+            </div>
+            <div class="value-block">
+              <span class="value-label">{{ (unitId === '8' || unitId === '9') ? 'Neutral Current' : 'Earth Current' }}</span>
+              <span class="value-number">{{ formatValue((unitId === '8' || unitId === '9') ? getValue('Current Neutral') : getValue('Current Earth'), 0) }} <small>A</small></span>
+            </div>
           </div>
         </div>
 
-        <!-- Row 5: Power Quality -->
+        <!-- Row 6: Power Quality -->
         <div class="detail-section mt-4">
           <div class="section-header">
             <span class="icon-box">📊</span>
@@ -191,6 +294,57 @@
             </div>
           </div>
         </div>
+
+
+        <!-- Row 7: Engine Statistics & Accumulation (Only for Unit 6 & 7) -->
+        <div v-if="unitId === '6' || unitId === '7'" class="detail-section mt-4">
+          <div class="section-header mb-4">
+            <span class="icon-box">📊</span>
+            <span class="section-title">Engine Statistics & Accumulation</span>
+          </div>
+          <div class="engine-grid">
+            <!-- Engine Run Time -->
+            <div class="engine-metric">
+              <span class="metric-label">Engine Run Time</span>
+              <span class="metric-value">{{ formatValueWithComma(getValue('Engine Run Time Hours'), 1) }} <small>Hours</small></span>
+            </div>
+            
+            <!-- Energy Active -->
+            <div class="engine-metric">
+              <span class="metric-label">Total Energy Active</span>
+              <span class="metric-value">{{ formatValueWithComma(getValue('Energy Active kWh'), 0) }} <small>kWh</small></span>
+            </div>
+            
+            <!-- Energy Reactive -->
+            <div class="engine-metric">
+              <span class="metric-label">Total Energy Reactive</span>
+              <span class="metric-value">{{ formatValueWithComma(getValue('Energy Reactive kVARh'), 0) }} <small>kVARh</small></span>
+            </div>
+            
+            <!-- Start Count -->
+            <div class="engine-metric">
+              <span class="metric-label">Engine Start Count</span>
+              <span class="metric-value">{{ formatValueWithComma(getValue('Start Count'), 0) }} <small>Times</small></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Row: Engine Parameters (Calculated for Unit 8 & 9) -->
+        <div v-if="unitId === '8' || unitId === '9'" class="detail-section mt-4">
+          <div class="section-header mb-4">
+            <span class="icon-box">⚙️</span>
+            <span class="section-title">Engine Parameters (Calculated)</span>
+          </div>
+          <div class="engine-grid" style="grid-template-columns: 1fr;">
+            <div class="engine-metric">
+              <span class="metric-label">Engine RPM</span>
+              <div class="pq-value-row justify-center">
+                <span class="metric-value">{{ formatValue(getValue('Frequency') * 30, 0) }} <small>RPM</small></span>
+              </div>
+              <div class="pq-threshold text-center mt-2">Batas: Mengikuti Frekuensi Grid (Frekuensi × 30)</div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Chart Card -->
@@ -201,33 +355,51 @@
           <div class="flex items-center gap-4">
             <label class="text-sm text-gray-600">Parameter:</label>
             <select v-model="activeTab" class="param-select" @change="fetchHistory">
-              <optgroup label="Power">
-                <option value="active-power">Active Power</option>
-                <option value="reactive-power">Reactive Power</option>
-                <option value="active-reactive-power">Active & Reactive Power</option>
-                <option value="power-factor">Power Factor</option>
+              <!-- FOR UNIT 6 & 7 (DSE 8610 MKII & DSE 7310 ENGINE) -->
+              <optgroup label="DSE 8610 MKII (PM-DG)" v-if="unitId === '6' || unitId === '7'">
+                <option value="pm-active-power">Active Power</option>
+                <option value="pm-reactive-power">Reactive Power</option>
+                <option value="pm-power-factor">Power Factor</option>
+                <option value="pm-all-currents">All Currents</option>
+                <option value="pm-all-voltages">All Voltages (L-L)</option>
+                <option value="pm-frequency">Frequency</option>
               </optgroup>
-              <optgroup label="Frequency">
-                <option value="frequency">Frequency</option>
+              
+              <optgroup label="DSE 7310 (ENGINE-DG)" v-if="unitId === '6' || unitId === '7'">
+                <option value="en-active-power-total">Active Power (Total)</option>
+                <option value="en-active-power-phases">Phase Active Powers</option>
+                <option value="en-reactive-power-total">Reactive Power (Total)</option>
+                <option value="en-reactive-power-phases">Phase Reactive Powers</option>
+                <option value="en-power-factor-total">Power Factor (Total)</option>
+                <option value="en-power-factor-phases">Phase Power Factors</option>
+                <option value="en-all-currents">All Currents</option>
+                <option value="en-current-earth">Current Earth</option>
+                <option value="en-all-voltages">All Voltages (L-L)</option>
+                <option value="en-all-voltages-ln">All Voltages (L-N)</option>
+                <option value="en-frequency">Frequency</option>
+                <option value="en-engine-rpm">Engine RPM</option>
+                <option value="en-oil-pressure">Oil Pressure</option>
+                <option value="en-coolant-temp">Coolant Temp</option>
+                <option value="en-battery-voltage">Battery Voltage</option>
+                <option value="en-charge-alt">Charge Alt</option>
               </optgroup>
-              <optgroup label="Voltage">
-                <option value="all-voltages">All Voltages</option>
-                <option value="voltage-l1l2">└ Voltage L1-L2</option>
-                <option value="voltage-l2l3">└ Voltage L2-L3</option>
-                <option value="voltage-l3l1">└ Voltage L3-L1</option>
-              </optgroup>
-              <optgroup label="Current">
-                <option value="all-currents">All Currents</option>
-                <option value="current-l1">└ Current L1</option>
-                <option value="current-l2">└ Current L2</option>
-                <option value="current-l3">└ Current L3</option>
-              </optgroup>
-              <optgroup label="Engine" v-if="unitId === '6' || unitId === '7'">
-                <option value="engine-rpm">Engine RPM</option>
-                <option value="oil-pressure">Oil Pressure</option>
-                <option value="coolant-temp">Coolant Temp</option>
-                <option value="battery-voltage">Battery Voltage</option>
-                <option value="charge-alt">Charge Alt</option>
+
+              <!-- FOR UNIT 8 & 9 (PM 5350) -->
+              <optgroup label="PM 5350 (PM-DG)" v-if="unitId === '8' || unitId === '9'">
+                <option value="pm5-active-power-total">Active Power (Total)</option>
+                <option value="pm5-active-power-phases">Phase Active Powers</option>
+                <option value="pm5-reactive-power-total">Reactive Power (Total)</option>
+                <option value="pm5-reactive-power-phases">Phase Reactive Powers</option>
+                <option value="pm5-power-factor-total">Power Factor (Total)</option>
+                <option value="pm5-power-factor-phases">Phase Power Factors</option>
+                <option value="pm5-all-currents">All Currents</option>
+                <option value="pm5-current-neutral">Current Neutral</option>
+                <option value="pm5-current-avg">Current Avg</option>
+                <option value="pm5-all-voltages">All Voltages (L-L)</option>
+                <option value="pm5-voltage-ll-avg">Voltage L-L Avg</option>
+                <option value="pm5-all-voltages-ln">All Voltages (L-N)</option>
+                <option value="pm5-voltage-ln-avg">Voltage L-N Avg</option>
+                <option value="pm5-frequency">Frequency</option>
               </optgroup>
             </select>
           </div>
@@ -304,7 +476,7 @@ const historyData = ref([])
 const loading = ref(true)
 const error = ref(null)
 const currentDate = ref('')
-const activeTab = ref('active-power')
+const activeTab = ref(unitId === '8' || unitId === '9' ? 'pm5-active-power-total' : 'en-active-power-total')
 const timeRange = ref('-1h')
 const customStart = ref('')
 const customStop = ref('')
@@ -328,29 +500,48 @@ const timeRanges = [
   { value: 'custom', label: 'Custom...' }
 ]
 
-// Tabs Config - All Parameters + Combined with High-Contrast Colors
 const chartTabs = [
-  { id: 'active-power', label: 'Active Power', field: 'Active Power', unit: 'kW', color: '#0ea5e9' },
-  { id: 'reactive-power', label: 'Reactive Power', field: 'Reactive Power', unit: 'kVAR', color: '#f97316' },
-  { id: 'active-reactive-power', label: 'Active & Reactive Power', fields: ['Active Power', 'Reactive Power'], unit: 'kW / kVAR', colors: ['#0ea5e9', '#f97316'], isMulti: true },
-  { id: 'power-factor', label: 'Power Factor', field: 'Power Factor', unit: '', color: '#14b8a6' },
-  { id: 'frequency', label: 'Frequency', field: 'Frequency', unit: 'Hz', color: '#a855f7' },
-  // Combined Charts (High-Contrast Triad Palettes)
-  { id: 'all-voltages', label: 'All Voltages', fields: ['Voltage L1 L2', 'Voltage L2 L3', 'Voltage L3 L1'], unit: 'V', colors: ['#ef4444', '#eab308', '#06b6d4'], isMulti: true },
-  { id: 'all-currents', label: 'All Currents', fields: ['Current L1', 'Current L2', 'Current L3'], unit: 'A', colors: ['#f43f5e', '#10b981', '#3b82f6'], isMulti: true },
-  // Individual
-  { id: 'voltage-l1l2', label: 'Voltage L1-L2', field: 'Voltage L1 L2', unit: 'V', color: '#ef4444' },
-  { id: 'voltage-l2l3', label: 'Voltage L2-L3', field: 'Voltage L2 L3', unit: 'V', color: '#eab308' },
-  { id: 'voltage-l3l1', label: 'Voltage L3-L1', field: 'Voltage L3 L1', unit: 'V', color: '#06b6d4' },
-  { id: 'current-l1', label: 'Current L1', field: 'Current L1', unit: 'A', color: '#f43f5e' },
-  { id: 'current-l2', label: 'Current L2', field: 'Current L2', unit: 'A', color: '#10b981' },
-  { id: 'current-l3', label: 'Current L3', field: 'Current L3', unit: 'A', color: '#3b82f6' },
-  // Engine Parameters
-  { id: 'engine-rpm', label: 'Engine RPM', field: 'Engine RPM', unit: 'RPM', color: '#8b5cf6' },
-  { id: 'oil-pressure', label: 'Oil Pressure', field: 'Oil Pressure', unit: 'Bar', color: '#eab308' },
-  { id: 'coolant-temp', label: 'Coolant Temp', field: 'Coolant Temp', unit: '°C', color: '#ef4444' },
-  { id: 'battery-voltage', label: 'Battery Voltage', field: 'Battery Voltage', unit: 'V', color: '#3b82f6' },
-  { id: 'charge-alt', label: 'Charge Alt', field: 'Charge Alt', unit: 'V', color: '#10b981' }
+  // PM-DG (Unit 6, 7)
+  { id: 'pm-active-power', label: 'Active Power (PM)', field: 'Active Power', unit: 'kW', color: '#0ea5e9', source: 'pm' },
+  { id: 'pm-reactive-power', label: 'Reactive Power (PM)', field: 'Reactive Power', unit: 'kVAR', color: '#f97316', source: 'pm' },
+  { id: 'pm-power-factor', label: 'Power Factor (PM)', field: 'Power Factor', unit: '', color: '#14b8a6', source: 'pm' },
+  { id: 'pm-all-currents', label: 'All Currents (PM)', fields: ['Current L1', 'Current L2', 'Current L3'], unit: 'A', colors: ['#f43f5e', '#10b981', '#3b82f6'], isMulti: true, source: 'pm' },
+  { id: 'pm-all-voltages', label: 'All Voltages L-L (PM)', fields: ['Voltage L1 L2', 'Voltage L2 L3', 'Voltage L3 L1'], unit: 'V', colors: ['#ef4444', '#eab308', '#06b6d4'], isMulti: true, source: 'pm' },
+  { id: 'pm-frequency', label: 'Frequency (PM)', field: 'Frequency', unit: 'Hz', color: '#a855f7', source: 'pm' },
+
+  // ENGINE-DG (Unit 6, 7)
+  { id: 'en-active-power-total', label: 'Active Power (Total)', field: 'Active Power', unit: 'kW', color: '#0ea5e9', source: 'engine' },
+  { id: 'en-active-power-phases', label: 'Phase Active Powers', fields: ['Active Power L1 kW', 'Active Power L2 kW', 'Active Power L3 kW'], unit: 'kW', colors: ['#ef4444', '#eab308', '#06b6d4'], isMulti: true, source: 'engine' },
+  { id: 'en-reactive-power-total', label: 'Reactive Power (Total)', field: 'Reactive Power', unit: 'kVAR', color: '#f97316', source: 'engine' },
+  { id: 'en-reactive-power-phases', label: 'Phase Reactive Powers', fields: ['Reactive Power L1 kVAr', 'Reactive Power L2 kVAr', 'Reactive Power L3 kVAr'], unit: 'kVAR', colors: ['#f43f5e', '#f59e0b', '#0ea5e9'], isMulti: true, source: 'engine' },
+  { id: 'en-power-factor-total', label: 'Power Factor (Total)', field: 'Power Factor', unit: '', color: '#14b8a6', source: 'engine' },
+  { id: 'en-power-factor-phases', label: 'Phase Power Factors', fields: ['Power Factor L1', 'Power Factor L2', 'Power Factor L3'], unit: '', colors: ['#10b981', '#3b82f6', '#8b5cf6'], isMulti: true, source: 'engine' },
+  { id: 'en-all-currents', label: 'All Currents', fields: ['Current L1', 'Current L2', 'Current L3'], unit: 'A', colors: ['#f43f5e', '#10b981', '#3b82f6'], isMulti: true, source: 'engine' },
+  { id: 'en-current-earth', label: 'Current Earth', field: 'Current Earth', unit: 'A', color: '#8b5cf6', source: 'engine' },
+  { id: 'en-all-voltages', label: 'All Voltages (L-L)', fields: ['Voltage L1 L2', 'Voltage L2 L3', 'Voltage L3 L1'], unit: 'V', colors: ['#ef4444', '#eab308', '#06b6d4'], isMulti: true, source: 'engine' },
+  { id: 'en-all-voltages-ln', label: 'All Voltages (L-N)', fields: ['Voltage L1 N', 'Voltage L2 N', 'Voltage L3 N'], unit: 'V', colors: ['#f43f5e', '#10b981', '#3b82f6'], isMulti: true, source: 'engine' },
+  { id: 'en-frequency', label: 'Frequency', field: 'Frequency', unit: 'Hz', color: '#a855f7', source: 'engine' },
+  { id: 'en-engine-rpm', label: 'Engine RPM', field: 'Engine RPM', unit: 'RPM', color: '#8b5cf6', source: 'engine' },
+  { id: 'en-oil-pressure', label: 'Oil Pressure', field: 'Oil Pressure', unit: 'Bar', color: '#eab308', source: 'engine' },
+  { id: 'en-coolant-temp', label: 'Coolant Temp', field: 'Coolant Temp', unit: '°C', color: '#ef4444', source: 'engine' },
+  { id: 'en-battery-voltage', label: 'Battery Voltage', field: 'Battery Voltage', unit: 'V', color: '#3b82f6', source: 'engine' },
+  { id: 'en-charge-alt', label: 'Charge Alt', field: 'Charge Alt', unit: 'V', color: '#10b981', source: 'engine' },
+
+  // PM 5350 (Unit 8, 9)
+  { id: 'pm5-active-power-total', label: 'Active Power (Total)', field: 'Active Power', unit: 'kW', color: '#0ea5e9', source: 'pm' },
+  { id: 'pm5-active-power-phases', label: 'Phase Active Powers', fields: ['Active Power L1 kW', 'Active Power L2 kW', 'Active Power L3 kW'], unit: 'kW', colors: ['#ef4444', '#eab308', '#06b6d4'], isMulti: true, source: 'pm' },
+  { id: 'pm5-reactive-power-total', label: 'Reactive Power (Total)', field: 'Reactive Power', unit: 'kVAR', color: '#f97316', source: 'pm' },
+  { id: 'pm5-reactive-power-phases', label: 'Phase Reactive Powers', fields: ['Reactive Power L1 kVAr', 'Reactive Power L2 kVAr', 'Reactive Power L3 kVAr'], unit: 'kVAR', colors: ['#f43f5e', '#f59e0b', '#0ea5e9'], isMulti: true, source: 'pm' },
+  { id: 'pm5-power-factor-total', label: 'Power Factor (Total)', field: 'Power Factor', unit: '', color: '#14b8a6', source: 'pm' },
+  { id: 'pm5-power-factor-phases', label: 'Phase Power Factors', fields: ['Power Factor L1', 'Power Factor L2', 'Power Factor L3'], unit: '', colors: ['#10b981', '#3b82f6', '#8b5cf6'], isMulti: true, source: 'pm' },
+  { id: 'pm5-all-currents', label: 'All Currents', fields: ['Current L1', 'Current L2', 'Current L3'], unit: 'A', colors: ['#f43f5e', '#10b981', '#3b82f6'], isMulti: true, source: 'pm' },
+  { id: 'pm5-current-neutral', label: 'Current Neutral', field: 'Current Neutral', unit: 'A', color: '#8b5cf6', source: 'pm' },
+  { id: 'pm5-current-avg', label: 'Current Avg', field: 'Current Avg', unit: 'A', color: '#0ea5e9', source: 'pm' },
+  { id: 'pm5-all-voltages', label: 'All Voltages (L-L)', fields: ['Voltage L1 L2', 'Voltage L2 L3', 'Voltage L3 L1'], unit: 'V', colors: ['#ef4444', '#eab308', '#06b6d4'], isMulti: true, source: 'pm' },
+  { id: 'pm5-voltage-ll-avg', label: 'Voltage L-L Avg', field: 'Voltage L L Avg', unit: 'V', color: '#eab308', source: 'pm' },
+  { id: 'pm5-all-voltages-ln', label: 'All Voltages (L-N)', fields: ['Voltage L1 N', 'Voltage L2 N', 'Voltage L3 N'], unit: 'V', colors: ['#f43f5e', '#10b981', '#3b82f6'], isMulti: true, source: 'pm' },
+  { id: 'pm5-voltage-ln-avg', label: 'Voltage L-N Avg', field: 'Voltage L N Avg', unit: 'V', color: '#10b981', source: 'pm' },
+  { id: 'pm5-frequency', label: 'Frequency', field: 'Frequency', unit: 'Hz', color: '#a855f7', source: 'pm' }
 ]
 
 const activeTabConfig = computed(() => chartTabs.find(t => t.id === activeTab.value))
@@ -390,6 +581,10 @@ const fetchHistory = async () => {
         
         // Build params based on range type
         const params = { field: fieldParam }
+        
+        if (config.source) {
+            params.source = config.source
+        }
         
         if (timeRange.value === 'custom' && customStart.value && customStop.value) {
             // Use absolute time for custom range
@@ -478,9 +673,30 @@ const getValue = (fieldName) => {
     return item?._value ?? 0
 }
 
+const getValueRaw = (fieldName) => {
+    if (!realtimeData.value || !realtimeData.value.length) return null
+    const item = realtimeData.value.find(d => d._field === fieldName)
+    return item?._value
+}
+
+const formatPhaseRotation = (val) => {
+    if (val === null || val === undefined) return 'N/A'
+    if (val === 0) return 'ABC'
+    if (val === 1) return 'CBA'
+    return val
+}
+
 const formatValue = (val, decimals = 0) => {
     if (typeof val !== 'number') return '0'
     return val.toFixed(decimals)
+}
+
+const formatValueWithComma = (val, decimals = 0) => {
+    if (typeof val !== 'number') return '0'
+    return new Intl.NumberFormat('en-US', {
+        minimumFractionDigits: decimals,
+        maximumFractionDigits: decimals
+    }).format(val)
 }
 
 const getEngineValue = (fieldName, decimals = 1) => {
@@ -493,8 +709,14 @@ const getEngineValue = (fieldName, decimals = 1) => {
 // Computed Status
 const statusInfo = computed(() => {
     const power = getValue('Active Power')
-    if (power > 0) {
-        return { text: 'OPERATING', badgeClass: 'bg-success text-white' }
+    const current = getValue('Current L1')
+    const voltage = getValue('Voltage L1 L2')
+    
+    if (current > 0 || power > 0) {
+        return { text: 'OPERATING (SYNC)', badgeClass: 'bg-success text-white' }
+    }
+    if (voltage > 100) {
+        return { text: 'OPERATING (NO LOAD)', badgeClass: 'bg-info text-white' }
     }
     if (unitDowntime.value && unitDowntime.value.status) {
         const s = unitDowntime.value.status.trim()
@@ -1073,8 +1295,10 @@ const exportCSV = async () => {
     letter-spacing: 0.05em;
 }
 
-.bg-success { background-color: var(--success); }
-.bg-warning { background-color: var(--warning); }
+.bg-success { background-color: var(--success); color: white; }
+.bg-warning { background-color: var(--warning); color: #1f2937; }
+.bg-info { background-color: #0284c7; color: white; }
+.bg-danger { background-color: #ef4444; color: white; }
 
 /* Frequency Display */
 .frequency-display {

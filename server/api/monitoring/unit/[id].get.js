@@ -8,8 +8,8 @@ export default defineEventHandler(async (event) => {
     // Units 4 and 5 do not have sensors
     const unitMap = {
         '1': 'PM-DG1',
-        '6': 'PM-DG6',
-        '7': 'PM-DG7',
+        '6': 'ENGINE-DG6',
+        '7': 'ENGINE-DG7',
         '8': 'PM-DG8',
         '9': 'PM-DG9'
     }
@@ -28,15 +28,29 @@ export default defineEventHandler(async (event) => {
 
     try {
         const pmQuery = buildDGQuery(config.influxBucket, measurement)
-        const pmResult = await queryInfluxDB(config, pmQuery)
+        let pmResult = await queryInfluxDB(config, pmQuery)
         
+        // Use Grid/System Frequency from DSE 8610 MKII (PM-DG) for Units 6 and 7
         if (id === '6' || id === '7') {
-            const engineMeasurement = `ENGINE-DG${id}`
-            const engineQuery = buildEngineQuery(config.influxBucket, engineMeasurement)
-            const engineResult = await queryInfluxDB(config, engineQuery).catch(() => [])
-            return [...pmResult, ...engineResult]
+            try {
+                const syncMeasurement = `PM-DG${id}`
+                const syncQuery = buildDGQuery(config.influxBucket, syncMeasurement)
+                const syncResult = await queryInfluxDB(config, syncQuery)
+                
+                const syncFreq = syncResult.find(item => item._field === 'Frequency')
+                if (syncFreq) {
+                    const freqIndex = pmResult.findIndex(item => item._field === 'Frequency')
+                    if (freqIndex !== -1) {
+                        pmResult[freqIndex]._value = syncFreq._value
+                    } else {
+                        pmResult.push(syncFreq)
+                    }
+                }
+            } catch (syncErr) {
+                console.error(`Failed to fetch sync frequency for Unit ${id}:`, syncErr)
+            }
         }
-
+        
         return pmResult
     } catch (error) {
         console.error(`Unit ${id} API error:`, error)
