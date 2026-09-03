@@ -136,7 +136,7 @@
           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 1rem;">
             <div style="background: var(--bg-hover, #f8f9fa); border: 1px solid var(--border-color, #e5e7eb); padding: 1.25rem; border-radius: 0.75rem; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
               <h4 style="text-align: center; font-size: 0.875rem; font-weight: 700; color: inherit; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid var(--border-color, #e5e7eb); padding-bottom: 0.5rem;">Line to Line (L-L)</h4>
-              <div class="values-grid" style="grid-template-columns: repeat(2, 1fr);">
+              <div class="values-grid" style="grid-template-columns: repeat(3, 1fr);">
                 <div class="value-block">
                   <span class="value-label">L1-L2</span>
                   <span class="value-number">{{ formatValue(getValue('Voltage L1 L2'), 0) }} <small>V</small></span>
@@ -149,16 +149,12 @@
                   <span class="value-label">L3-L1</span>
                   <span class="value-number">{{ formatValue(getValue('Voltage L3 L1'), 0) }} <small>V</small></span>
                 </div>
-                <div class="value-block">
-                  <span class="value-label">Average L-L</span>
-                  <span class="value-number">{{ formatValue(getValue('Voltage L L Avg'), 0) }} <small>V</small></span>
-                </div>
               </div>
             </div>
             
             <div style="background: var(--bg-hover, #f8f9fa); border: 1px solid var(--border-color, #e5e7eb); padding: 1.25rem; border-radius: 0.75rem; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
               <h4 style="text-align: center; font-size: 0.875rem; font-weight: 700; color: inherit; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid var(--border-color, #e5e7eb); padding-bottom: 0.5rem;">Line to Neutral (L-N)</h4>
-              <div class="values-grid" style="grid-template-columns: repeat(2, 1fr);">
+              <div class="values-grid" style="grid-template-columns: repeat(3, 1fr);">
                 <div class="value-block">
                   <span class="value-label">L1-N</span>
                   <span class="value-number">{{ formatValue(getValue('Voltage L1 N'), 0) }} <small>V</small></span>
@@ -171,10 +167,6 @@
                   <span class="value-label">L3-N</span>
                   <span class="value-number">{{ formatValue(getValue('Voltage L3 N'), 0) }} <small>V</small></span>
                 </div>
-                <div class="value-block">
-                  <span class="value-label">Average L-N</span>
-                  <span class="value-number">{{ formatValue(getValue('Voltage L N Avg'), 0) }} <small>V</small></span>
-                </div>
               </div>
             </div>
           </div>
@@ -186,7 +178,7 @@
             <span class="icon-box">🌊</span>
             <span class="section-title">Current & System</span>
           </div>
-          <div class="values-grid" style="grid-template-columns: repeat(3, 1fr);">
+          <div class="values-grid" style="grid-template-columns: repeat(4, 1fr);">
             <div class="value-block">
               <span class="value-label">L1</span>
               <span class="value-number">{{ formatValue(getValue('Current L1'), 0) }} <small>A</small></span>
@@ -198,10 +190,6 @@
             <div class="value-block">
               <span class="value-label">L3</span>
               <span class="value-number">{{ formatValue(getValue('Current L3'), 0) }} <small>A</small></span>
-            </div>
-            <div class="value-block">
-              <span class="value-label">Average</span>
-              <span class="value-number">{{ formatValue(getValue('Current Avg'), 0) }} <small>A</small></span>
             </div>
             <div class="value-block">
               <span class="value-label">{{ (unitId === '8' || unitId === '9') ? 'Neutral Current' : 'Earth Current' }}</span>
@@ -361,6 +349,7 @@
                 <option value="pm-reactive-power">Reactive Power</option>
                 <option value="pm-power-factor">Power Factor</option>
                 <option value="pm-all-currents">All Currents</option>
+                <option value="pm-current-earth">Current Earth</option>
                 <option value="pm-all-voltages">All Voltages (L-L)</option>
                 <option value="pm-frequency">Frequency</option>
               </optgroup>
@@ -394,11 +383,8 @@
                 <option value="pm5-power-factor-phases">Phase Power Factors</option>
                 <option value="pm5-all-currents">All Currents</option>
                 <option value="pm5-current-neutral">Current Neutral</option>
-                <option value="pm5-current-avg">Current Avg</option>
                 <option value="pm5-all-voltages">All Voltages (L-L)</option>
-                <option value="pm5-voltage-ll-avg">Voltage L-L Avg</option>
                 <option value="pm5-all-voltages-ln">All Voltages (L-N)</option>
-                <option value="pm5-voltage-ln-avg">Voltage L-N Avg</option>
                 <option value="pm5-frequency">Frequency</option>
               </optgroup>
             </select>
@@ -506,6 +492,7 @@ const chartTabs = [
   { id: 'pm-reactive-power', label: 'Reactive Power (PM)', field: 'Reactive Power', unit: 'kVAR', color: '#f97316', source: 'pm' },
   { id: 'pm-power-factor', label: 'Power Factor (PM)', field: 'Power Factor', unit: '', color: '#14b8a6', source: 'pm' },
   { id: 'pm-all-currents', label: 'All Currents (PM)', fields: ['Current L1', 'Current L2', 'Current L3'], unit: 'A', colors: ['#f43f5e', '#10b981', '#3b82f6'], isMulti: true, source: 'pm' },
+  { id: 'pm-current-earth', label: 'Current Earth (PM)', field: 'Current Earth', unit: 'A', color: '#8b5cf6', source: 'pm' },
   { id: 'pm-all-voltages', label: 'All Voltages L-L (PM)', fields: ['Voltage L1 L2', 'Voltage L2 L3', 'Voltage L3 L1'], unit: 'V', colors: ['#ef4444', '#eab308', '#06b6d4'], isMulti: true, source: 'pm' },
   { id: 'pm-frequency', label: 'Frequency (PM)', field: 'Frequency', unit: 'Hz', color: '#a855f7', source: 'pm' },
 
@@ -536,11 +523,8 @@ const chartTabs = [
   { id: 'pm5-power-factor-phases', label: 'Phase Power Factors', fields: ['Power Factor L1', 'Power Factor L2', 'Power Factor L3'], unit: '', colors: ['#10b981', '#3b82f6', '#8b5cf6'], isMulti: true, source: 'pm' },
   { id: 'pm5-all-currents', label: 'All Currents', fields: ['Current L1', 'Current L2', 'Current L3'], unit: 'A', colors: ['#f43f5e', '#10b981', '#3b82f6'], isMulti: true, source: 'pm' },
   { id: 'pm5-current-neutral', label: 'Current Neutral', field: 'Current Neutral', unit: 'A', color: '#8b5cf6', source: 'pm' },
-  { id: 'pm5-current-avg', label: 'Current Avg', field: 'Current Avg', unit: 'A', color: '#0ea5e9', source: 'pm' },
   { id: 'pm5-all-voltages', label: 'All Voltages (L-L)', fields: ['Voltage L1 L2', 'Voltage L2 L3', 'Voltage L3 L1'], unit: 'V', colors: ['#ef4444', '#eab308', '#06b6d4'], isMulti: true, source: 'pm' },
-  { id: 'pm5-voltage-ll-avg', label: 'Voltage L-L Avg', field: 'Voltage L L Avg', unit: 'V', color: '#eab308', source: 'pm' },
   { id: 'pm5-all-voltages-ln', label: 'All Voltages (L-N)', fields: ['Voltage L1 N', 'Voltage L2 N', 'Voltage L3 N'], unit: 'V', colors: ['#f43f5e', '#10b981', '#3b82f6'], isMulti: true, source: 'pm' },
-  { id: 'pm5-voltage-ln-avg', label: 'Voltage L-N Avg', field: 'Voltage L N Avg', unit: 'V', color: '#10b981', source: 'pm' },
   { id: 'pm5-frequency', label: 'Frequency', field: 'Frequency', unit: 'Hz', color: '#a855f7', source: 'pm' }
 ]
 
