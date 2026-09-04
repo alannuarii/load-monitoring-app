@@ -192,7 +192,7 @@
               <span class="value-number">{{ formatValue(getValue('Current L3'), 0) }} <small>A</small></span>
             </div>
             <div class="value-block">
-              <span class="value-label">{{ (unitId === '8' || unitId === '9') ? 'Neutral Current' : 'Earth Current' }}</span>
+              <span class="value-label">{{ (unitId === '8' || unitId === '9') ? 'Neutral' : 'Earth' }}</span>
               <span class="value-number">{{ formatValue((unitId === '8' || unitId === '9') ? getValue('Current Neutral') : getValue('Current Earth'), 0) }} <small>A</small></span>
             </div>
           </div>
