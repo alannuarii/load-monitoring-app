@@ -2,8 +2,8 @@
   <div class="auth-card">
     <div class="text-center mb-4">
       <slot name="header">
-        <h2>Selamat Datang</h2>
-        <p class="text-muted">Silakan masuk untuk melanjutkan</p>
+        <h2>Welcome</h2>
+        <p class="text-muted">Please sign in to continue</p>
       </slot>
     </div>
     

@@ -12,14 +12,14 @@
           class="control-btn"
           title="Zoom In"
         >
-          🔍+
+          Zoom +
         </button>
         <button 
           @click="zoomOut" 
           class="control-btn"
           title="Zoom Out"
         >
-          🔍-
+          Zoom -
         </button>
         <button 
           @click="resetZoom" 
@@ -65,8 +65,8 @@
       </div>
 
       <div class="sld-instructions">
-        <p>💡 <strong>Desktop:</strong> Gunakan scroll mouse untuk zoom, klik dan drag untuk menggeser</p>
-        <p>💡 <strong>Mobile:</strong> Pinch untuk zoom, swipe untuk menggeser</p>
+        <p><strong>Desktop:</strong> Gunakan scroll mouse untuk zoom, klik dan drag untuk menggeser</p>
+        <p><strong>Mobile:</strong> Pinch untuk zoom, swipe untuk menggeser</p>
       </div>
     </div>
   </div>

@@ -1,12 +1,12 @@
 <template>
-  <header class="app-header">
+  <header class="app-header" :class="{ 'is-dark': isDark }">
     <div class="container header-content">
       <div class="header-left">
         <!-- Logo -->
         <NuxtLink to="/" class="header-logo">
           <img :src="isDark ? '/images/npwhite.png' : '/images/npblue.png'" alt="PLTD Tahuna" class="header-logo-img" />
           <div class="brand-text">
-            <h1 class="app-brand-title">DASHBOARD PEMBEBANAN ONLINE</h1>
+            <h1 class="app-brand-title">LOAD MONITORING</h1>
             <span class="app-brand-subtitle">PLTD TAHUNA</span>
           </div>
         </NuxtLink>
@@ -15,22 +15,29 @@
       <!-- Desktop Navigation -->
       <nav class="header-nav hidden-mobile">
         <NuxtLink to="/" class="nav-link" :class="{ active: route.path === '/' }">
-          <span class="nav-icon">🏠</span> Home
+          Home
         </NuxtLink>
         <NuxtLink to="/profile" class="nav-link" :class="{ active: route.path === '/profile' }">
-          <span class="nav-icon">🏭</span> Profile
+          Profile
         </NuxtLink>
         <NuxtLink to="/sld" class="nav-link" :class="{ active: route.path === '/sld' }">
-          <span class="nav-icon">🔌</span> SLD
+          SLD
+        </NuxtLink>
+        <NuxtLink to="/analysis" class="nav-link" :class="{ active: route.path === '/analysis' }">
+          Analysis
         </NuxtLink>
       </nav>
       
       <!-- User section -->
       <div class="header-user-section">
         <!-- Theme Toggle -->
-        <button class="btn-theme-toggle" @click="toggleTheme" :title="isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'">
-          {{ isDark ? '🌞' : '🌙' }}
-        </button>
+        <div class="theme-toggle-container" @click="toggleTheme" :title="isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'">
+          <span class="theme-toggle-label" :class="{ active: !isDark }">Light</span>
+          <div class="theme-toggle-switch" :class="{ 'is-dark': isDark }">
+            <div class="theme-toggle-thumb"></div>
+          </div>
+          <span class="theme-toggle-label" :class="{ active: isDark }">Dark</span>
+        </div>
 
         <!-- Mobile Menu Toggle -->
         <button class="btn-mobile-menu visible-mobile" @click="toggleMobileMenu">
@@ -70,7 +77,7 @@
               </div>
               <div class="user-dropdown-divider"></div>
               <button class="user-dropdown-item danger" @click="handleLogout">
-                🚪 Keluar
+                Sign Out
               </button>
             </div>
           </div>
@@ -82,17 +89,17 @@
     <!-- Mobile Navigation Menu (Slide down) -->
     <div class="mobile-nav-menu" :class="{ open: isMobileMenuOpen }">
       <NuxtLink to="/" class="mobile-nav-link" :class="{ active: route.path === '/' }" @click="closeMobileMenu">
-        <span class="nav-icon">🏠</span> Home
+        Home
       </NuxtLink>
       <NuxtLink to="/profile" class="mobile-nav-link" :class="{ active: route.path === '/profile' }" @click="closeMobileMenu">
-        <span class="nav-icon">🏭</span> Profile
+        Profile
       </NuxtLink>
       <NuxtLink to="/sld" class="mobile-nav-link" :class="{ active: route.path === '/sld' }" @click="closeMobileMenu">
-        <span class="nav-icon">🔌</span> SLD
+        SLD
       </NuxtLink>
       <div class="mobile-nav-divider"></div>
       <button class="mobile-nav-link danger" @click="handleLogout">
-        <span class="nav-icon">🚪</span> Keluar
+        Sign Out
       </button>
     </div>
   </header>
@@ -223,6 +230,11 @@ onMounted(() => {
   font-weight: 600;
 }
 
+.is-dark .nav-link.active {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--primary-300);
+}
+
 .nav-icon {
   font-size: 1.1em;
 }
@@ -233,22 +245,59 @@ onMounted(() => {
   gap: var(--space-2);
 }
 
-.btn-theme-toggle {
-  background: transparent;
-  border: none;
-  font-size: 1.25rem;
-  cursor: pointer;
-  padding: var(--space-2);
-  border-radius: var(--radius-full);
+.theme-toggle-container {
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: var(--space-2);
+  cursor: pointer;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-lg);
   transition: background var(--transition-fast);
-  color: var(--gray-600);
 }
 
-.btn-theme-toggle:hover {
+.theme-toggle-container:hover {
   background: var(--bg-hover);
+}
+
+.theme-toggle-label {
+  font-size: 0.75rem;
+  color: var(--gray-500);
+  font-weight: 500;
+  transition: color var(--transition-fast);
+}
+
+.theme-toggle-label.active {
+  color: var(--text-main);
+  font-weight: 600;
+}
+
+.theme-toggle-switch {
+  width: 44px;
+  height: 24px;
+  background: var(--gray-300);
+  border-radius: var(--radius-full);
+  position: relative;
+  transition: background var(--transition-base);
+}
+
+.theme-toggle-switch.is-dark {
+  background: var(--primary-600);
+}
+
+.theme-toggle-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  background: white;
+  border-radius: 50%;
+  transition: transform var(--transition-base);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+.theme-toggle-switch.is-dark .theme-toggle-thumb {
+  transform: translateX(20px);
 }
 
 @media (max-width: 768px) {
@@ -529,6 +578,11 @@ onMounted(() => {
 .mobile-nav-link.active {
   background: var(--bg-hover);
   color: var(--primary-600);
+}
+
+.is-dark .mobile-nav-link.active {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--primary-300);
 }
 
 .mobile-nav-divider {

@@ -19,10 +19,10 @@
 const route = useRoute()
 
 const menuItems = [
-  { path: '/', icon: '🏠', label: 'Home' },
-  { path: '/preventive', icon: '📅', label: 'PM' },
-  { path: '/material', icon: '📦', label: 'Material' },
-  { path: '/periodic', icon: '🔄', label: 'Periodik' },
+  { path: '/', icon: '', label: 'Home' },
+  { path: '/preventive', icon: '', label: 'PM' },
+  { path: '/material', icon: '', label: 'Material' },
+  { path: '/periodic', icon: '', label: 'Periodik' },
 ]
 
 const isActive = (path) => {

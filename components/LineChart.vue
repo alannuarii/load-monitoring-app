@@ -1,10 +1,11 @@
 <template>
   <div class="chart-container">
-    <Line :data="chartData" :options="chartOptions" />
+    <Line ref="chartRef" :data="chartData" :options="chartOptions" :plugins="chartPlugins" />
   </div>
 </template>
 
 <script setup>
+import { ref } from 'vue'
 import { Line } from 'vue-chartjs'
 import {
   Chart as ChartJS,
@@ -17,6 +18,7 @@ import {
   CategoryScale,
   Filler
 } from 'chart.js'
+import zoomPlugin from 'chartjs-plugin-zoom'
 
 ChartJS.register(
   Title,
@@ -26,8 +28,11 @@ ChartJS.register(
   LinearScale,
   PointElement,
   CategoryScale,
-  Filler
+  Filler,
+  zoomPlugin
 )
+
+const chartRef = ref(null)
 
 const props = defineProps({
   chartData: {
@@ -96,7 +101,20 @@ const props = defineProps({
         }
       }
     })
+  },
+  chartPlugins: {
+    type: Array,
+    default: () => []
   }
+})
+
+defineExpose({
+  resetZoom: () => {
+    if (chartRef.value?.chart) {
+      chartRef.value.chart.resetZoom()
+    }
+  },
+  getChartInstance: () => chartRef.value?.chart || null
 })
 </script>
 

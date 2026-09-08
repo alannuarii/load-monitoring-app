@@ -39,15 +39,15 @@
 
     <!-- Error State -->
     <div v-if="error" class="error-card">
-      <div class="error-icon">⚠️</div>
+      <div class="error-icon"></div>
       <p class="error-message">{{ error }}</p>
-      <button class="btn btn-primary btn-sm" @click="fetchAllData">Coba Lagi</button>
+      <button class="btn btn-primary btn-sm" @click="fetchAllData">Retry</button>
     </div>
 
     <!-- Loading State -->
     <div v-else-if="loading" class="loading-state">
       <div class="spinner spinner-lg"></div>
-      <p class="mt-4 text-muted">Menghubungkan ke sistem monitoring...</p>
+      <p class="mt-4 text-muted">Connecting to monitoring system...</p>
     </div>
 
     <!-- Units Grid -->
@@ -93,19 +93,17 @@ const currentDate = ref('')
 
 const updateDate = () => {
     const now = new Date()
-    const options = { 
-        weekday: 'long', 
-        year: 'numeric', 
-        month: 'long', 
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        hour12: false
-    }
-    currentDate.value = now.toLocaleString('id-ID', options)
-        .replace(/\s*pukul\s*/gi, ' ')
-        .replace(/\./g, ':') + ' WITA'
+    const months = [
+        'January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'
+    ]
+    const day = now.getDate()
+    const month = months[now.getMonth()]
+    const year = now.getFullYear()
+    const hours = String(now.getHours()).padStart(2, '0')
+    const minutes = String(now.getMinutes()).padStart(2, '0')
+    const seconds = String(now.getSeconds()).padStart(2, '0')
+    currentDate.value = `${day} ${month} ${year} ${hours}:${minutes}:${seconds} (Local Time)`
 }
 
 // Calculate system frequency from first available unit
@@ -189,7 +187,7 @@ const fetchAllData = async () => {
     // Silent fail for polling updates unless it's the first load
     if (loading.value) {
       console.error('Failed to fetch monitoring data:', err)
-      error.value = 'Gagal terhubung ke sistem monitoring'
+      error.value = 'Failed to connect to monitoring system'
       loading.value = false
     }
   }

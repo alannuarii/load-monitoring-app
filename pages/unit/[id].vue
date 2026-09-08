@@ -66,7 +66,6 @@
         <!-- Row 3: Phase Power Details -->
         <div class="detail-section mb-6">
           <div class="section-header">
-            <span class="icon-box">🔌</span>
             <span class="section-title">Phase Power Details</span>
           </div>
           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 1rem;">
@@ -130,7 +129,6 @@
         <!-- Row 4: Voltage Generator -->
         <div class="detail-section mb-6">
           <div class="section-header">
-            <span class="icon-box">⚡</span>
             <span class="section-title">Voltage Generator</span>
           </div>
           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 1rem;">
@@ -175,7 +173,6 @@
         <!-- Row 5: Current & System -->
         <div class="detail-section mb-6">
           <div class="section-header">
-            <span class="icon-box">🌊</span>
             <span class="section-title">Current & System</span>
           </div>
           <div class="values-grid" style="grid-template-columns: repeat(4, 1fr);">
@@ -201,7 +198,6 @@
         <!-- Row 6: Power Quality -->
         <div class="detail-section mt-4">
           <div class="section-header">
-            <span class="icon-box">📊</span>
             <span class="section-title">Power Quality</span>
             <span class="overall-status-badge" :class="overallPowerQualityClass">{{ overallPowerQualityStatus }}</span>
           </div>
@@ -212,7 +208,7 @@
                 <span class="pq-value">{{ voltageUnbalance.value }}%</span>
                 <span class="pq-status-badge" :class="voltageUnbalance.class">{{ voltageUnbalance.status }}</span>
               </div>
-              <div class="pq-threshold">Batas: &lt; 2% (Good), 2-5% (Warning)</div>
+              <div class="pq-threshold">Threshold: &lt; 2% (Good), 2-5% (Warning)</div>
             </div>
             <div class="pq-item">
               <div class="pq-label">Current Unbalance</div>
@@ -220,7 +216,7 @@
                 <span class="pq-value">{{ currentUnbalance.value }}%</span>
                 <span class="pq-status-badge" :class="currentUnbalance.class">{{ currentUnbalance.status }}</span>
               </div>
-              <div class="pq-threshold">Batas: &lt; 10% (Good), 10-20% (Warning)</div>
+              <div class="pq-threshold">Threshold: &lt; 10% (Good), 10-20% (Warning)</div>
             </div>
             <div class="pq-item">
               <div class="pq-label">Power Factor</div>
@@ -228,7 +224,7 @@
                 <span class="pq-value">{{ powerFactorStatus.value }}</span>
                 <span class="pq-status-badge" :class="powerFactorStatus.class">{{ powerFactorStatus.status }}</span>
               </div>
-              <div class="pq-threshold">Batas: &gt; 0.9 (Good), 0.8-0.9 (Fair)</div>
+              <div class="pq-threshold">Threshold: &gt; 0.9 (Good), 0.8-0.9 (Fair)</div>
             </div>
           </div>
         </div>
@@ -236,7 +232,6 @@
         <!-- Row 6: Engine Parameters (Only for Unit 6 & 7) -->
         <div v-if="unitId === '6' || unitId === '7'" class="detail-section mt-4">
           <div class="section-header mb-4">
-            <span class="icon-box">⚙️</span>
             <span class="section-title">Engine Parameters</span>
           </div>
           <div class="engine-grid">
@@ -246,7 +241,7 @@
                 <span class="metric-value">{{ oilPressureStatus.value }} <small>Bar</small></span>
                 <span class="pq-status-badge" :class="oilPressureStatus.class">{{ oilPressureStatus.status }}</span>
               </div>
-              <div class="pq-threshold">Batas: &gt; 4.0 (Good), 1.5-4.0 (Warning), &lt; 1.5 (Shutdown)</div>
+              <div class="pq-threshold">Threshold: &gt; 4.0 (Good), 1.5-4.0 (Warning), &lt; 1.5 (Shutdown)</div>
             </div>
             <div class="engine-metric">
               <span class="metric-label">Coolant Temperature</span>
@@ -254,7 +249,7 @@
                 <span class="metric-value">{{ coolantTempStatus.value }} <small>°C</small></span>
                 <span class="pq-status-badge" :class="coolantTempStatus.class">{{ coolantTempStatus.status }}</span>
               </div>
-              <div class="pq-threshold">Batas: &lt; 95 (Good), 95-98 (Warning), &gt; 98 (Shutdown)</div>
+              <div class="pq-threshold">Threshold: &lt; 95 (Good), 95-98 (Warning), &gt; 98 (Shutdown)</div>
             </div>
             <div class="engine-metric">
               <span class="metric-label">Charge Alternator</span>
@@ -262,7 +257,7 @@
                 <span class="metric-value">{{ chargeAltStatus.value }} <small>V</small></span>
                 <span class="pq-status-badge" :class="chargeAltStatus.class">{{ chargeAltStatus.status }}</span>
               </div>
-              <div class="pq-threshold">Batas: &gt; 19.2 (Good), &lt; 19.2 (Warning)</div>
+              <div class="pq-threshold">Threshold: &gt; 19.2 (Good), &lt; 19.2 (Warning)</div>
             </div>
             <div class="engine-metric">
               <span class="metric-label">Battery Voltage</span>
@@ -270,7 +265,7 @@
                 <span class="metric-value">{{ batteryVoltStatus.value }} <small>V</small></span>
                 <span class="pq-status-badge" :class="batteryVoltStatus.class">{{ batteryVoltStatus.status }}</span>
               </div>
-              <div class="pq-threshold">Batas: 18.0-31.2 (Good), &lt;18.0 / &gt;31.2 (Warning)</div>
+              <div class="pq-threshold">Threshold: 18.0-31.2 (Good), &lt;18.0 / &gt;31.2 (Warning)</div>
             </div>
             <div class="engine-metric engine-metric-full">
               <span class="metric-label">Engine RPM</span>
@@ -278,7 +273,7 @@
                 <span class="metric-value">{{ engineRpmStatus.value }} <small>RPM</small></span>
                 <span class="pq-status-badge" :class="engineRpmStatus.class">{{ engineRpmStatus.status }}</span>
               </div>
-              <div class="pq-threshold">Batas: 1200-1650 (Good), 900-1200 / 1650-1725 (Warning)</div>
+              <div class="pq-threshold">Threshold: 1200-1650 (Good), 900-1200 / 1650-1725 (Warning)</div>
             </div>
           </div>
         </div>
@@ -287,26 +282,25 @@
         <!-- Row 7: Engine Statistics & Accumulation (Only for Unit 6 & 7) -->
         <div v-if="unitId === '6' || unitId === '7'" class="detail-section mt-4">
           <div class="section-header mb-4">
-            <span class="icon-box">📊</span>
             <span class="section-title">Engine Statistics & Accumulation</span>
           </div>
           <div class="engine-grid">
             <!-- Engine Run Time -->
             <div class="engine-metric">
               <span class="metric-label">Engine Run Time</span>
-              <span class="metric-value">{{ formatValueWithComma(getValue('Engine Run Time Hours'), 1) }} <small>Hours</small></span>
+              <span class="metric-value">{{ formatValueWithComma(getValue('Engine Run Time Hours'), 2) }} <small>Hours</small></span>
             </div>
             
             <!-- Energy Active -->
             <div class="engine-metric">
               <span class="metric-label">Total Energy Active</span>
-              <span class="metric-value">{{ formatValueWithComma(getValue('Energy Active kWh'), 0) }} <small>kWh</small></span>
+              <span class="metric-value">{{ formatValueWithComma(getValue('Energy Active kWh'), 1) }} <small>kWh</small></span>
             </div>
             
             <!-- Energy Reactive -->
             <div class="engine-metric">
               <span class="metric-label">Total Energy Reactive</span>
-              <span class="metric-value">{{ formatValueWithComma(getValue('Energy Reactive kVARh'), 0) }} <small>kVARh</small></span>
+              <span class="metric-value">{{ formatValueWithComma(getValue('Energy Reactive kVARh'), 1) }} <small>kVARh</small></span>
             </div>
             
             <!-- Start Count -->
@@ -320,7 +314,6 @@
         <!-- Row: Engine Parameters (Calculated for Unit 8 & 9) -->
         <div v-if="unitId === '8' || unitId === '9'" class="detail-section mt-4">
           <div class="section-header mb-4">
-            <span class="icon-box">⚙️</span>
             <span class="section-title">Engine Parameters (Calculated)</span>
           </div>
           <div class="engine-grid" style="grid-template-columns: 1fr;">
@@ -329,7 +322,7 @@
               <div class="pq-value-row justify-center">
                 <span class="metric-value">{{ formatValue(getValue('Frequency') * 30, 0) }} <small>RPM</small></span>
               </div>
-              <div class="pq-threshold text-center mt-2">Batas: Mengikuti Frekuensi Grid (Frekuensi × 30)</div>
+              <div class="pq-threshold text-center mt-2">Threshold: Follows Grid Frequency (Frequency × 30)</div>
             </div>
           </div>
         </div>
@@ -396,8 +389,8 @@
               <option v-for="r in timeRanges" :key="r.value" :value="r.value">{{ r.label }}</option>
             </select>
             <button class="btn-export" @click="exportCSV" :disabled="isExporting" title="Export CSV Data Raw">
-              <span v-if="isExporting">⏳ Exporting Raw...</span>
-              <span v-else>📥 Export CSV</span>
+              <span v-if="isExporting">Exporting Raw...</span>
+              <span v-else>Export CSV</span>
             </button>
           </div>
         </div>
@@ -406,14 +399,14 @@
         <div v-if="timeRange === 'custom'" class="custom-range-picker mb-4">
           <div class="flex items-center gap-4 flex-wrap">
             <div class="date-input-group">
-              <label class="text-sm text-gray-600">Dari:</label>
+              <label class="text-sm text-gray-600">From:</label>
               <input type="datetime-local" v-model="customStart" class="date-input" />
             </div>
             <div class="date-input-group">
-              <label class="text-sm text-gray-600">Sampai:</label>
+              <label class="text-sm text-gray-600">To:</label>
               <input type="datetime-local" v-model="customStop" class="date-input" />
             </div>
-            <button class="btn-apply" @click="fetchHistory">Terapkan</button>
+            <button class="btn-apply" @click="fetchHistory">Apply</button>
           </div>
         </div>
 
@@ -473,16 +466,16 @@ const rawStats = ref(null)
 
 // Time Range Options (extended to 30 days + custom)
 const timeRanges = [
-  { value: '-5m', label: '5 Menit' },
-  { value: '-15m', label: '15 Menit' },
-  { value: '-30m', label: '30 Menit' },
-  { value: '-1h', label: '1 Jam' },
-  { value: '-6h', label: '6 Jam' },
-  { value: '-1d', label: '1 Hari' },
-  { value: '-3d', label: '3 Hari' },
-  { value: '-7d', label: '7 Hari' },
-  { value: '-14d', label: '14 Hari' },
-  { value: '-30d', label: '30 Hari' },
+  { value: '-5m', label: '5 Minutes' },
+  { value: '-15m', label: '15 Minutes' },
+  { value: '-30m', label: '30 Minutes' },
+  { value: '-1h', label: '1 Hour' },
+  { value: '-6h', label: '6 Hours' },
+  { value: '-1d', label: '1 Day' },
+  { value: '-3d', label: '3 Days' },
+  { value: '-7d', label: '7 Days' },
+  { value: '-14d', label: '14 Days' },
+  { value: '-30d', label: '30 Days' },
   { value: 'custom', label: 'Custom...' }
 ]
 
@@ -636,19 +629,17 @@ onMounted(() => {
 // Helpers
 const updateDate = () => {
     const now = new Date()
-    const options = { 
-        weekday: 'long', 
-        year: 'numeric', 
-        month: 'long', 
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        hour12: false
-    }
-    currentDate.value = now.toLocaleString('id-ID', options)
-        .replace(/\s*pukul\s*/gi, ' ')
-        .replace(/\./g, ':') + ' WITA'
+    const months = [
+        'January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'
+    ]
+    const day = now.getDate()
+    const month = months[now.getMonth()]
+    const year = now.getFullYear()
+    const hours = String(now.getHours()).padStart(2, '0')
+    const minutes = String(now.getMinutes()).padStart(2, '0')
+    const seconds = String(now.getSeconds()).padStart(2, '0')
+    currentDate.value = `${day} ${month} ${year} ${hours}:${minutes}:${seconds} (Local Time)`
 }
 
 const getValue = (fieldName) => {
@@ -683,11 +674,20 @@ const formatValueWithComma = (val, decimals = 0) => {
     }).format(val)
 }
 
-const getEngineValue = (fieldName, decimals = 1) => {
+const getEngineValue = (fieldName, decimals = null) => {
     if (!realtimeData.value || !realtimeData.value.length) return 'N/A'
     const item = realtimeData.value.find(d => d._field === fieldName)
     if (!item || item._value == null) return 'N/A'
-    return formatValue(item._value, decimals)
+    
+    let dec = decimals
+    if (dec === null) {
+        if (fieldName === 'Oil Pressure') dec = 2
+        else if (fieldName === 'Engine RPM') dec = 0
+        else if (fieldName === 'Coolant Temp') dec = 0
+        else if (fieldName === 'Battery Voltage' || fieldName === 'Charge Alt') dec = 1
+        else dec = 2
+    }
+    return formatValue(item._value, dec)
 }
 
 // Computed Status
@@ -827,7 +827,7 @@ const overallPowerQualityClass = computed(() => {
 
 // Engine Parameters Status
 const oilPressureStatus = computed(() => {
-    const val = getEngineValue('Oil Pressure')
+    const val = getEngineValue('Oil Pressure', 2)
     if (val === 'N/A') return { value: 'N/A', status: 'N/A', class: 'pq-neutral' }
     
     const num = parseFloat(val)
@@ -846,7 +846,7 @@ const oilPressureStatus = computed(() => {
 })
 
 const coolantTempStatus = computed(() => {
-    const val = getEngineValue('Coolant Temp')
+    const val = getEngineValue('Coolant Temp', 0)
     if (val === 'N/A') return { value: 'N/A', status: 'N/A', class: 'pq-neutral' }
     
     const num = parseFloat(val)
@@ -884,7 +884,7 @@ const engineRpmStatus = computed(() => {
 })
 
 const batteryVoltStatus = computed(() => {
-    const val = getEngineValue('Battery Voltage')
+    const val = getEngineValue('Battery Voltage', 1)
     if (val === 'N/A') return { value: 'N/A', status: 'N/A', class: 'pq-neutral' }
     
     const num = parseFloat(val)
@@ -900,7 +900,7 @@ const batteryVoltStatus = computed(() => {
 })
 
 const chargeAltStatus = computed(() => {
-    const val = getEngineValue('Charge Alt')
+    const val = getEngineValue('Charge Alt', 1)
     if (val === 'N/A') return { value: 'N/A', status: 'N/A', class: 'pq-neutral' }
     
     const num = parseFloat(val)
@@ -922,7 +922,15 @@ const chartStats = computed(() => {
     const config = activeTabConfig.value
     if (!config) return null
     
-    const decimals = config.field === 'Power Factor' ? 2 : 0
+    let decimals = 0
+    const f = config.field || (config.fields ? config.fields[0] : '')
+    if (f.includes('Power Factor') || f === 'Oil Pressure' || f === 'Frequency') {
+        decimals = 2
+    } else if (f === 'Battery Voltage' || f === 'Charge Alt') {
+        decimals = 1
+    } else if (f === 'Engine RPM' || f === 'Coolant Temp') {
+        decimals = 0
+    }
 
     const formatStat = (val) => {
         if (Math.abs(val) < 0.01) return (0).toFixed(decimals)
@@ -932,7 +940,7 @@ const chartStats = computed(() => {
     const formatDateWithSeconds = (dStr) => {
         if (!dStr) return null
         const date = new Date(dStr)
-        return date.toLocaleString('id-ID', {
+        return date.toLocaleString('en-US', {
             day: '2-digit',
             month: 'short',
             year: 'numeric',
@@ -940,7 +948,7 @@ const chartStats = computed(() => {
             minute: '2-digit',
             second: '2-digit',
             hour12: false
-        }).replace(/\./g, ':')
+        })
     }
 
     if (rawStats.value) {
@@ -994,8 +1002,8 @@ const chartData = computed(() => {
     const formatLabelDate = (dStr) => {
         const date = new Date(dStr)
         if (isMultiDay.value) {
-            const dayMonth = date.toLocaleDateString('id-ID', { day: '2-digit', month: 'short' })
-            const time = date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
+            const dayMonth = date.toLocaleDateString('en-US', { day: '2-digit', month: 'short' })
+            const time = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })
             return `${dayMonth} ${time}`
         }
         
@@ -1007,10 +1015,11 @@ const chartData = computed(() => {
             if (diffMs <= 60 * 60 * 1000) showSecs = true
         }
 
-        return date.toLocaleTimeString('id-ID', { 
+        return date.toLocaleTimeString('en-US', { 
             hour: '2-digit', 
             minute: '2-digit', 
-            second: showSecs ? '2-digit' : undefined 
+            second: showSecs ? '2-digit' : undefined,
+            hour12: false
         })
     }
 
@@ -1153,7 +1162,7 @@ const chartOptions = computed(() => ({
                             if (diffMs <= 60 * 60 * 1000) showSecs = true
                         }
                         
-                        return date.toLocaleString('id-ID', {
+                        return date.toLocaleString('en-US', {
                             day: '2-digit',
                             month: 'short',
                             year: 'numeric',
@@ -1161,7 +1170,7 @@ const chartOptions = computed(() => ({
                             minute: '2-digit',
                             second: showSecs ? '2-digit' : undefined,
                             hour12: false
-                        }).replace(/\./g, ':')
+                        })
                     }
                     return tooltipItems[0].label
                 }
@@ -1224,19 +1233,19 @@ const exportCSV = async () => {
         } else if (timeRange.value !== 'custom') {
             params.range = timeRange.value
         } else {
-            alert('Silakan pilih rentang tanggal custom terlebih dahulu.')
+            alert('Please select a custom date range first.')
             return
         }
         
         const rawData = await $fetch(`/api/monitoring/history/${unitId}`, { params })
         if (!rawData || rawData.length === 0) {
-            alert('Tidak ada data raw untuk diexport pada rentang waktu ini.')
+            alert('No raw data available to export for this time range.')
             return
         }
         
         const rows = [['Timestamp', 'Measurement', 'Field', 'Value']]
         rawData.forEach(d => {
-            const time = new Date(d._time).toLocaleString('id-ID', {
+            const time = new Date(d._time).toLocaleString('en-US', {
                 year: 'numeric',
                 month: '2-digit',
                 day: '2-digit',
@@ -1244,7 +1253,7 @@ const exportCSV = async () => {
                 minute: '2-digit',
                 second: '2-digit',
                 hour12: false
-            }).replace(/\./g, ':')
+            })
             rows.push([`"${time}"`, `"${d._measurement || ''}"`, `"${d._field || ''}"`, d._value])
         })
         
@@ -1260,7 +1269,7 @@ const exportCSV = async () => {
         URL.revokeObjectURL(url)
     } catch (err) {
         console.error('Export CSV Error:', err)
-        alert('Gagal mengunduh data CSV raw.')
+        alert('Failed to export raw CSV data.')
     } finally {
         isExporting.value = false
     }
@@ -1364,12 +1373,29 @@ const exportCSV = async () => {
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    margin-bottom: var(--space-3);
+    margin-bottom: var(--space-4);
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .section-title {
-    font-weight: 500;
+    font-weight: 700;
     color: var(--text-main);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.section-title::before {
+    content: '';
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    background-color: var(--primary-500);
+    border-radius: 2px;
 }
 
 .icon-box {

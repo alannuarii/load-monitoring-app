@@ -65,7 +65,6 @@
       <!-- Battery Storage System Card -->
       <div class="card mb-6 p-6">
         <div class="section-header mb-4">
-          <span class="icon-box">🔋</span>
           <span class="section-title">Battery Storage System</span>
         </div>
         
@@ -108,7 +107,6 @@
       <!-- Weather Station Card -->
       <div class="card mb-6 p-6">
         <div class="section-header mb-4">
-          <span class="icon-box">🌤️</span>
           <span class="section-title">Weather Station</span>
         </div>
 
@@ -208,8 +206,8 @@
               <option v-for="r in timeRanges" :key="r.value" :value="r.value">{{ r.label }}</option>
             </select>
             <button class="btn-export" @click="exportCSV" :disabled="isExporting" title="Export CSV Data Raw">
-              <span v-if="isExporting">⏳ Exporting Raw...</span>
-              <span v-else>📥 Export CSV</span>
+              <span v-if="isExporting">Exporting Raw...</span>
+              <span v-else>Export CSV</span>
             </button>
           </div>
         </div>
@@ -218,14 +216,14 @@
          <div v-if="timeRange === 'custom'" class="custom-range-picker mb-4">
           <div class="flex items-center gap-4 flex-wrap">
             <div class="date-input-group">
-              <label class="text-sm text-gray-600">Dari:</label>
+              <label class="text-sm text-gray-600">From:</label>
               <input type="datetime-local" v-model="customStart" class="date-input" />
             </div>
             <div class="date-input-group">
-              <label class="text-sm text-gray-600">Sampai:</label>
+              <label class="text-sm text-gray-600">To:</label>
               <input type="datetime-local" v-model="customStop" class="date-input" />
             </div>
-            <button class="btn-apply" @click="fetchHistory">Terapkan</button>
+            <button class="btn-apply" @click="fetchHistory">Apply</button>
           </div>
         </div>
         
@@ -285,16 +283,16 @@ const hasData = computed(() => {
 
 // Time Range Options
 const timeRanges = [
-  { value: '-5m', label: '5 Menit' },
-  { value: '-15m', label: '15 Menit' },
-  { value: '-30m', label: '30 Menit' },
-  { value: '-1h', label: '1 Jam' },
-  { value: '-6h', label: '6 Jam' },
-  { value: '-1d', label: '1 Hari' },
-  { value: '-3d', label: '3 Hari' },
-  { value: '-7d', label: '7 Hari' },
-  { value: '-14d', label: '14 Hari' },
-  { value: '-30d', label: '30 Hari' },
+  { value: '-5m', label: '5 Minutes' },
+  { value: '-15m', label: '15 Minutes' },
+  { value: '-30m', label: '30 Minutes' },
+  { value: '-1h', label: '1 Hour' },
+  { value: '-6h', label: '6 Hours' },
+  { value: '-1d', label: '1 Day' },
+  { value: '-3d', label: '3 Days' },
+  { value: '-7d', label: '7 Days' },
+  { value: '-14d', label: '14 Days' },
+  { value: '-30d', label: '30 Days' },
   { value: 'custom', label: 'Custom...' }
 ]
 
@@ -421,10 +419,17 @@ onMounted(() => {
 // Helpers
 const updateDate = () => {
     const now = new Date()
-    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }
-    currentDate.value = now.toLocaleString('id-ID', options)
-        .replace(/\s*pukul\s*/gi, ' ')
-        .replace(/\./g, ':') + ' WITA'
+    const months = [
+        'January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'
+    ]
+    const day = now.getDate()
+    const month = months[now.getMonth()]
+    const year = now.getFullYear()
+    const hours = String(now.getHours()).padStart(2, '0')
+    const minutes = String(now.getMinutes()).padStart(2, '0')
+    const seconds = String(now.getSeconds()).padStart(2, '0')
+    currentDate.value = `${day} ${month} ${year} ${hours}:${minutes}:${seconds} (Local Time)`
 }
 
 const getValue = (dataset, fieldName) => {
@@ -592,19 +597,19 @@ const exportCSV = async () => {
         } else if (timeRange.value !== 'custom') {
             params.range = timeRange.value
         } else {
-            alert('Silakan pilih rentang tanggal custom terlebih dahulu.')
+            alert('Please select a custom date range first.')
             return
         }
         
         const rawData = await $fetch(`/api/monitoring/history/plts`, { params })
         if (!rawData || rawData.length === 0) {
-            alert('Tidak ada data raw untuk diexport pada rentang waktu ini.')
+            alert('No raw data available to export for this time range.')
             return
         }
         
         const rows = [['Timestamp', 'Measurement', 'Field', 'Value']]
         rawData.forEach(d => {
-            const time = new Date(d._time).toLocaleString('id-ID', {
+            const time = new Date(d._time).toLocaleString('en-US', {
                 year: 'numeric',
                 month: '2-digit',
                 day: '2-digit',
@@ -612,7 +617,7 @@ const exportCSV = async () => {
                 minute: '2-digit',
                 second: '2-digit',
                 hour12: false
-            }).replace(/\./g, ':')
+            })
             rows.push([`"${time}"`, `"${d._measurement || ''}"`, `"${d._field || ''}"`, d._value])
         })
         
@@ -628,7 +633,7 @@ const exportCSV = async () => {
         URL.revokeObjectURL(url)
     } catch (err) {
         console.error('Export CSV Error:', err)
-        alert('Gagal mengunduh data CSV raw.')
+        alert('Failed to export raw CSV data.')
     } finally {
         isExporting.value = false
     }
@@ -667,8 +672,34 @@ const exportCSV = async () => {
 .feeder-block { background: var(--bg-subtle); padding: var(--space-4); border-radius: var(--radius-md); border: 1px solid var(--border-color); }
 .feeder-title { font-size: 1rem; font-weight: 600; margin-bottom: var(--space-4); color: var(--text-main); text-align: center; }
 
-.section-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: var(--space-3); }
-.section-title { font-weight: 500; color: var(--text-main); }
+.section-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: var(--space-4);
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.section-title {
+    font-weight: 700;
+    color: var(--text-main);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.section-title::before {
+    content: '';
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    background-color: var(--primary-500);
+    border-radius: 2px;
+}
 .icon-box { width: 2rem; height: 2rem; display: flex; align-items: center; justify-content: center; background: var(--bg-card); border-radius: 0.375rem; font-size: 1rem; }
 
 .weather-metric { background: var(--bg-hover); padding: var(--space-3); border-radius: var(--radius-md); text-align: center; display: flex; flex-direction: column; justify-content: center; }

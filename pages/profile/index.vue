@@ -9,14 +9,14 @@
     <div class="pltd-summary-card">
       <!-- Left: Photo Placeholder -->
       <div class="pltd-photo-placeholder">
-        <span class="pltd-photo-icon">🏭</span>
+        <span class="pltd-photo-icon"></span>
         <span class="pltd-photo-text">Foto PLTD Tahuna</span>
       </div>
       
       <!-- Center: Info -->
       <div class="pltd-info">
         <h2 class="pltd-name">PLTD Tahuna</h2>
-        <p class="pltd-location">📍 Kabupaten Kepulauan Sangihe, Sulawesi Utara</p>
+        <p class="pltd-location">Kabupaten Kepulauan Sangihe, Sulawesi Utara</p>
         <div class="pltd-stats-grid">
           <div class="pltd-stat">
             <span class="pltd-stat-label">DAYA TERPASANG</span>
@@ -58,7 +58,7 @@
       >
         <div class="unit-card-image">
           <div class="unit-placeholder">
-            <span class="unit-placeholder-icon">🏭</span>
+            <span class="unit-placeholder-icon"></span>
           </div>
         </div>
         <div class="unit-card-body">
@@ -92,7 +92,7 @@
         <div class="modal-body" v-if="selectedUnit">
           <!-- Engine Section -->
           <div class="section-card">
-            <h4 class="section-title">⚙️ Data Mesin</h4>
+            <h4 class="section-title">Data Mesin</h4>
             <div class="specs-grid">
               <div class="spec-row">
                 <span class="spec-label">Merek</span>
@@ -131,7 +131,7 @@
 
           <!-- Generator Section -->
           <div class="section-card">
-            <h4 class="section-title">🔌 Data Generator</h4>
+            <h4 class="section-title">Data Generator</h4>
             <div class="specs-grid">
               <div class="spec-row">
                 <span class="spec-label">Merek</span>
@@ -172,7 +172,7 @@
 
           <!-- Transformer Section -->
           <div class="section-card">
-            <h4 class="section-title">🔋 Data Transformator</h4>
+            <h4 class="section-title">Data Transformator</h4>
             <div class="specs-grid">
               <div class="spec-row">
                 <span class="spec-label">Merek</span>
@@ -564,10 +564,26 @@ const selectUnit = (unit) => {
 }
 
 .section-title {
-  font-size: var(--font-size-base);
-  font-weight: 600;
+  font-size: 0.85rem;
+  font-weight: 700;
   color: var(--text-main);
   margin: 0 0 var(--space-3) 0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.section-title::before {
+  content: '';
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  background-color: var(--primary-500);
+  border-radius: 2px;
 }
 
 .specs-grid {

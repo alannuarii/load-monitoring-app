@@ -4,8 +4,8 @@
       src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" 
       alt="Google"
     />
-    <span v-if="isLoading">Memproses...</span>
-    <span v-else>Masuk dengan Google</span>
+    <span v-if="isLoading">Signing in...</span>
+    <span v-else>Sign in with Google</span>
   </button>
 </template>
 
