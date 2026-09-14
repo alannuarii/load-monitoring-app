@@ -12,9 +12,16 @@
 <script setup>
 const isLoading = ref(false)
 
-const handleGoogleLogin = () => {
+const handleGoogleLogin = async () => {
   isLoading.value = true
-  const { loginWithGoogle } = useAuth()
-  loginWithGoogle()
+  try {
+    const { loginWithGoogle } = useAuth()
+    await loginWithGoogle()
+  } finally {
+    // If redirect didn't happen immediately, we reset after a short delay
+    setTimeout(() => {
+      isLoading.value = false
+    }, 2000)
+  }
 }
 </script>

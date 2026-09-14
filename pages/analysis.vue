@@ -130,6 +130,7 @@
             <span>Drag to zoom · Scroll to zoom · Shift+Drag to pan</span>
           </div>
           <button v-if="hasData" class="btn-reset-zoom" @click="resetChartZoom" title="Reset Zoom">↩ Reset Zoom</button>
+          <button class="btn-export" @click="downloadChart" :disabled="!hasData">Download Chart</button>
           <button class="btn-export" @click="exportCSV" :disabled="!hasData">Export CSV</button>
         </div>
       </div>
@@ -755,6 +756,18 @@ const chartOptions = computed(() => {
     }
   }
 })
+
+const downloadChart = () => {
+  if (!chartComponentRef.value) return
+  const chartInstance = chartComponentRef.value.getChartInstance()
+  if (!chartInstance) return
+
+  const url = chartInstance.toBase64Image()
+  const link = document.createElement('a')
+  link.setAttribute('href', url)
+  link.setAttribute('download', `Analysis_Chart_${timeRange.value}.png`)
+  link.click()
+}
 
 const exportCSV = () => {
   const { timestamps, seriesPoints } = alignedData.value
