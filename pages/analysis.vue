@@ -72,6 +72,7 @@
             <select v-else-if="mode === 'PLTS'" v-model="series.unit" class="chip-select" @change="onUnitChange(series)">
               <option value="" disabled>Unit / Bagian</option>
               <option value="Combined-LVSW">Total LVSW</option>
+              <option value="Combined-IT">Total BSS</option>
               <option value="LVSW1">LVSW Feeder 1</option>
               <option value="LVSW2">LVSW Feeder 2</option>
               <option value="IT1">BSS Feeder 1</option>
@@ -291,44 +292,40 @@ const paramsUnit891 = [
   { label: 'Power Factor L3', value: 'Power Factor L3' }
 ]
 
+// Parameters for PLTS Feeders (LVSW1, LVSW2, IT1, IT2) - Excluding Energy
+const pltsFeederParams = [
+  { label: 'Active Power (kW)', value: 'Active Power' },
+  { label: 'Reactive Power (kVAR)', value: 'Reactive Power' },
+  { label: 'Power Factor', value: 'Power Factor' },
+  { label: 'Frequency (Hz)', value: 'Frequency' },
+  { label: 'Voltage L1-L2 (V)', value: 'Voltage L1 L2' },
+  { label: 'Voltage L2-L3 (V)', value: 'Voltage L2 L3' },
+  { label: 'Voltage L3-L1 (V)', value: 'Voltage L3 L1' },
+  { label: 'Voltage Average L-L (V)', value: 'Voltage' },
+  { label: 'Voltage L1-N (V)', value: 'Voltage L1 N' },
+  { label: 'Voltage L2-N (V)', value: 'Voltage L2 N' },
+  { label: 'Voltage L3-N (V)', value: 'Voltage L3 N' },
+  { label: 'Voltage Average L-N (V)', value: 'Voltage LN Avg' },
+  { label: 'Current L1 (A)', value: 'Current L1' },
+  { label: 'Current L2 (A)', value: 'Current L2' },
+  { label: 'Current L3 (A)', value: 'Current L3' },
+  { label: 'Current Average (A)', value: 'Current' }
+]
+
 // Parameters for PLTS by Section
 const pltsParamsMap = {
   'Combined-LVSW': [
     { label: 'Total Active Power (kW)', value: 'Active Power' },
     { label: 'Total Reactive Power (kVAR)', value: 'Reactive Power' }
   ],
-  'LVSW1': [
-    { label: 'Active Power (kW)', value: 'Active Power' },
-    { label: 'Reactive Power (kVAR)', value: 'Reactive Power' },
-    { label: 'Voltage (V)', value: 'Voltage' },
-    { label: 'Current (A)', value: 'Current' },
-    { label: 'Power Factor', value: 'Power Factor' },
-    { label: 'Frequency (Hz)', value: 'Frequency' }
+  'Combined-IT': [
+    { label: 'Total Active Power (kW)', value: 'Active Power' },
+    { label: 'Total Reactive Power (kVAR)', value: 'Reactive Power' }
   ],
-  'LVSW2': [
-    { label: 'Active Power (kW)', value: 'Active Power' },
-    { label: 'Reactive Power (kVAR)', value: 'Reactive Power' },
-    { label: 'Voltage (V)', value: 'Voltage' },
-    { label: 'Current (A)', value: 'Current' },
-    { label: 'Power Factor', value: 'Power Factor' },
-    { label: 'Frequency (Hz)', value: 'Frequency' }
-  ],
-  'IT1': [
-    { label: 'Active Power (kW)', value: 'Active Power' },
-    { label: 'Reactive Power (kVAR)', value: 'Reactive Power' },
-    { label: 'Voltage (V)', value: 'Voltage' },
-    { label: 'Current (A)', value: 'Current' },
-    { label: 'Power Factor', value: 'Power Factor' },
-    { label: 'Frequency (Hz)', value: 'Frequency' }
-  ],
-  'IT2': [
-    { label: 'Active Power (kW)', value: 'Active Power' },
-    { label: 'Reactive Power (kVAR)', value: 'Reactive Power' },
-    { label: 'Voltage (V)', value: 'Voltage' },
-    { label: 'Current (A)', value: 'Current' },
-    { label: 'Power Factor', value: 'Power Factor' },
-    { label: 'Frequency (Hz)', value: 'Frequency' }
-  ],
+  'LVSW1': pltsFeederParams,
+  'LVSW2': pltsFeederParams,
+  'IT1': pltsFeederParams,
+  'IT2': pltsFeederParams,
   'weather_station': [
     { label: 'Global Irradiance (W/m²)', value: 'Global Irradiance' },
     { label: 'Air Temperature (°C)', value: 'Air Temperature' },
@@ -392,6 +389,7 @@ const getAxisID = (param) => {
 
 const pltsSourceLabels = {
   'Combined-LVSW': 'Total LVSW',
+  'Combined-IT': 'Total BSS',
   'LVSW1': 'LVSW 1',
   'LVSW2': 'LVSW 2',
   'IT1': 'BSS 1',
@@ -1060,21 +1058,39 @@ const exportCSV = () => {
 }
 
 .btn-export {
-  padding: 0.3rem 0.75rem;
-  background: transparent;
-  color: var(--success);
-  border: 1px solid var(--success);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  padding: 0.4rem 0.85rem;
+  background: #2563eb;
+  color: #ffffff;
+  border: 1px solid #3b82f6;
   border-radius: var(--radius-sm);
   font-size: 0.8125rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.15s;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(37, 99, 235, 0.25);
   font-family: inherit;
 }
 .btn-export:hover:not(:disabled) {
-  background: var(--success);
-  color: #fff;
+  background: #1d4ed8;
+  border-color: #60a5fa;
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(29, 78, 216, 0.4);
 }
-.btn-export:disabled { opacity: 0.45; cursor: not-allowed; }
+.btn-export:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(37, 99, 235, 0.2);
+}
+.btn-export:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
 
 /* Chart Area */
 .chart-area {

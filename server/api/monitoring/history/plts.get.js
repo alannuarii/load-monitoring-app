@@ -15,108 +15,118 @@ export default defineEventHandler(async (event) => {
     const fieldParam = queryParams.field || 'Active Power'
     const fields = fieldParam.includes(',') ? fieldParam.split(',') : null
     const range = queryParams.range || '-30m'
+    const isRaw = queryParams.raw === 'true' || queryParams.raw === true
 
     // Support absolute time range
     const startTime = queryParams.start
     const stopTime = queryParams.stop
 
-    // Determine measurement based on field or explicit source param
-    // Since we have multiple sources (LVSW1, LVSW2, IT1, IT2, Weather), 
-    // we need to know which measurement to query.
-    // The frontend should pass a 'source' param, or we can infer it.
-    // Let's require a 'source' param for clarity.
-
-    const source = queryParams.source // 'LVSW1', 'LVSW2', 'IT1', 'IT2', 'weather_station', 'Combined-LVSW'
+    const source = queryParams.source
 
     if (!source) {
         throw createError({
             statusCode: 400,
-            message: 'Source parameter is required (LVSW1, LVSW2, IT1, IT2, weather_station, Combined-LVSW)'
+            message: 'Source parameter is required (Combined-LVSW, Compare-LVSW, Combined-IT, Compare-IT, LVSW1, LVSW2, IT1, IT2, weather_station)'
         })
     }
 
-    // Handle Combined-LVSW separately
-    if (source === 'Combined-LVSW') {
-        // We only support summing for now.
-        // Fetch LVSW1 and LVSW2 separately
-        let query1, query2
+    // Helper to calculate appropriate window for combined and comparison queries
+    const getCombinedWindow = () => {
+        if (startTime && stopTime) {
+            const diffHours = (new Date(stopTime) - new Date(startTime)) / (1000 * 60 * 60)
+            if (diffHours <= 0.2) return '5s'
+            if (diffHours <= 1) return '10s'
+            if (diffHours <= 6) return '1m'
+            if (diffHours <= 24) return '5m'
+            if (diffHours <= 168) return '15m'
+            return '1h'
+        }
+        const match = range.match(/-(\d+)([mhd])/)
+        if (!match) return '5s'
+        const val = parseInt(match[1])
+        const unit = match[2]
+        if (unit === 'm') return val <= 5 ? '5s' : '10s'
+        if (unit === 'h' && val <= 1) return '10s'
+        if (unit === 'h' && val <= 6) return '1m'
+        if (unit === 'h') return '5m'
+        if (unit === 'd' && val <= 1) return '5m'
+        if (unit === 'd' && val <= 7) return '15m'
+        if (unit === 'd' && val <= 14) return '1h'
+        return '2h'
+    }
+
+    const timeRangeFilter = startTime && stopTime
+        ? `range(start: ${startTime}, stop: ${stopTime})`
+        : `range(start: ${range})`
+
+    let query = ''
+
+    if (source === 'Combined-LVSW' || source === 'Combined-IT') {
+        const m1 = source === 'Combined-LVSW' ? 'LVSW1' : 'IT1'
+        const m2 = source === 'Combined-LVSW' ? 'LVSW2' : 'IT2'
+        const window = getCombinedWindow()
+
+        query = `
+            m1 = from(bucket: "${config.influxBucket}")
+              |> ${timeRangeFilter}
+              |> filter(fn: (r) => r._measurement == "${m1}" and r._field == "${fieldParam}")
+              |> aggregateWindow(every: ${window}, fn: mean, createEmpty: false)
+
+            m2 = from(bucket: "${config.influxBucket}")
+              |> ${timeRangeFilter}
+              |> filter(fn: (r) => r._measurement == "${m2}" and r._field == "${fieldParam}")
+              |> aggregateWindow(every: ${window}, fn: mean, createEmpty: false)
+
+            union(tables: [m1, m2])
+              |> group(columns: ["_time", "_field"])
+              |> sum()
+              |> group(columns: ["_field"])
+              |> yield(name: "combined")
+        `
+    } else if (source === 'Compare-LVSW' || source === 'Compare-IT') {
+        const m1 = source === 'Compare-LVSW' ? 'LVSW1' : 'IT1'
+        const m2 = source === 'Compare-LVSW' ? 'LVSW2' : 'IT2'
+        const label1 = source === 'Compare-LVSW' ? 'Feeder 1 (LVSW1)' : 'Feeder 1 (IT1)'
+        const label2 = source === 'Compare-LVSW' ? 'Feeder 2 (LVSW2)' : 'Feeder 2 (IT2)'
+        const window = getCombinedWindow()
+
+        query = `
+            m1 = from(bucket: "${config.influxBucket}")
+              |> ${timeRangeFilter}
+              |> filter(fn: (r) => r._measurement == "${m1}" and r._field == "${fieldParam}")
+              |> aggregateWindow(every: ${window}, fn: mean, createEmpty: false)
+              |> set(key: "_field", value: "${label1}")
+
+            m2 = from(bucket: "${config.influxBucket}")
+              |> ${timeRangeFilter}
+              |> filter(fn: (r) => r._measurement == "${m2}" and r._field == "${fieldParam}")
+              |> aggregateWindow(every: ${window}, fn: mean, createEmpty: false)
+              |> set(key: "_field", value: "${label2}")
+
+            union(tables: [m1, m2])
+              |> yield(name: "compare")
+        `
+    } else {
+        // Individual measurement (LVSW1, LVSW2, IT1, IT2, weather_station)
+        const measurementMap = {
+            'it1': 'IT1',
+            'it2': 'IT2',
+            'lvsw1': 'LVSW1',
+            'lvsw2': 'LVSW2',
+            'weather': 'weather_station',
+            'weather_station': 'weather_station'
+        }
+        const measurement = measurementMap[source.toLowerCase()] || source
 
         if (startTime && stopTime) {
-            query1 = fields
-                ? buildMultiFieldHistoryQueryAbsolute(config.influxBucket, 'LVSW1', fields, startTime, stopTime)
-                : buildHistoryQueryAbsolute(config.influxBucket, 'LVSW1', fieldParam, startTime, stopTime)
-            query2 = fields
-                ? buildMultiFieldHistoryQueryAbsolute(config.influxBucket, 'LVSW2', fields, startTime, stopTime)
-                : buildHistoryQueryAbsolute(config.influxBucket, 'LVSW2', fieldParam, startTime, stopTime)
+            query = fields
+                ? buildMultiFieldHistoryQueryAbsolute(config.influxBucket, measurement, fields, startTime, stopTime, isRaw)
+                : buildHistoryQueryAbsolute(config.influxBucket, measurement, fieldParam, startTime, stopTime, isRaw)
         } else {
-            query1 = fields
-                ? buildMultiFieldHistoryQuery(config.influxBucket, 'LVSW1', fields, range)
-                : buildHistoryQuery(config.influxBucket, 'LVSW1', fieldParam, range)
-            query2 = fields
-                ? buildMultiFieldHistoryQuery(config.influxBucket, 'LVSW2', fields, range)
-                : buildHistoryQuery(config.influxBucket, 'LVSW2', fieldParam, range)
+            query = fields
+                ? buildMultiFieldHistoryQuery(config.influxBucket, measurement, fields, range, isRaw)
+                : buildHistoryQuery(config.influxBucket, measurement, fieldParam, range, isRaw)
         }
-
-        try {
-            const [result1, result2] = await Promise.all([
-                queryInfluxDB(config, query1),
-                queryInfluxDB(config, query2)
-            ])
-
-            // Aggregate results
-            // We need to merge based on time. 
-            // Result structure: [{_time: ..., _value: ..., _field: ...}, ...]
-            // Map by time-field key
-            const map = new Map()
-
-            const processResult = (res) => {
-                res.forEach(row => {
-                    const key = `${row._time}_${row._field}`
-                    if (!map.has(key)) {
-                        map.set(key, { ...row }) // clone
-                    } else {
-                        const existing = map.get(key)
-                        // Sum values if numeric
-                        if (typeof row._value === 'number') {
-                            existing._value += row._value
-                        }
-                    }
-                })
-            }
-
-            processResult(result1)
-            processResult(result2)
-
-            return Array.from(map.values()).sort((a, b) => new Date(a._time) - new Date(b._time))
-
-        } catch (error) {
-            console.error('PLTS Combined Query Error:', error)
-            throw createError({ statusCode: 500, message: 'Failed to fetch combined PLTS data' })
-        }
-    }
-
-    // Map friendly names to actual measurement names if needed
-    const measurementMap = {
-        'it1': 'IT1',
-        'it2': 'IT2',
-        'lvsw1': 'LVSW1',
-        'lvsw2': 'LVSW2',
-        'weather': 'weather_station',
-        'weather_station': 'weather_station'
-    }
-
-    const measurement = measurementMap[source.toLowerCase()] || source
-
-    let query
-
-    if (startTime && stopTime) {
-        query = fields
-            ? buildMultiFieldHistoryQueryAbsolute(config.influxBucket, measurement, fields, startTime, stopTime)
-            : buildHistoryQueryAbsolute(config.influxBucket, measurement, fieldParam, startTime, stopTime)
-    } else {
-        query = fields
-            ? buildMultiFieldHistoryQuery(config.influxBucket, measurement, fields, range)
-            : buildHistoryQuery(config.influxBucket, measurement, fieldParam, range)
     }
 
     try {
@@ -126,7 +136,7 @@ export default defineEventHandler(async (event) => {
         console.error(`PLTS History API error (${source}):`, error)
         throw createError({
             statusCode: 500,
-            message: `Failed to fetch history for ${source}`
+            message: `Failed to fetch history for ${source}: ${error.message}`
         })
     }
 })
