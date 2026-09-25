@@ -1,11 +1,11 @@
 <template>
   <div class="chart-container">
-    <Line ref="chartRef" :data="chartData" :options="chartOptions" :plugins="chartPlugins" />
+    <Line v-if="isReady" ref="chartRef" :data="chartData" :options="chartOptions" :plugins="chartPlugins" />
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { Line } from 'vue-chartjs'
 import {
   Chart as ChartJS,
@@ -18,7 +18,6 @@ import {
   CategoryScale,
   Filler
 } from 'chart.js'
-import zoomPlugin from 'chartjs-plugin-zoom'
 
 ChartJS.register(
   Title,
@@ -28,11 +27,27 @@ ChartJS.register(
   LinearScale,
   PointElement,
   CategoryScale,
-  Filler,
-  zoomPlugin
+  Filler
 )
 
+let isZoomRegistered = false
+const isReady = ref(false)
 const chartRef = ref(null)
+
+onMounted(async () => {
+  if (typeof window !== 'undefined') {
+    if (!isZoomRegistered) {
+      try {
+        const zoomPlugin = (await import('chartjs-plugin-zoom')).default
+        ChartJS.register(zoomPlugin)
+        isZoomRegistered = true
+      } catch (e) {
+        console.error('Failed to load chartjs-plugin-zoom:', e)
+      }
+    }
+    isReady.value = true
+  }
+})
 
 const props = defineProps({
   chartData: {

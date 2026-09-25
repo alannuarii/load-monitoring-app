@@ -1733,6 +1733,9 @@ const exportCSV = async () => {
     background: var(--bg-hover);
     border-radius: var(--radius-md);
     padding: var(--space-4);
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
 }
 
 .section-header-row {
@@ -1850,14 +1853,16 @@ const exportCSV = async () => {
     display: grid;
     gap: 1.25rem;
     margin-top: 1rem;
+    width: 100%;
+    min-width: 0;
 }
 
 .grid-2-cols {
-    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
 }
 
 .grid-1-col {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
 }
 
 /* Feeder Box */
@@ -1870,12 +1875,17 @@ const exportCSV = async () => {
     display: flex;
     flex-direction: column;
     gap: 1rem;
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 .feeder-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
     padding-bottom: 0.5rem;
     border-bottom: 1px solid var(--border-color);
 }
@@ -1886,6 +1896,7 @@ const exportCSV = async () => {
     color: var(--text-main);
     text-transform: uppercase;
     letter-spacing: 0.05em;
+    line-height: 1.2;
 }
 
 /* Sub Card */
@@ -1894,6 +1905,8 @@ const exportCSV = async () => {
     border: 1px solid var(--border-color);
     padding: 0.85rem;
     border-radius: 0.5rem;
+    min-width: 0;
+    box-sizing: border-box;
 }
 
 .sub-card-title {
@@ -1911,10 +1924,12 @@ const exportCSV = async () => {
 .values-grid {
     display: grid;
     gap: var(--space-3);
+    min-width: 0;
 }
 
 .value-block {
     text-align: center;
+    min-width: 0;
 }
 
 .value-label {
@@ -1929,6 +1944,7 @@ const exportCSV = async () => {
     font-size: 1.05rem;
     font-weight: 600;
     color: var(--text-main);
+    word-break: break-word;
 }
 
 .value-number small {
@@ -1940,6 +1956,7 @@ const exportCSV = async () => {
 .pq-grid {
     display: grid;
     gap: var(--space-2);
+    min-width: 0;
 }
 
 .pq-item {
@@ -1948,6 +1965,8 @@ const exportCSV = async () => {
     border-radius: var(--radius-sm);
     padding: 0.5rem 0.25rem;
     text-align: center;
+    min-width: 0;
+    box-sizing: border-box;
 }
 
 .pq-label {
@@ -2115,6 +2134,27 @@ const exportCSV = async () => {
     .back-text, .divider-vertical { display: none; }
     .header-left-group { width: 100%; }
     
+    .card.p-6 {
+        padding: var(--space-4);
+    }
+
+    .detail-section {
+        padding: var(--space-3);
+    }
+
+    .feeders-container {
+        gap: 1rem;
+        margin-top: 0.75rem;
+    }
+
+    .grid-2-cols {
+        grid-template-columns: 1fr;
+    }
+
+    .feeder-box {
+        padding: 0.875rem;
+    }
+
     .metrics-grid { grid-template-columns: 1fr; }
     .energy-summary-grid { grid-template-columns: 1fr; }
     
@@ -2186,6 +2226,11 @@ const exportCSV = async () => {
 
     .values-grid {
         grid-template-columns: repeat(2, 1fr) !important;
+        gap: var(--space-2);
+    }
+
+    .value-number {
+        font-size: 0.95rem;
     }
 }
 </style>
