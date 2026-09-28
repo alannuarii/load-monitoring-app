@@ -4,7 +4,7 @@
     <div class="page-header mb-6">
       <div class="header-top-row">
         <div class="header-left-group">
-          <NuxtLink to="/plts" class="btn-back" title="Kembali ke Halaman PLTS">
+          <NuxtLink to="/plts" class="btn-back" title="Back to PLTS Page">
             <span class="icon">←</span>
           </NuxtLink>
           <div class="divider-vertical"></div>
@@ -58,26 +58,26 @@
       <div class="card mb-6 p-6">
         <div class="section-header-row mb-6">
           <div class="section-header m-0 p-0" style="border: none;">
-            <span class="section-title">Ringkasan Bank BSS Feeder {{ feederParam }}</span>
+            <span class="section-title">BSS Bank Summary - Feeder {{ feederParam }}</span>
           </div>
           <div class="flex items-center gap-2">
             <span class="status-badge bg-success">{{ summary.onlineCount }} / {{ summary.totalModules }} ONLINE</span>
-            <span v-if="summary.offlineCount > 0" class="status-badge bg-warning">{{ summary.offlineCount }} PEMELIHARAAN</span>
+            <span v-if="summary.offlineCount > 0" class="status-badge bg-warning">{{ summary.offlineCount }} MAINTENANCE</span>
           </div>
         </div>
 
         <!-- Metrics Grid (5 Columns) -->
         <div class="metrics-grid-5 mb-2">
           <div class="metric-card">
-            <span class="metric-label">Rata-rata SOC Bank</span>
+            <span class="metric-label">Average Bank SOC</span>
             <span class="metric-value-primary">{{ formatValue(summary.avgSoc, 1) }} <small>%</small></span>
           </div>
           <div class="metric-card">
-            <span class="metric-label">Rata-rata SOH Bank</span>
+            <span class="metric-label">Average Bank SOH</span>
             <span class="metric-value-primary">{{ formatValue(summary.avgSoh, 1) }} <small>%</small></span>
           </div>
           <div class="metric-card">
-            <span class="metric-label">Tegangan Rata-rata Pack</span>
+            <span class="metric-label">Average Pack Voltage</span>
             <span class="metric-value-primary">{{ formatValue(summary.avgVoltage, 2) }} <small>V</small></span>
           </div>
           <div class="metric-card">
@@ -93,7 +93,7 @@
             </span>
           </div>
           <div class="metric-card">
-            <span class="metric-label">Suhu Modul Tertinggi</span>
+            <span class="metric-label">Max Module Temperature</span>
             <span 
               class="metric-value-primary"
               :class="{ 'text-warning': summary.maxTemp >= 40 }"
@@ -108,8 +108,8 @@
       <div class="card mb-6 p-6">
         <div class="section-header-row mb-4">
           <div class="section-header m-0 p-0" style="border: none;">
-            <span class="section-title">Rack Matrix (88 Modul BMS)</span>
-            <span class="text-xs text-muted ml-2">Pilih salah satu modul untuk melihat rincian telemetri dan grafik</span>
+            <span class="section-title">BMS Rack Matrix (88 Modules)</span>
+            <span class="text-xs text-muted ml-2">Select a module to view telemetry details and historical charts</span>
           </div>
 
           <!-- Matrix Filters -->
@@ -119,7 +119,7 @@
               :class="{ active: matrixFilter === 'all' }" 
               @click="matrixFilter = 'all'"
             >
-              Semua ({{ modules.length }})
+              All ({{ modules.length }})
             </button>
             <button 
               class="btn-filter" 
@@ -133,14 +133,14 @@
               :class="{ active: matrixFilter === 'offline' }" 
               @click="matrixFilter = 'offline'"
             >
-              Pemeliharaan ({{ summary.offlineCount }})
+              Maintenance ({{ summary.offlineCount }})
             </button>
             <button 
               class="btn-filter btn-filter-warning" 
               :class="{ active: matrixFilter === 'warning' }" 
               @click="matrixFilter = 'warning'"
             >
-              Perhatian ({{ warningModulesCount }})
+              Attention ({{ warningModulesCount }})
             </button>
           </div>
         </div>
@@ -181,7 +181,7 @@
         <div class="section-header-row mb-6">
           <div class="section-header m-0 p-0" style="border: none;">
             <span class="section-title">
-              Detail Telemetri: {{ selectedModule.moduleName }} (Feeder {{ feederParam }} - BMS #{{ selectedModule.feederIndex }})
+              Telemetry Details: {{ selectedModule.moduleName }} (Feeder {{ feederParam }} - BMS #{{ selectedModule.feederIndex }})
             </span>
           </div>
           <div class="flex items-center gap-3">
@@ -192,9 +192,9 @@
             <button 
               class="btn-close-detail" 
               @click="closeDetail" 
-              title="Tutup Detail Telemetri"
+              title="Close Telemetry Details"
             >
-              ✕ Tutup
+              ✕ Close
             </button>
           </div>
         </div>
@@ -203,7 +203,7 @@
           <!-- Module Pack Metrics -->
           <div class="metrics-grid mb-6">
             <div class="metric-card">
-              <span class="metric-label">Tegangan Pack</span>
+              <span class="metric-label">Pack Voltage</span>
               <span class="metric-value-primary">{{ formatValue(selectedModule.voltage, 2) }} <small>V</small></span>
             </div>
             <div class="metric-card">
@@ -223,7 +223,7 @@
               <span class="metric-value-primary">{{ formatValue(selectedModule.soh, 0) }} <small>%</small></span>
             </div>
             <div class="metric-card">
-              <span class="metric-label">Kapasitas</span>
+              <span class="metric-label">Capacity</span>
               <span class="metric-value-primary">{{ formatValueWithComma(selectedModule.capacity, 0) }} <small>mAh</small></span>
             </div>
           </div>
@@ -232,18 +232,18 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
             <!-- Temperatures Sub-Card -->
             <div class="sub-card">
-              <h5 class="sub-card-title">Titik Sensor Suhu</h5>
+              <h5 class="sub-card-title">Temperature Sensors</h5>
               <div class="values-grid" style="grid-template-columns: repeat(3, 1fr);">
                 <div class="value-block">
-                  <span class="value-label">Modul</span>
+                  <span class="value-label">Module</span>
                   <span class="value-number">{{ formatValue(selectedModule.tempModule, 1) }} <small>°C</small></span>
                 </div>
                 <div class="value-block">
-                  <span class="value-label">Baterai Kiri</span>
+                  <span class="value-label">Left Battery</span>
                   <span class="value-number">{{ formatValue(selectedModule.tempLeft, 1) }} <small>°C</small></span>
                 </div>
                 <div class="value-block">
-                  <span class="value-label">Baterai Kanan</span>
+                  <span class="value-label">Right Battery</span>
                   <span class="value-number">{{ formatValue(selectedModule.tempRight, 1) }} <small>°C</small></span>
                 </div>
               </div>
@@ -251,22 +251,22 @@
 
             <!-- Cell Balance Summary Sub-Card -->
             <div class="sub-card">
-              <h5 class="sub-card-title">Statistik Keseimbangan Sel (Balancing)</h5>
+              <h5 class="sub-card-title">Cell Balance Statistics</h5>
               <div class="values-grid" style="grid-template-columns: repeat(3, 1fr);">
                 <div class="value-block">
-                  <span class="value-label">Sel Terendah (Min)</span>
+                  <span class="value-label">Min Cell Voltage</span>
                   <span class="value-number text-info">
                     {{ formatValue(selectedModule.cellMin, 3) }} <small>V</small>
                   </span>
                 </div>
                 <div class="value-block">
-                  <span class="value-label">Sel Tertinggi (Max)</span>
+                  <span class="value-label">Max Cell Voltage</span>
                   <span class="value-number text-success">
                     {{ formatValue(selectedModule.cellMax, 3) }} <small>V</small>
                   </span>
                 </div>
                 <div class="value-block">
-                  <span class="value-label">Delta (Selisih Sel)</span>
+                  <span class="value-label">Cell Delta (Imbalance)</span>
                   <span 
                     class="value-number"
                     :class="{
@@ -285,11 +285,11 @@
           <div class="detail-section">
             <div class="section-header-row mb-4">
               <div class="section-header m-0 p-0" style="border: none;">
-                <span class="section-title">Visualisasi 16 Sel Baterai (Cell 01 – 16)</span>
+                <span class="section-title">16-Cell Battery Visualizer (Cell 01 – 16)</span>
               </div>
               <div class="flex items-center gap-3 text-xs">
-                <span class="badge-legend badge-min">■ Sel Min: {{ formatValue(selectedModule.cellMin, 3) }}V</span>
-                <span class="badge-legend badge-max">■ Sel Max: {{ formatValue(selectedModule.cellMax, 3) }}V</span>
+                <span class="badge-legend badge-min">■ Min Cell: {{ formatValue(selectedModule.cellMin, 3) }}V</span>
+                <span class="badge-legend badge-max">■ Max Cell: {{ formatValue(selectedModule.cellMax, 3) }}V</span>
               </div>
             </div>
 
@@ -310,7 +310,7 @@
                 <!-- Relative height bar (based on 3.0V to 3.6V scale) -->
                 <div class="cell-gauge-track">
                   <div 
-                    class="cell-gauge-fill"
+                    class="cell-gauge-fill" 
                     :style="{ width: getCellGaugePercent(cellVal) }"
                     :class="{
                       'fill-min': cellVal === selectedModule.cellMin,
@@ -324,7 +324,7 @@
         </template>
         <template v-else>
           <div class="text-center py-8 text-muted">
-            <p>Modul ini sedang offline atau dalam masa pemeliharaan (tidak merespons query Modbus TCP).</p>
+            <p>This module is currently offline or under maintenance (no Modbus TCP response).</p>
           </div>
         </template>
       </div>
@@ -337,17 +337,17 @@
           <div class="flex items-center gap-4">
             <label class="text-sm text-gray-600">Parameter:</label>
             <select v-model="activeChartField" class="param-select" @change="fetchHistory">
-              <optgroup label="Tingkat Modul (Pack Level)">
+              <optgroup label="Pack Level">
                 <option value="soc">State of Charge (SOC)</option>
                 <option value="voltage">Pack Voltage</option>
                 <option value="cell_delta">Cell Delta / Imbalance</option>
-                <option value="temp_module">Suhu Modul</option>
-                <option value="temp_battery_left">Suhu Baterai Kiri</option>
-                <option value="temp_battery_right">Suhu Baterai Kanan</option>
+                <option value="temp_module">Module Temperature</option>
+                <option value="temp_battery_left">Left Battery Temperature</option>
+                <option value="temp_battery_right">Right Battery Temperature</option>
               </optgroup>
-              <optgroup label="Tingkat Sel Baterai">
-                <option value="all-cells">Perbandingan 16 Sel Baterai (Multi-Line)</option>
-                <option value="cell-summary">Sel Min vs Sel Max vs Sel Rata-rata</option>
+              <optgroup label="Battery Cell Level">
+                <option value="all-cells">16 Cells Comparison (Multi-Line)</option>
+                <option value="cell-summary">Min vs Max vs Average Cell</option>
               </optgroup>
             </select>
           </div>
@@ -534,11 +534,11 @@ const chartFieldMap = {
     'soc': { label: 'State of Charge (SOC)', unit: '%', field: 'soc', color: '#10b981', isMulti: false },
     'voltage': { label: 'Pack Voltage', unit: 'V', field: 'voltage', color: '#3b82f6', isMulti: false },
     'cell_delta': { label: 'Cell Delta Imbalance', unit: 'V', field: 'cell_delta', color: '#f59e0b', isMulti: false },
-    'temp_module': { label: 'Suhu Modul', unit: '°C', field: 'temp_module', color: '#ef4444', isMulti: false },
-    'temp_battery_left': { label: 'Suhu Baterai Kiri', unit: '°C', field: 'temp_battery_left', color: '#8b5cf6', isMulti: false },
-    'temp_battery_right': { label: 'Suhu Baterai Kanan', unit: '°C', field: 'temp_battery_right', color: '#ec4899', isMulti: false },
+    'temp_module': { label: 'Module Temperature', unit: '°C', field: 'temp_module', color: '#ef4444', isMulti: false },
+    'temp_battery_left': { label: 'Left Battery Temperature', unit: '°C', field: 'temp_battery_left', color: '#8b5cf6', isMulti: false },
+    'temp_battery_right': { label: 'Right Battery Temperature', unit: '°C', field: 'temp_battery_right', color: '#ec4899', isMulti: false },
     'all-cells': {
-        label: 'Tegangan 16 Sel Baterai',
+        label: '16-Cell Battery Voltages',
         unit: 'V',
         isMulti: true,
         fields: Array.from({ length: 16 }, (_, i) => `v_cell_${String(i + 1).padStart(2, '0')}`),
@@ -550,7 +550,7 @@ const chartFieldMap = {
         ]
     },
     'cell-summary': {
-        label: 'Ringkasan Sel (Min vs Max vs Rata-rata)',
+        label: 'Cell Voltage Summary (Min vs Max vs Avg)',
         unit: 'V',
         isMulti: true,
         fields: ['v_cell_min', 'v_cell_avg', 'v_cell_max'],
