@@ -62,7 +62,6 @@
           </div>
           <div class="flex items-center gap-2">
             <span class="status-badge bg-success">{{ summary.onlineCount }} / {{ summary.totalModules }} ONLINE</span>
-            <span v-if="summary.offlineCount > 0" class="status-badge bg-warning">{{ summary.offlineCount }} MAINTENANCE</span>
           </div>
         </div>
 
@@ -133,7 +132,7 @@
               :class="{ active: matrixFilter === 'offline' }" 
               @click="matrixFilter = 'offline'"
             >
-              Maintenance ({{ summary.offlineCount }})
+              Offline ({{ summary.offlineCount }})
             </button>
             <button 
               class="btn-filter btn-filter-warning" 
@@ -187,7 +186,7 @@
           <div class="flex items-center gap-3">
             <span class="text-xs text-muted font-mono">IP: {{ selectedModule.ip }}</span>
             <span class="status-badge" :class="selectedModule.online ? 'bg-success' : 'bg-warning'">
-              {{ selectedModule.online ? 'OPERATING' : 'MAINTENANCE' }}
+              {{ selectedModule.online ? 'OPERATING' : 'OFFLINE' }}
             </span>
             <button 
               class="btn-close-detail" 
