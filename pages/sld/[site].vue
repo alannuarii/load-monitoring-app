@@ -1,8 +1,31 @@
 <template>
   <div class="animate-fade-in">
+    <!-- Page Header with Site Switcher -->
     <div class="page-header">
-      <h1 class="page-title">Single Line Diagram</h1>
-      <p class="page-subtitle">PLTD Tahuna</p>
+      <div class="header-top-row">
+        <div class="header-title-group">
+          <h1 class="page-title">Single Line Diagram</h1>
+          <p class="page-subtitle">{{ currentSite.name }}</p>
+        </div>
+
+        <!-- Site Switcher Tabs -->
+        <div class="site-toggle-bar">
+          <NuxtLink 
+            to="/sld/tahuna" 
+            class="btn-site-tab" 
+            :class="{ active: currentSiteKey === 'tahuna' }"
+          >
+            PLTD Tahuna
+          </NuxtLink>
+          <NuxtLink 
+            to="/sld/sangihe" 
+            class="btn-site-tab" 
+            :class="{ active: currentSiteKey === 'sangihe' }"
+          >
+            PLTS Sangihe
+          </NuxtLink>
+        </div>
+      </div>
     </div>
 
     <div class="sld-viewer">
@@ -52,8 +75,8 @@
       >
         <img 
           ref="sldImage"
-          src="/images/sld_tahuna.png" 
-          alt="Single Line Diagram PLTD Tahuna"
+          :src="currentSite.image" 
+          :alt="currentSite.alt"
           class="sld-image"
           :style="imageStyle"
           @dragstart.prevent
@@ -61,7 +84,7 @@
       </div>
 
       <div class="sld-update-info">
-        <p><em>Terakhir diperbarui: 19 September 2025</em></p>
+        <p><em>{{ currentSite.updated }}</em></p>
       </div>
 
       <div class="sld-instructions">
@@ -73,6 +96,37 @@
 </template>
 
 <script setup>
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
+import { useRoute } from 'vue-router'
+
+const route = useRoute()
+
+// Sites configuration
+const sites = {
+  tahuna: {
+    id: 'tahuna',
+    name: 'PLTD Tahuna',
+    image: '/images/sld_tahuna.png',
+    alt: 'Single Line Diagram PLTD Tahuna',
+    updated: 'Terakhir diperbarui: 19 September 2025'
+  },
+  sangihe: {
+    id: 'sangihe',
+    name: 'PLTS Sangihe',
+    image: '/images/sld_sangihe.png',
+    alt: 'Single Line Diagram PLTS Sangihe',
+    updated: 'Terakhir diperbarui: 28 September 2026'
+  }
+}
+
+const currentSiteKey = computed(() => {
+  const param = String(route.params.site || '').toLowerCase()
+  return param === 'sangihe' ? 'sangihe' : 'tahuna'
+})
+
+const currentSite = computed(() => sites[currentSiteKey.value])
+
+// Viewer State
 const imageContainer = ref(null)
 const sldImage = ref(null)
 const scale = ref(1)
@@ -101,7 +155,7 @@ const zoomOut = () => {
 }
 
 const resetZoom = () => {
-  scale.value = 1
+  scale.value = window.innerWidth <= 768 ? 0.8 : 1
   translateX.value = 0
   translateY.value = 0
 }
@@ -149,11 +203,9 @@ const getDistance = (touch1, touch2) => {
 
 const handleTouchStart = (e) => {
   if (e.touches.length === 2) {
-    // Pinch zoom
     initialDistance.value = getDistance(e.touches[0], e.touches[1])
     initialScale.value = scale.value
   } else if (e.touches.length === 1) {
-    // Pan
     isDragging.value = true
     startX.value = e.touches[0].clientX - translateX.value
     startY.value = e.touches[0].clientY - translateY.value
@@ -164,12 +216,10 @@ const handleTouchMove = (e) => {
   e.preventDefault()
   
   if (e.touches.length === 2) {
-    // Pinch zoom
     const currentDistance = getDistance(e.touches[0], e.touches[1])
     const scaleChange = currentDistance / initialDistance.value
     scale.value = Math.min(Math.max(initialScale.value * scaleChange, 0.5), 5)
   } else if (e.touches.length === 1 && isDragging.value) {
-    // Pan
     translateX.value = e.touches[0].clientX - startX.value
     translateY.value = e.touches[0].clientY - startY.value
   }
@@ -179,16 +229,24 @@ const handleTouchEnd = () => {
   isDragging.value = false
 }
 
-// Listen for fullscreen changes
+const handleFullscreenChange = () => {
+  isFullscreen.value = !!document.fullscreenElement
+}
+
+// Reset viewer on route change between sites
+watch(() => route.params.site, () => {
+  resetZoom()
+})
+
 onMounted(() => {
-  document.addEventListener('fullscreenchange', () => {
-    isFullscreen.value = !!document.fullscreenElement
-  })
-  
-  // Set initial scale for mobile
+  document.addEventListener('fullscreenchange', handleFullscreenChange)
   if (window.innerWidth <= 768) {
     scale.value = 0.8
   }
+})
+
+onUnmounted(() => {
+  document.removeEventListener('fullscreenchange', handleFullscreenChange)
 })
 </script>
 
@@ -196,6 +254,19 @@ onMounted(() => {
 /* Page Header */
 .page-header {
   margin-bottom: var(--space-4);
+}
+
+.header-top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+}
+
+.header-title-group {
+  display: flex;
+  flex-direction: column;
 }
 
 .page-title {
@@ -208,7 +279,51 @@ onMounted(() => {
 .page-subtitle {
   font-size: 0.95rem;
   color: var(--text-muted);
-  margin: 0 0 var(--space-4) 0;
+  margin: 0;
+}
+
+/* Site Switcher Toggle Bar */
+.site-toggle-bar {
+  display: inline-flex;
+  background: var(--bg-hover);
+  padding: 0.25rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  gap: 0.25rem;
+}
+
+.btn-site-tab {
+  padding: 0.4rem 0.9rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: transparent;
+  border: none;
+  border-radius: calc(var(--radius-md) - 2px);
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+}
+
+.btn-site-tab:hover {
+  color: var(--text-main);
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.btn-site-tab.active {
+  color: var(--primary-600);
+  background: var(--bg-card);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.dark-mode .btn-site-tab:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.dark-mode .btn-site-tab.active {
+  color: #38bdf8;
+  background: #1e293b;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
 }
 
 /* SLD Viewer */
@@ -276,7 +391,7 @@ onMounted(() => {
   width: 100%;
   height: 70vh;
   overflow: hidden;
-  background: var(--bg-main);
+  background: var(--bg-main, #f8fafc);
   border-radius: var(--radius-lg);
   border: 2px solid var(--border-color);
   display: flex;
@@ -345,6 +460,22 @@ onMounted(() => {
     font-size: 0.875rem;
   }
 
+  .header-top-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-3);
+  }
+
+  .site-toggle-bar {
+    width: 100%;
+    display: flex;
+  }
+
+  .btn-site-tab {
+    flex: 1;
+    text-align: center;
+  }
+
   .sld-viewer {
     padding: var(--space-3);
   }
@@ -388,9 +519,7 @@ onMounted(() => {
 }
 
 /* Dark mode specific adjustments */
-@media (prefers-color-scheme: dark) {
-  .sld-image-container {
-    background: var(--gray-900);
-  }
+.dark-mode .sld-image-container {
+  background: var(--gray-900, #0f172a);
 }
 </style>

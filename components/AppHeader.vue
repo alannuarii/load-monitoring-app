@@ -20,9 +20,37 @@
         <NuxtLink to="/profile" class="nav-link" :class="{ active: route.path === '/profile' }">
           Profile
         </NuxtLink>
-        <NuxtLink to="/sld" class="nav-link" :class="{ active: route.path === '/sld' }">
-          SLD
-        </NuxtLink>
+        <!-- SLD Dropdown Menu -->
+        <div class="sld-dropdown" :class="{ open: isSldDropdownOpen }">
+          <button 
+            type="button"
+            class="nav-link sld-nav-btn" 
+            :class="{ active: isSldActive, open: isSldDropdownOpen }"
+            @click.stop="toggleSldDropdown"
+          >
+            <span>SLD</span>
+            <span class="dropdown-arrow" :class="{ rotated: isSldDropdownOpen }">▼</span>
+          </button>
+          
+          <div class="sld-dropdown-menu">
+            <NuxtLink 
+              to="/sld/tahuna" 
+              class="sld-dropdown-item" 
+              :class="{ active: route.path === '/sld/tahuna' || route.path === '/sld' }"
+              @click="closeSldDropdown"
+            >
+              PLTD Tahuna
+            </NuxtLink>
+            <NuxtLink 
+              to="/sld/sangihe" 
+              class="sld-dropdown-item" 
+              :class="{ active: route.path === '/sld/sangihe' }"
+              @click="closeSldDropdown"
+            >
+              PLTS Sangihe
+            </NuxtLink>
+          </div>
+        </div>
         <NuxtLink to="/analysis" class="nav-link" :class="{ active: route.path === '/analysis' }">
           Analysis
         </NuxtLink>
@@ -94,8 +122,27 @@
       <NuxtLink to="/profile" class="mobile-nav-link" :class="{ active: route.path === '/profile' }" @click="closeMobileMenu">
         Profile
       </NuxtLink>
-      <NuxtLink to="/sld" class="mobile-nav-link" :class="{ active: route.path === '/sld' }" @click="closeMobileMenu">
-        SLD
+      <div class="mobile-nav-section">
+        <div class="mobile-nav-section-title">Single Line Diagram (SLD)</div>
+        <NuxtLink 
+          to="/sld/tahuna" 
+          class="mobile-nav-link mobile-sublink" 
+          :class="{ active: route.path === '/sld/tahuna' || route.path === '/sld' }" 
+          @click="closeMobileMenu"
+        >
+          PLTD Tahuna
+        </NuxtLink>
+        <NuxtLink 
+          to="/sld/sangihe" 
+          class="mobile-nav-link mobile-sublink" 
+          :class="{ active: route.path === '/sld/sangihe' }" 
+          @click="closeMobileMenu"
+        >
+          PLTS Sangihe
+        </NuxtLink>
+      </div>
+      <NuxtLink to="/analysis" class="mobile-nav-link" :class="{ active: route.path === '/analysis' }" @click="closeMobileMenu">
+        Analysis
       </NuxtLink>
       <div class="mobile-nav-divider"></div>
       <button class="mobile-nav-link danger" @click="handleLogout">
@@ -110,7 +157,12 @@ const route = useRoute()
 const { user, logout } = useAuth()
 const { isDark, toggleTheme } = useTheme()
 const isDropdownOpen = ref(false)
+const isSldDropdownOpen = ref(false)
 const isMobileMenuOpen = ref(false)
+
+const isSldActive = computed(() => {
+  return route.path.startsWith('/sld')
+})
 
 const toggleMobileMenu = () => {
   isMobileMenuOpen.value = !isMobileMenuOpen.value
@@ -122,6 +174,20 @@ const closeMobileMenu = () => {
 
 const toggleDropdown = () => {
   isDropdownOpen.value = !isDropdownOpen.value
+  if (isDropdownOpen.value) {
+    isSldDropdownOpen.value = false
+  }
+}
+
+const toggleSldDropdown = () => {
+  isSldDropdownOpen.value = !isSldDropdownOpen.value
+  if (isSldDropdownOpen.value) {
+    isDropdownOpen.value = false
+  }
+}
+
+const closeSldDropdown = () => {
+  isSldDropdownOpen.value = false
 }
 
 const handleLogout = async () => {
@@ -134,6 +200,9 @@ onMounted(() => {
   document.addEventListener('click', (e) => {
     if (!e.target.closest('.user-dropdown')) {
       isDropdownOpen.value = false
+    }
+    if (!e.target.closest('.sld-dropdown')) {
+      isSldDropdownOpen.value = false
     }
   })
 })
@@ -385,6 +454,100 @@ onMounted(() => {
 .dropdown-arrow {
   font-size: 10px;
   opacity: 0.5;
+  transition: transform var(--transition-fast);
+  display: inline-block;
+}
+
+.dropdown-arrow.rotated {
+  transform: rotate(180deg);
+}
+
+/* SLD Dropdown Menu */
+.sld-dropdown {
+  position: relative;
+  display: inline-flex;
+}
+
+.sld-nav-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: inherit;
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.sld-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) translateY(-10px);
+  min-width: 170px;
+  background: var(--bg-dropdown);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xl);
+  border: 1px solid var(--border-color);
+  padding: var(--space-2);
+  opacity: 0;
+  visibility: hidden;
+  transition: all var(--transition-base);
+  z-index: 200;
+}
+
+.sld-dropdown.open .sld-dropdown-menu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
+.sld-dropdown-item {
+  display: block;
+  padding: 0.6rem 1rem;
+  font-size: var(--font-size-sm);
+  color: var(--text-main);
+  text-decoration: none;
+  font-weight: 500;
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.sld-dropdown-item:hover {
+  background: var(--bg-hover);
+  color: var(--primary-600);
+}
+
+.sld-dropdown-item.active {
+  background: var(--primary-50);
+  color: var(--primary-700);
+  font-weight: 600;
+}
+
+.is-dark .sld-dropdown-item.active {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--primary-300);
+}
+
+/* Mobile SLD items */
+.mobile-nav-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.mobile-nav-section-title {
+  padding: var(--space-2) var(--space-4) var(--space-1) var(--space-4);
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+}
+
+.mobile-sublink {
+  padding-left: calc(var(--space-4) + var(--space-3));
+  font-size: var(--font-size-sm);
 }
 
 /* Dropdown menu */
