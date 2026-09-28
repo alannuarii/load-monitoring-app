@@ -512,9 +512,14 @@
                   <span class="feeder-name">Feeder 1 (IT1)</span>
                   <span class="status-badge" :class="it1_status.badgeClass">{{ it1_status.text }}</span>
                 </div>
-                <div class="flex items-center gap-2">
-                  <span class="text-xs text-muted">PQ:</span>
-                  <span class="overall-status-badge" :class="it1_overallPQ.class">{{ it1_overallPQ.status }}</span>
+                <div class="flex items-center gap-3">
+                  <NuxtLink to="/plts/bms/1" class="btn-bms-link">
+                    BMS Feeder 1 (88 Modul) →
+                  </NuxtLink>
+                  <div class="flex items-center gap-2">
+                    <span class="text-xs text-muted">PQ:</span>
+                    <span class="overall-status-badge" :class="it1_overallPQ.class">{{ it1_overallPQ.status }}</span>
+                  </div>
                 </div>
               </div>
 
@@ -670,9 +675,14 @@
                   <span class="feeder-name">Feeder 2 (IT2)</span>
                   <span class="status-badge" :class="it2_status.badgeClass">{{ it2_status.text }}</span>
                 </div>
-                <div class="flex items-center gap-2">
-                  <span class="text-xs text-muted">PQ:</span>
-                  <span class="overall-status-badge" :class="it2_overallPQ.class">{{ it2_overallPQ.status }}</span>
+                <div class="flex items-center gap-3">
+                  <NuxtLink to="/plts/bms/2" class="btn-bms-link">
+                    BMS Feeder 2 (88 Modul) →
+                  </NuxtLink>
+                  <div class="flex items-center gap-2">
+                    <span class="text-xs text-muted">PQ:</span>
+                    <span class="overall-status-badge" :class="it2_overallPQ.class">{{ it2_overallPQ.status }}</span>
+                  </div>
                 </div>
               </div>
 
@@ -1846,6 +1856,28 @@ const exportCSV = async () => {
     background: var(--primary-500);
     color: white;
     box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.btn-bms-link {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.65rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--primary-600);
+    background: rgba(57, 148, 176, 0.1);
+    border: 1px solid rgba(57, 148, 176, 0.25);
+    border-radius: var(--radius-sm);
+    text-decoration: none;
+    transition: all 0.15s ease-in-out;
+    white-space: nowrap;
+}
+
+.btn-bms-link:hover {
+    background: var(--primary-600);
+    color: #ffffff;
+    border-color: var(--primary-600);
+    transform: translateX(2px);
 }
 
 /* Feeders Container */
