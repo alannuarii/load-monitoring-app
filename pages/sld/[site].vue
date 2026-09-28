@@ -115,7 +115,7 @@ const sites = {
     name: 'PLTS Sangihe',
     image: '/images/sld_sangihe.png',
     alt: 'Single Line Diagram PLTS Sangihe',
-    updated: 'Terakhir diperbarui: 28 September 2026'
+    updated: 'Terakhir diperbarui: -'
   }
 }
 
