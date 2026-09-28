@@ -32,21 +32,22 @@ export default defineEventHandler(async (event) => {
 
     // Helper to calculate appropriate window for combined and comparison queries
     const getCombinedWindow = () => {
+        if (isRaw) return '1s'
+
         if (startTime && stopTime) {
             const diffHours = (new Date(stopTime) - new Date(startTime)) / (1000 * 60 * 60)
-            if (diffHours <= 0.2) return '5s'
-            if (diffHours <= 1) return '10s'
+            if (diffHours <= 1) return '1s'
             if (diffHours <= 6) return '1m'
             if (diffHours <= 24) return '5m'
             if (diffHours <= 168) return '15m'
             return '1h'
         }
         const match = range.match(/-(\d+)([mhd])/)
-        if (!match) return '5s'
+        if (!match) return '1s'
         const val = parseInt(match[1])
         const unit = match[2]
-        if (unit === 'm') return val <= 5 ? '5s' : '10s'
-        if (unit === 'h' && val <= 1) return '10s'
+        if (unit === 'm') return '1s'
+        if (unit === 'h' && val <= 1) return '1s'
         if (unit === 'h' && val <= 6) return '1m'
         if (unit === 'h') return '5m'
         if (unit === 'd' && val <= 1) return '5m'
@@ -70,16 +71,19 @@ export default defineEventHandler(async (event) => {
             m1 = from(bucket: "${config.influxBucket}")
               |> ${timeRangeFilter}
               |> filter(fn: (r) => r._measurement == "${m1}" and r._field == "${fieldParam}")
-              |> aggregateWindow(every: ${window}, fn: mean, createEmpty: false)
+              |> aggregateWindow(every: ${window}, fn: mean, createEmpty: true)
+              |> fill(usePrevious: true)
 
             m2 = from(bucket: "${config.influxBucket}")
               |> ${timeRangeFilter}
               |> filter(fn: (r) => r._measurement == "${m2}" and r._field == "${fieldParam}")
-              |> aggregateWindow(every: ${window}, fn: mean, createEmpty: false)
+              |> aggregateWindow(every: ${window}, fn: mean, createEmpty: true)
+              |> fill(usePrevious: true)
 
             union(tables: [m1, m2])
               |> group(columns: ["_time", "_field"])
               |> sum()
+              |> filter(fn: (r) => exists r._value)
               |> group(columns: ["_field"])
               |> yield(name: "combined")
         `
@@ -94,13 +98,17 @@ export default defineEventHandler(async (event) => {
             m1 = from(bucket: "${config.influxBucket}")
               |> ${timeRangeFilter}
               |> filter(fn: (r) => r._measurement == "${m1}" and r._field == "${fieldParam}")
-              |> aggregateWindow(every: ${window}, fn: mean, createEmpty: false)
+              |> aggregateWindow(every: ${window}, fn: mean, createEmpty: true)
+              |> fill(usePrevious: true)
+              |> filter(fn: (r) => exists r._value)
               |> set(key: "_field", value: "${label1}")
 
             m2 = from(bucket: "${config.influxBucket}")
               |> ${timeRangeFilter}
               |> filter(fn: (r) => r._measurement == "${m2}" and r._field == "${fieldParam}")
-              |> aggregateWindow(every: ${window}, fn: mean, createEmpty: false)
+              |> aggregateWindow(every: ${window}, fn: mean, createEmpty: true)
+              |> fill(usePrevious: true)
+              |> filter(fn: (r) => exists r._value)
               |> set(key: "_field", value: "${label2}")
 
             union(tables: [m1, m2])
