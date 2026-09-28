@@ -512,15 +512,9 @@
                   <span class="feeder-name">Feeder 1 (IT1)</span>
                   <span class="status-badge" :class="it1_status.badgeClass">{{ it1_status.text }}</span>
                 </div>
-                <div class="flex items-center gap-3">
-                  <NuxtLink to="/plts/bms/1" class="btn-bms-link">
-                    BMS Feeder 1 (88 Modul) →
-                  </NuxtLink>
-                  <div class="flex items-center gap-2">
-                    <span class="text-xs text-muted">PQ:</span>
-                    <span class="overall-status-badge" :class="it1_overallPQ.class">{{ it1_overallPQ.status }}</span>
-                  </div>
-                </div>
+                <NuxtLink to="/plts/bms/1" class="btn-bms-link">
+                  BMS
+                </NuxtLink>
               </div>
 
               <!-- Power & Frequency -->
@@ -675,15 +669,9 @@
                   <span class="feeder-name">Feeder 2 (IT2)</span>
                   <span class="status-badge" :class="it2_status.badgeClass">{{ it2_status.text }}</span>
                 </div>
-                <div class="flex items-center gap-3">
-                  <NuxtLink to="/plts/bms/2" class="btn-bms-link">
-                    BMS Feeder 2 (88 Modul) →
-                  </NuxtLink>
-                  <div class="flex items-center gap-2">
-                    <span class="text-xs text-muted">PQ:</span>
-                    <span class="overall-status-badge" :class="it2_overallPQ.class">{{ it2_overallPQ.status }}</span>
-                  </div>
-                </div>
+                <NuxtLink to="/plts/bms/2" class="btn-bms-link">
+                  BMS
+                </NuxtLink>
               </div>
 
               <!-- Power & Frequency -->
@@ -1861,15 +1849,17 @@ const exportCSV = async () => {
 .btn-bms-link {
     display: inline-flex;
     align-items: center;
-    padding: 0.25rem 0.65rem;
+    justify-content: center;
+    padding: 0.25rem 0.85rem;
     font-size: 0.75rem;
-    font-weight: 600;
+    font-weight: 700;
+    letter-spacing: 0.05em;
     color: var(--primary-600);
-    background: rgba(57, 148, 176, 0.1);
-    border: 1px solid rgba(57, 148, 176, 0.25);
-    border-radius: var(--radius-sm);
+    background: rgba(57, 148, 176, 0.12);
+    border: 1px solid rgba(57, 148, 176, 0.3);
+    border-radius: var(--radius-md);
     text-decoration: none;
-    transition: all 0.15s ease-in-out;
+    transition: all 0.2s ease-in-out;
     white-space: nowrap;
 }
 
@@ -1877,7 +1867,7 @@ const exportCSV = async () => {
     background: var(--primary-600);
     color: #ffffff;
     border-color: var(--primary-600);
-    transform: translateX(2px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 /* Feeders Container */
