@@ -110,7 +110,7 @@
         <div class="section-header-row mb-4">
           <div class="section-header m-0 p-0" style="border: none;">
             <span class="section-title">Rack Matrix (88 Modul BMS)</span>
-            <span class="text-xs text-muted ml-2">Klik modul untuk melihat rincian telemetri</span>
+            <span class="text-xs text-muted ml-2">Pilih salah satu modul untuk melihat rincian telemetri dan grafik</span>
           </div>
 
           <!-- Matrix Filters -->
@@ -178,7 +178,7 @@
       </div>
 
       <!-- CARD 3: Selected Module Telemetry Detail -->
-      <div v-if="selectedModule" class="card mb-6 p-6 selected-module-card">
+      <div v-if="selectedModule" id="bms-module-detail" class="card mb-6 p-6 selected-module-card">
         <div class="section-header-row mb-6">
           <div class="section-header m-0 p-0" style="border: none;">
             <span class="section-title">
@@ -190,6 +190,13 @@
             <span class="status-badge" :class="selectedModule.online ? 'bg-success' : 'bg-warning'">
               {{ selectedModule.online ? 'OPERATING' : 'MAINTENANCE' }}
             </span>
+            <button 
+              class="btn-close-detail" 
+              @click="closeDetail" 
+              title="Tutup Detail Telemetri"
+            >
+              ✕ Tutup
+            </button>
           </div>
         </div>
 
@@ -327,48 +334,38 @@
       <div v-if="selectedModule && selectedModule.online" class="card p-6">
         <!-- Chart Controls -->
         <div class="chart-controls mb-6">
-          <div class="flex items-center gap-4 flex-wrap">
-            <div class="flex items-center gap-2">
-              <label class="text-sm text-gray-600">Parameter:</label>
-              <select v-model="activeChartField" class="param-select" @change="fetchHistory">
-                <optgroup label="Tingkat Modul (Pack Level)">
-                  <option value="soc">State of Charge (SOC %)</option>
-                  <option value="voltage">Pack Voltage (V)</option>
-                  <option value="cell_delta">Cell Delta / Imbalance (V)</option>
-                  <option value="temp_module">Suhu Modul (°C)</option>
-                  <option value="temp_battery_left">Suhu Baterai Kiri (°C)</option>
-                  <option value="temp_battery_right">Suhu Baterai Kanan (°C)</option>
-                </optgroup>
-                <optgroup label="Tingkat Sel Baterai">
-                  <option value="all-cells">Perbandingan 16 Sel Baterai (Multi-Line)</option>
-                  <option value="cell-summary">Sel Min vs Sel Max vs Sel Rata-rata</option>
-                </optgroup>
-              </select>
-            </div>
+          <!-- Parameter Selector -->
+          <div class="flex items-center gap-4">
+            <label class="text-sm text-gray-600">Parameter:</label>
+            <select v-model="activeChartField" class="param-select" @change="fetchHistory">
+              <optgroup label="Tingkat Modul (Pack Level)">
+                <option value="soc">State of Charge (SOC)</option>
+                <option value="voltage">Pack Voltage</option>
+                <option value="cell_delta">Cell Delta / Imbalance</option>
+                <option value="temp_module">Suhu Modul</option>
+                <option value="temp_battery_left">Suhu Baterai Kiri</option>
+                <option value="temp_battery_right">Suhu Baterai Kanan</option>
+              </optgroup>
+              <optgroup label="Tingkat Sel Baterai">
+                <option value="all-cells">Perbandingan 16 Sel Baterai (Multi-Line)</option>
+                <option value="cell-summary">Sel Min vs Sel Max vs Sel Rata-rata</option>
+              </optgroup>
+            </select>
+          </div>
 
-            <div class="flex items-center gap-2">
-              <label class="text-sm text-gray-600">Rentang:</label>
-              <select v-model="timeRange" class="range-select" @change="onTimeRangeChange">
-                <option v-for="r in timeRanges" :key="r.value" :value="r.value">{{ r.label }}</option>
-              </select>
-            </div>
-
-            <button class="btn btn-sm btn-outline-primary" @click="fetchHistory" :disabled="historyLoading">
-              {{ historyLoading ? 'Loading...' : 'Refresh' }}
-            </button>
-
-            <!-- Export RAW CSV -->
-            <button 
-              class="btn btn-sm btn-outline-success ml-auto" 
-              @click="downloadRawData"
-              :disabled="isExporting"
-            >
-              {{ isExporting ? 'Exporting...' : 'Export RAW CSV' }}
+          <!-- Time Range + Export -->
+          <div class="chart-actions">
+            <select v-model="timeRange" class="range-select" @change="onTimeRangeChange">
+              <option v-for="r in timeRanges" :key="r.value" :value="r.value">{{ r.label }}</option>
+            </select>
+            <button class="btn-export" @click="exportCSV" :disabled="isExporting" title="Export CSV Data Raw">
+              <span v-if="isExporting">Exporting Raw...</span>
+              <span v-else>Export CSV</span>
             </button>
           </div>
         </div>
 
-        <!-- Custom Date Range Picker -->
+        <!-- Custom Date Range (shown when 'custom' selected) -->
         <div v-if="timeRange === 'custom'" class="custom-range-picker mb-4">
           <div class="flex items-center gap-4 flex-wrap">
             <div class="date-input-group">
@@ -383,43 +380,36 @@
           </div>
         </div>
 
-        <!-- Chart Title -->
+        <!-- Chart Header -->
         <div class="flex items-center justify-between mb-4">
           <h3 class="text-gray-700 font-medium m-0">
-            Grafik {{ currentChartConfig.label }} — {{ selectedModule.moduleName }}
+            {{ currentChartConfig.label }} {{ currentChartConfig.unit ? `(${currentChartConfig.unit})` : '' }} — {{ selectedModule.moduleName }}
           </h3>
         </div>
 
         <!-- Chart Area -->
         <div class="chart-wrapper">
-          <div v-if="historyLoading" class="chart-loading-overlay">
-            <div class="spinner"></div>
-          </div>
-          <LineChart 
-            v-if="chartData" 
-            :chart-data="chartData" 
-            :chart-options="chartOptions" 
-          />
-          <div v-else-if="!historyLoading" class="no-data">
-            No historical data available for this range
+          <LineChart v-if="chartData" :chart-data="chartData" :chart-options="chartOptions" />
+          <div v-else class="flex justify-center items-center h-full text-muted">
+            <div class="spinner mr-2"></div> Loading Chart...
           </div>
         </div>
 
-        <!-- Min, Max, Avg Statistics Box -->
-        <div v-if="stats" class="stats-grid mt-6">
-          <div class="stat-card">
-            <span class="stat-label">Minimum</span>
-            <span class="stat-value text-info">{{ stats.min }} <small>{{ currentChartConfig.unit }}</small></span>
-            <span v-if="stats.minTime" class="stat-time">{{ stats.minTime }}</span>
+        <!-- Stats Bar -->
+        <div v-if="chartStats" class="stats-bar mt-4">
+          <div class="stat-item">
+            <span class="stat-label">Min</span>
+            <span class="stat-value">{{ chartStats.min }}</span>
+            <span v-if="chartStats.minTime" class="stat-time">{{ chartStats.minTime }}</span>
           </div>
-          <div class="stat-card">
-            <span class="stat-label">Maximum</span>
-            <span class="stat-value text-danger">{{ stats.max }} <small>{{ currentChartConfig.unit }}</small></span>
-            <span v-if="stats.maxTime" class="stat-time">{{ stats.maxTime }}</span>
+          <div class="stat-item">
+            <span class="stat-label">Max</span>
+            <span class="stat-value">{{ chartStats.max }}</span>
+            <span v-if="chartStats.maxTime" class="stat-time">{{ chartStats.maxTime }}</span>
           </div>
-          <div class="stat-card">
-            <span class="stat-label">Average</span>
-            <span class="stat-value text-success">{{ stats.avg }} <small>{{ currentChartConfig.unit }}</small></span>
+          <div class="stat-item">
+            <span class="stat-label">Avg</span>
+            <span class="stat-value">{{ chartStats.avg }}</span>
           </div>
         </div>
       </div>
@@ -462,21 +452,33 @@ const modules = ref([])
 const selectedModuleId = ref(null)
 const matrixFilter = ref('all') // 'all' | 'online' | 'offline' | 'warning'
 
-// Selected Module
+// Selected Module (only populated when user selects a module)
 const selectedModule = computed(() => {
-    if (!modules.value.length) return null
-    if (selectedModuleId.value) {
-        const found = modules.value.find(m => m.id === selectedModuleId.value)
-        if (found) return found
-    }
-    // Default to first online module, or first module
-    const firstOnline = modules.value.find(m => m.online)
-    return firstOnline || modules.value[0]
+    if (!modules.value.length || !selectedModuleId.value) return null
+    return modules.value.find(m => m.id === selectedModuleId.value) || null
 })
 
 const selectModule = (mod) => {
+    if (selectedModuleId.value === mod.id) {
+        selectedModuleId.value = null
+        historyData.value = []
+        return
+    }
     selectedModuleId.value = mod.id
-    fetchHistory()
+    if (mod.online) {
+        fetchHistory()
+    } else {
+        historyData.value = []
+    }
+    nextTick(() => {
+        const el = document.getElementById('bms-module-detail')
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    })
+}
+
+const closeDetail = () => {
+    selectedModuleId.value = null
+    historyData.value = []
 }
 
 // Matrix filtering
@@ -616,7 +618,9 @@ const onTimeRangeChange = () => {
 const refreshData = async () => {
     loading.value = true
     await fetchRealtime()
-    await fetchHistory()
+    if (selectedModule.value && selectedModule.value.online) {
+        await fetchHistory()
+    }
     loading.value = false
 }
 
@@ -656,10 +660,44 @@ const hexToRgba = (hex, alpha = 1) => {
     return `rgba(${r}, ${g}, ${b}, ${alpha})`
 }
 
+// Multi-day and Date Formatting
+const isMultiDay = computed(() => {
+    const r = timeRange.value
+    if (['-3d', '-7d', '-14d', '-30d'].includes(r)) return true
+    if (r === 'custom' && customStart.value && customStop.value) {
+        const diffMs = new Date(customStop.value) - new Date(customStart.value)
+        return diffMs > 24 * 60 * 60 * 1000
+    }
+    return false
+})
+
+const formatLabelDate = (dStr) => {
+    const date = new Date(dStr)
+    if (isMultiDay.value) {
+        const dayMonth = date.toLocaleDateString('en-US', { day: '2-digit', month: 'short' })
+        const time = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })
+        return `${dayMonth} ${time}`
+    }
+    let showSecs = false
+    if (['-5m', '-15m', '-30m', '-1h'].includes(timeRange.value)) {
+        showSecs = true
+    } else if (timeRange.value === 'custom' && customStart.value && customStop.value) {
+        const diffMs = new Date(customStop.value) - new Date(customStart.value)
+        if (diffMs <= 60 * 60 * 1000) showSecs = true
+    }
+    return date.toLocaleTimeString('en-US', { 
+        hour: '2-digit', 
+        minute: '2-digit', 
+        second: showSecs ? '2-digit' : undefined,
+        hour12: false
+    })
+}
+
 // Statistics Computation
-const stats = computed(() => {
+const chartStats = computed(() => {
     if (!historyData.value || historyData.value.length === 0) return null
     const config = currentChartConfig.value
+    if (!config) return null
     let decimals = config.unit === '%' ? 1 : (config.unit === 'V' ? 3 : 1)
 
     const formatStat = (val) => {
@@ -682,9 +720,9 @@ const stats = computed(() => {
 
     let validRecords = []
     if (config.isMulti) {
-        validRecords = historyData.value.filter(d => config.fields.includes(d._field) && typeof d._value === 'number')
+        validRecords = historyData.value.filter(d => config.fields.includes(d._field) && typeof d._value === 'number' && !isNaN(d._value))
     } else {
-        validRecords = historyData.value.filter(d => typeof d._value === 'number')
+        validRecords = historyData.value.filter(d => typeof d._value === 'number' && !isNaN(d._value))
     }
 
     if (validRecords.length === 0) return null
@@ -709,18 +747,6 @@ const stats = computed(() => {
         avg: formatStat(avg)
     }
 })
-
-// Chart Data Construction
-const formatLabelDate = (dStr) => {
-    const date = new Date(dStr)
-    let showSecs = ['-5m', '-15m', '-30m', '-1h'].includes(timeRange.value)
-    return date.toLocaleTimeString('en-US', { 
-        hour: '2-digit', 
-        minute: '2-digit', 
-        second: showSecs ? '2-digit' : undefined,
-        hour12: false
-    })
-}
 
 const chartData = computed(() => {
     if (!historyData.value || historyData.value.length === 0) return null
@@ -808,13 +834,20 @@ const chartOptions = computed(() => ({
                     const rawTime = rawTimestamps.value[idx]
                     if (rawTime) {
                         const date = new Date(rawTime)
+                        let showSecs = false
+                        if (['-5m', '-15m', '-30m', '-1h'].includes(timeRange.value)) {
+                            showSecs = true
+                        } else if (timeRange.value === 'custom' && customStart.value && customStop.value) {
+                            const diffMs = new Date(customStop.value) - new Date(customStart.value)
+                            if (diffMs <= 60 * 60 * 1000) showSecs = true
+                        }
                         return date.toLocaleString('en-US', {
                             day: '2-digit',
                             month: 'short',
                             year: 'numeric',
                             hour: '2-digit',
                             minute: '2-digit',
-                            second: '2-digit',
+                            second: showSecs ? '2-digit' : undefined,
                             hour12: false
                         })
                     }
@@ -837,11 +870,14 @@ const chartOptions = computed(() => ({
                 minRotation: 45
             }
         }
+    },
+    elements: {
+        line: { tension: 0.4 }
     }
 }))
 
-// Download RAW CSV
-const downloadRawData = async () => {
+// Export Raw CSV
+const exportCSV = async () => {
     if (!selectedModule.value || !selectedModule.value.online) return
     isExporting.value = true
     try {
@@ -1332,118 +1368,106 @@ onMounted(() => {
 .badge-min { color: #06b6d4; background: rgba(6, 182, 212, 0.1); }
 .badge-max { color: #10b981; background: rgba(16, 185, 129, 0.1); }
 
-/* Chart Area */
-.chart-controls {
-    background: var(--bg-hover);
-    padding: 0.75rem 1rem;
-    border-radius: var(--radius-md);
-}
-
-.param-select, .range-select {
-    padding: 0.35rem 0.75rem;
-    font-size: 0.85rem;
-    border-radius: var(--radius-md);
-    border: 1px solid var(--border-color);
-    background: var(--bg-card);
-    color: var(--text-main);
-}
-
-.custom-range-picker {
-    background: var(--bg-hover);
-    padding: var(--space-4);
-    border-radius: var(--radius-md);
-}
-
-.date-input-group {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
-}
-
-.date-input {
-    padding: 0.35rem 0.5rem;
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-sm);
-    background: var(--bg-card);
-    color: var(--text-main);
-    font-size: 0.85rem;
-}
-
-.btn-apply {
-    padding: 0.35rem 1rem;
-    background: var(--primary-600);
-    color: white;
-    border: none;
-    border-radius: var(--radius-sm);
-    font-size: 0.85rem;
-    font-weight: 600;
-    cursor: pointer;
-}
-
-.chart-wrapper {
-    position: relative;
-    height: 380px;
-    width: 100%;
-}
-
-.chart-loading-overlay {
-    position: absolute;
-    inset: 0;
-    background: rgba(255, 255, 255, 0.7);
-    display: flex;
+/* Chart Controls */
+.chart-controls { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem; }
+.chart-actions { display: flex; gap: 0.5rem; align-items: center; flex-shrink: 0; }
+.param-select { padding: 0.5rem 1rem; border-radius: 0.375rem; border: 1px solid var(--border-color); background: var(--bg-input); font-size: 0.875rem; color: var(--text-main); cursor: pointer; min-width: 180px; }
+.range-select { padding: 0.4rem 0.75rem; border-radius: 0.375rem; border: 1px solid var(--border-color); background: var(--bg-input); font-size: 0.8rem; color: var(--text-main); cursor: pointer; }
+.btn-export {
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    z-index: 10;
-}
-
-.dark-mode .chart-loading-overlay {
-    background: rgba(15, 23, 42, 0.7);
-}
-
-.no-data {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    color: var(--text-muted);
-}
-
-.stats-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: var(--space-4);
-}
-
-.stat-card {
-    background: var(--bg-hover);
-    border-radius: var(--radius-md);
-    padding: var(--space-3);
-    text-align: center;
-}
-
-.stat-label {
-    display: block;
-    font-size: 0.75rem;
-    color: var(--text-muted);
-    text-transform: uppercase;
-}
-
-.stat-value {
-    font-size: 1.35rem;
-    font-weight: 700;
-}
-
-.stat-value small {
+    gap: 0.375rem;
+    padding: 0.45rem 0.85rem;
+    border-radius: 0.375rem;
     font-size: 0.8rem;
-    font-weight: 400;
-    color: var(--text-muted);
+    font-weight: 600;
+    color: #ffffff;
+    background: #2563eb;
+    border: 1px solid #3b82f6;
+    box-shadow: 0 2px 4px rgba(37, 99, 235, 0.25);
+    cursor: pointer;
+    transition: all 0.2s ease;
 }
 
+.btn-export:hover:not(:disabled) {
+    background: #1d4ed8;
+    border-color: #60a5fa;
+    color: #ffffff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(29, 78, 216, 0.4);
+}
+
+.btn-export:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: 0 1px 2px rgba(37, 99, 235, 0.2);
+}
+
+.btn-export:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.chart-wrapper { height: 350px; width: 100%; margin-top: 1rem; }
+
+/* Stats Bar */
+.stats-bar { display: flex; justify-content: center; gap: 3rem; padding: var(--space-4); background: var(--bg-hover); border-radius: var(--radius-md); }
+.stat-item { text-align: center; }
+.stat-label { display: block; font-size: 0.7rem; color: var(--gray-500); text-transform: uppercase; margin-bottom: 0.25rem; }
+.stat-value { font-family: monospace; font-size: 1.125rem; font-weight: 600; color: var(--text-main); }
 .stat-time {
     display: block;
-    font-size: 0.7rem;
+    font-size: 0.68rem;
     color: var(--text-muted);
-    margin-top: 0.25rem;
+    margin-top: 0.2rem;
+    font-weight: 400;
+}
+
+/* Custom Range */
+.custom-range-picker { padding: var(--space-4); background: var(--bg-hover); border-radius: var(--radius-md); }
+.date-input-group { display: flex; align-items: center; gap: 0.5rem; }
+.date-input { padding: 0.4rem 0.75rem; border-radius: 0.375rem; border: 1px solid var(--border-color); background: var(--bg-input); font-size: 0.8rem; color: var(--text-main); }
+.btn-apply {
+    padding: 0.5rem 1.25rem;
+    border-radius: 0.5rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #ffffff;
+    background: #2563eb;
+    border: 1px solid #3b82f6;
+    box-shadow: 0 2px 6px rgba(37, 99, 235, 0.4);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-apply:hover {
+    background: #1d4ed8;
+    border-color: #60a5fa;
+    box-shadow: 0 4px 10px rgba(29, 78, 216, 0.5);
+    transform: translateY(-1px);
+}
+
+.btn-close-detail {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.2rem 0.6rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    background: var(--bg-hover);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-close-detail:hover {
+    color: #ef4444;
+    border-color: #ef4444;
+    background: rgba(239, 68, 68, 0.08);
 }
 
 /* Responsiveness */
