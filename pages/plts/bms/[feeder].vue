@@ -959,6 +959,23 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.unit-container {
+    min-height: calc(100vh - 140px);
+    display: flex;
+    flex-direction: column;
+}
+
+/* Loading State */
+.loading-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 60vh;
+    width: 100%;
+    text-align: center;
+}
+
 /* Header & Navigation Styles matching plts */
 .page-header { display: flex; flex-direction: column; width: 100%; }
 .header-top-row { display: flex; justify-content: space-between; align-items: center; width: 100%; flex-wrap: wrap; gap: 1rem; }
