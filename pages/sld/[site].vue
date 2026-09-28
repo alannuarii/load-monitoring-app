@@ -73,12 +73,28 @@
         @touchmove="handleTouchMove"
         @touchend="handleTouchEnd"
       >
+        <!-- Loading State Overlay -->
+        <div v-if="isLoading" class="sld-loading-overlay">
+          <div class="sld-spinner"></div>
+          <p class="sld-loading-text">Memuat Single Line Diagram...</p>
+        </div>
+
+        <!-- Error State Overlay -->
+        <div v-if="hasError" class="sld-error-overlay">
+          <span class="sld-error-icon">⚠️</span>
+          <p class="sld-error-text">Gagal memuat diagram SLD dari server penyimpanan.</p>
+          <button @click="retryLoad" class="control-btn retry-btn">Coba Lagi</button>
+        </div>
+
         <img 
           ref="sldImage"
-          :src="currentSite.image" 
+          :src="imageSrc" 
           :alt="currentSite.alt"
           class="sld-image"
+          :class="{ 'hidden-image': isLoading || hasError }"
           :style="imageStyle"
+          @load="onImageLoad"
+          @error="onImageError"
           @dragstart.prevent
         />
       </div>
@@ -101,19 +117,19 @@ import { useRoute } from 'vue-router'
 
 const route = useRoute()
 
-// Sites configuration
+// Sites configuration - Protected internal API routes (authenticated via BetterAuth & fetched from AuraStorage)
 const sites = {
   tahuna: {
     id: 'tahuna',
     name: 'PLTD Tahuna',
-    image: '/images/sld_tahuna.png',
+    image: '/api/sld/tahuna',
     alt: 'Single Line Diagram PLTD Tahuna',
     updated: 'Terakhir diperbarui: 19 September 2025'
   },
   sangihe: {
     id: 'sangihe',
     name: 'PLTS Sangihe',
-    image: '/images/sld_sangihe.png',
+    image: '/api/sld/sangihe',
     alt: 'Single Line Diagram PLTS Sangihe',
     updated: 'Terakhir diperbarui: -'
   }
@@ -125,6 +141,31 @@ const currentSiteKey = computed(() => {
 })
 
 const currentSite = computed(() => sites[currentSiteKey.value])
+
+// Loading & Error States for SLD Image
+const isLoading = ref(true)
+const hasError = ref(false)
+const retryCount = ref(0)
+
+const imageSrc = computed(() => {
+  return `${currentSite.value.image}?v=${retryCount.value}`
+})
+
+const onImageLoad = () => {
+  isLoading.value = false
+  hasError.value = false
+}
+
+const onImageError = () => {
+  isLoading.value = false
+  hasError.value = true
+}
+
+const retryLoad = () => {
+  isLoading.value = true
+  hasError.value = false
+  retryCount.value++
+}
 
 // Viewer State
 const imageContainer = ref(null)
@@ -236,6 +277,8 @@ const handleFullscreenChange = () => {
 // Reset viewer on route change between sites
 watch(() => route.params.site, () => {
   resetZoom()
+  isLoading.value = true
+  hasError.value = false
 })
 
 onMounted(() => {
@@ -415,9 +458,70 @@ onUnmounted(() => {
   max-width: 100%;
   max-height: 100%;
   object-fit: contain;
-  transition: transform 0.1s ease-out;
+  transition: transform 0.1s ease-out, opacity 0.2s ease-in-out;
   user-select: none;
   -webkit-user-drag: none;
+}
+
+.sld-image.hidden-image {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.sld-loading-overlay,
+.sld-error-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-card);
+  z-index: 10;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  text-align: center;
+}
+
+.sld-spinner {
+  width: 44px;
+  height: 44px;
+  border: 4px solid rgba(37, 99, 235, 0.2);
+  border-top-color: #2563eb;
+  border-radius: 50%;
+  animation: sld-spin 0.8s linear infinite;
+}
+
+@keyframes sld-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.sld-loading-text {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  margin: 0;
+}
+
+.sld-error-icon {
+  font-size: 2.2rem;
+}
+
+.sld-error-text {
+  font-size: 0.95rem;
+  color: var(--text-main);
+  margin: 0;
+}
+
+.retry-btn {
+  margin-top: var(--space-2);
+  font-size: 0.875rem;
+  padding: 0.45rem 1.25rem;
 }
 
 .sld-update-info {

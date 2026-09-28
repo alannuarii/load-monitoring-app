@@ -1493,7 +1493,7 @@ onMounted(() => {
 
 @media (max-width: 768px) {
     .header-date-desktop { display: none; }
-    .header-date-mobile { display: block; }
+    .header-date-mobile { display: none; }
     .metrics-grid-5 { grid-template-columns: repeat(2, 1fr); }
     .metrics-grid { grid-template-columns: repeat(2, 1fr); }
     .module-matrix-grid { grid-template-columns: repeat(4, 1fr); }

@@ -43,6 +43,12 @@ export default defineNuxtConfig({
         betterAuthSecret: process.env.BETTER_AUTH_SECRET || process.env.NUXT_BETTER_AUTH_SECRET,
         betterAuthUrl: process.env.BETTER_AUTH_URL || process.env.NUXT_BETTER_AUTH_URL || 'http://localhost:3000',
 
+        // AuraStorage (Server-only credentials and file identifiers)
+        auraStorageApiKey: process.env.AURA_STORAGE_API_KEY || process.env.NUXT_AURA_STORAGE_API_KEY || '',
+        auraStorageBaseUrl: process.env.AURA_STORAGE_BASE_URL || process.env.NUXT_AURA_STORAGE_BASE_URL || 'https://aurastorage.serveer.biz.id',
+        auraStorageSldTahuna: process.env.AURA_STORAGE_SLD_TAHUNA_FILE || 'f1adbf22-32af-4aff-871c-375f3dd0b329.png',
+        auraStorageSldSangihe: process.env.AURA_STORAGE_SLD_SANGIHE_FILE || '0060d4c0-3078-4081-8e15-98af2668c3f3.png',
+
         // Public environment variables (exposed to client)
         public: {
             googleClientId: process.env.GOOGLE_CLIENT_ID || process.env.NUXT_GOOGLE_CLIENT_ID,

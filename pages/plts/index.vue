@@ -2144,7 +2144,7 @@ const exportCSV = async () => {
 /* Mobile */
 @media (max-width: 768px) {
     .header-date-desktop { display: none; }
-    .header-date-mobile { display: block; text-align: center; margin-top: var(--space-2); width: 100%; }
+    .header-date-mobile { display: none; }
     .back-text, .divider-vertical { display: none; }
     .header-left-group { width: 100%; }
     
