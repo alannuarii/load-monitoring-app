@@ -120,10 +120,6 @@
                   <span class="feeder-name">Feeder 1 (LVSW1)</span>
                   <span class="status-badge" :class="lvsw1_status.badgeClass">{{ lvsw1_status.text }}</span>
                 </div>
-                <div class="flex items-center gap-2">
-                  <span class="text-xs text-muted">PQ:</span>
-                  <span class="overall-status-badge" :class="lvsw1_overallPQ.class">{{ lvsw1_overallPQ.status }}</span>
-                </div>
               </div>
 
               <!-- Power & Frequency -->
@@ -277,10 +273,6 @@
                 <div class="flex items-center gap-2">
                   <span class="feeder-name">Feeder 2 (LVSW2)</span>
                   <span class="status-badge" :class="lvsw2_status.badgeClass">{{ lvsw2_status.text }}</span>
-                </div>
-                <div class="flex items-center gap-2">
-                  <span class="text-xs text-muted">PQ:</span>
-                  <span class="overall-status-badge" :class="lvsw2_overallPQ.class">{{ lvsw2_overallPQ.status }}</span>
                 </div>
               </div>
 

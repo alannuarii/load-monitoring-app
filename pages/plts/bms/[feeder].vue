@@ -6,7 +6,6 @@
         <div class="header-left-group">
           <NuxtLink to="/plts" class="btn-back" title="Kembali ke Halaman PLTS">
             <span class="icon">←</span>
-            <span class="back-text">PLTS</span>
           </NuxtLink>
           <div class="divider-vertical"></div>
           <h1 class="page-title m-0">BMS Feeder {{ feederParam }} ({{ feederParam === '1' ? 'IT1' : 'IT2' }})</h1>
@@ -968,7 +967,6 @@ onMounted(() => {
 .header-date-mobile { display: none; }
 .btn-back { display: flex; align-items: center; gap: 0.5rem; color: var(--text-muted); text-decoration: none; font-weight: 500; transition: color 0.2s; }
 .btn-back:hover { color: var(--primary-600); }
-.back-text { font-size: 0.875rem; }
 .divider-vertical { width: 1px; background-color: var(--border-color); height: 1.5rem; }
 
 .status-badge { padding: 0.25rem 0.75rem; border-radius: 999px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
