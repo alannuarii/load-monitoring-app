@@ -8,7 +8,7 @@
             <span class="icon">←</span>
           </NuxtLink>
           <div class="divider-vertical"></div>
-          <h1 class="page-title m-0">BMS Feeder {{ feederParam }} ({{ feederParam === '1' ? 'IT1' : 'IT2' }})</h1>
+          <h1 class="page-title m-0">BMS Feeder {{ feederParam }}</h1>
         </div>
         
         <!-- Feeder Switcher & Date/Time Display (Desktop) -->
@@ -19,14 +19,14 @@
               class="btn-feeder-tab" 
               :class="{ active: feederParam === '1' }"
             >
-              Feeder 1 (1–88)
+              Feeder 1
             </NuxtLink>
             <NuxtLink 
               to="/plts/bms/2" 
               class="btn-feeder-tab" 
               :class="{ active: feederParam === '2' }"
             >
-              Feeder 2 (89–176)
+              Feeder 2
             </NuxtLink>
           </div>
           <div class="header-date-desktop">
@@ -198,7 +198,14 @@
           </div>
         </div>
 
-        <template v-if="selectedModule.online">
+        <!-- Offline Notice Banner if offline -->
+        <div v-if="!selectedModule.online" class="offline-banner mb-6 p-3 flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="text-warning font-bold">⚠ OFFLINE</span>
+            <span class="text-xs text-muted">Modul sedang offline atau dalam perbaikan. Menampilkan parameter terakhir dan grafik riwayat operasi.</span>
+          </div>
+          <span class="text-xs font-mono text-muted">IP: {{ selectedModule.ip }}</span>
+        </div>
           <!-- Module Pack Metrics -->
           <div class="metrics-grid mb-6">
             <div class="metric-card">
@@ -320,16 +327,10 @@
               </div>
             </div>
           </div>
-        </template>
-        <template v-else>
-          <div class="text-center py-8 text-muted">
-            <p>This module is currently offline or under maintenance (no Modbus TCP response).</p>
-          </div>
-        </template>
       </div>
 
       <!-- CARD 4: Historical Chart & Analytics -->
-      <div v-if="selectedModule && selectedModule.online" class="card p-6">
+      <div v-if="selectedModule" class="card p-6">
         <!-- Chart Controls -->
         <div class="chart-controls mb-6">
           <!-- Parameter Selector -->
@@ -387,9 +388,13 @@
 
         <!-- Chart Area -->
         <div class="chart-wrapper">
-          <LineChart v-if="chartData" :chart-data="chartData" :chart-options="chartOptions" />
-          <div v-else class="flex justify-center items-center h-full text-muted">
+          <div v-if="historyLoading" class="flex justify-center items-center h-full text-muted">
             <div class="spinner mr-2"></div> Loading Chart...
+          </div>
+          <LineChart v-else-if="chartData && historyData.length" :chart-data="chartData" :chart-options="chartOptions" />
+          <div v-else class="flex flex-col justify-center items-center h-full text-muted py-8 text-center">
+            <p class="m-0 font-medium">No historical telemetry recorded for {{ currentChartConfig.label }} in this time range.</p>
+            <span class="text-xs text-muted mt-1">Try selecting a different parameter or a wider time range (e.g. 1 Day or 7 Days).</span>
           </div>
         </div>
 
@@ -463,11 +468,7 @@ const selectModule = (mod) => {
         return
     }
     selectedModuleId.value = mod.id
-    if (mod.online) {
-        fetchHistory()
-    } else {
-        historyData.value = []
-    }
+    fetchHistory()
     nextTick(() => {
         const el = document.getElementById('bms-module-detail')
         if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
@@ -578,7 +579,7 @@ const fetchRealtime = async () => {
 
 // History Data Fetching
 const fetchHistory = async () => {
-    if (!selectedModule.value || !selectedModule.value.online) return
+    if (!selectedModule.value) return
     historyLoading.value = true
     try {
         const config = currentChartConfig.value
@@ -616,7 +617,7 @@ const onTimeRangeChange = () => {
 const refreshData = async () => {
     loading.value = true
     await fetchRealtime()
-    if (selectedModule.value && selectedModule.value.online) {
+    if (selectedModule.value) {
         await fetchHistory()
     }
     loading.value = false
@@ -876,7 +877,7 @@ const chartOptions = computed(() => ({
 
 // Export Raw CSV
 const exportCSV = async () => {
-    if (!selectedModule.value || !selectedModule.value.online) return
+    if (!selectedModule.value) return
     isExporting.value = true
     try {
         const config = currentChartConfig.value
@@ -1229,6 +1230,12 @@ onMounted(() => {
 /* Selected Module Card & SOC Progress */
 .selected-module-card {
     border-top: 3px solid var(--primary-500);
+}
+
+.offline-banner {
+    background: rgba(245, 158, 11, 0.08);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    border-radius: var(--radius-md);
 }
 
 .soc-progress-bar {

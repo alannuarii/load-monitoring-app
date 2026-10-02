@@ -84,14 +84,14 @@
                 :class="{ active: pltsFeederTab === '1' }" 
                 @click="pltsFeederTab = '1'"
               >
-                Feeder 1 (LVSW1)
+                Feeder 1
               </button>
               <button 
                 class="btn-feeder-tab" 
                 :class="{ active: pltsFeederTab === '2' }" 
                 @click="pltsFeederTab = '2'"
               >
-                Feeder 2 (LVSW2)
+                Feeder 2
               </button>
             </div>
           </div>
@@ -117,9 +117,12 @@
             <div v-if="pltsFeederTab === 'all' || pltsFeederTab === '1'" class="feeder-box">
               <div class="feeder-header">
                 <div class="flex items-center gap-2">
-                  <span class="feeder-name">Feeder 1 (LVSW1)</span>
+                  <span class="feeder-name">Feeder 1</span>
                   <span class="status-badge" :class="lvsw1_status.badgeClass">{{ lvsw1_status.text }}</span>
                 </div>
+                <NuxtLink to="/plts/inverter/1" class="btn-bms-link">
+                  Inverter
+                </NuxtLink>
               </div>
 
               <!-- Power & Frequency -->
@@ -271,9 +274,12 @@
             <div v-if="pltsFeederTab === 'all' || pltsFeederTab === '2'" class="feeder-box">
               <div class="feeder-header">
                 <div class="flex items-center gap-2">
-                  <span class="feeder-name">Feeder 2 (LVSW2)</span>
+                  <span class="feeder-name">Feeder 2</span>
                   <span class="status-badge" :class="lvsw2_status.badgeClass">{{ lvsw2_status.text }}</span>
                 </div>
+                <NuxtLink to="/plts/inverter/2" class="btn-bms-link">
+                  Inverter
+                </NuxtLink>
               </div>
 
               <!-- Power & Frequency -->
@@ -468,14 +474,14 @@
                 :class="{ active: bssFeederTab === '1' }" 
                 @click="bssFeederTab = '1'"
               >
-                Feeder 1 (IT1)
+                Feeder 1
               </button>
               <button 
                 class="btn-feeder-tab" 
                 :class="{ active: bssFeederTab === '2' }" 
                 @click="bssFeederTab = '2'"
               >
-                Feeder 2 (IT2)
+                Feeder 2
               </button>
             </div>
           </div>
@@ -501,7 +507,7 @@
             <div v-if="bssFeederTab === 'all' || bssFeederTab === '1'" class="feeder-box">
               <div class="feeder-header">
                 <div class="flex items-center gap-2">
-                  <span class="feeder-name">Feeder 1 (IT1)</span>
+                  <span class="feeder-name">Feeder 1</span>
                   <span class="status-badge" :class="it1_status.badgeClass">{{ it1_status.text }}</span>
                 </div>
                 <NuxtLink to="/plts/bms/1" class="btn-bms-link">
@@ -658,7 +664,7 @@
             <div v-if="bssFeederTab === 'all' || bssFeederTab === '2'" class="feeder-box">
               <div class="feeder-header">
                 <div class="flex items-center gap-2">
-                  <span class="feeder-name">Feeder 2 (IT2)</span>
+                  <span class="feeder-name">Feeder 2</span>
                   <span class="status-badge" :class="it2_status.badgeClass">{{ it2_status.text }}</span>
                 </div>
                 <NuxtLink to="/plts/bms/2" class="btn-bms-link">
@@ -866,7 +872,7 @@
                 <option value="plts-compare-reactive">PLTS Reactive Power (Feeder 1 vs Feeder 2)</option>
               </optgroup>
               
-              <optgroup label="PLTS Feeder 1 (LVSW1)">
+              <optgroup label="PLTS Feeder 1">
                 <option value="lvsw1-active">Active Power</option>
                 <option value="lvsw1-reactive">Reactive Power</option>
                 <option value="lvsw1-pf">Power Factor</option>
@@ -879,7 +885,7 @@
                 <option value="lvsw1-voltage-ln-avg">Average Voltage (L-N)</option>
               </optgroup>
 
-              <optgroup label="PLTS Feeder 2 (LVSW2)">
+              <optgroup label="PLTS Feeder 2">
                 <option value="lvsw2-active">Active Power</option>
                 <option value="lvsw2-reactive">Reactive Power</option>
                 <option value="lvsw2-pf">Power Factor</option>
@@ -899,7 +905,7 @@
                 <option value="bss-compare-reactive">BSS Reactive Power (Feeder 1 vs Feeder 2)</option>
               </optgroup>
 
-              <optgroup label="BSS Feeder 1 (IT1)">
+              <optgroup label="BSS Feeder 1">
                 <option value="it1-active">Active Power</option>
                 <option value="it1-reactive">Reactive Power</option>
                 <option value="it1-pf">Power Factor</option>
@@ -912,7 +918,7 @@
                 <option value="it1-voltage-ln-avg">Average Voltage (L-N)</option>
               </optgroup>
 
-              <optgroup label="BSS Feeder 2 (IT2)">
+              <optgroup label="BSS Feeder 2">
                 <option value="it2-active">Active Power</option>
                 <option value="it2-reactive">Reactive Power</option>
                 <option value="it2-pf">Power Factor</option>
