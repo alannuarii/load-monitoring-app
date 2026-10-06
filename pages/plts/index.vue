@@ -2145,7 +2145,15 @@ const exportCSV = async () => {
 
 /* Loading State */
 .loading-state { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 60vh; width: 100%; text-align: center; }
-.unit-container { min-height: calc(100vh - 140px); display: flex; flex-direction: column; }
+.unit-container {
+    min-height: calc(100vh - 140px);
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+}
 
 /* Mobile */
 @media (max-width: 768px) {
@@ -2156,10 +2164,21 @@ const exportCSV = async () => {
     
     .card.p-6 {
         padding: var(--space-4);
+        max-width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
     }
 
     .detail-section {
         padding: var(--space-3);
+        min-width: 0;
+        box-sizing: border-box;
+    }
+
+    .sub-card {
+        min-width: 0;
+        width: 100%;
+        box-sizing: border-box;
     }
 
     .feeders-container {
@@ -2173,6 +2192,9 @@ const exportCSV = async () => {
 
     .feeder-box {
         padding: 0.875rem;
+        min-width: 0;
+        max-width: 100%;
+        box-sizing: border-box;
     }
 
     .metrics-grid { grid-template-columns: 1fr; }
@@ -2181,7 +2203,7 @@ const exportCSV = async () => {
     .chart-controls { 
         flex-direction: column; 
         align-items: stretch; 
-        gap: 1rem;
+        gap: 0.75rem;
     }
 
     .chart-controls > div:first-child {
@@ -2198,11 +2220,43 @@ const exportCSV = async () => {
     }
 
     .chart-actions { 
+        display: flex;
+        gap: 0.5rem;
         justify-content: space-between; 
         width: 100%;
     }
 
-    .stats-bar { gap: 1.5rem; flex-wrap: wrap; }
+    .range-select {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .btn-export {
+        flex-shrink: 0;
+        white-space: nowrap;
+    }
+
+    .chart-wrapper {
+        height: 280px;
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .stats-bar { 
+        gap: 1rem; 
+        flex-wrap: wrap; 
+        justify-content: space-around;
+        padding: var(--space-3);
+    }
+    
+    .stat-item {
+        flex: 1 1 80px;
+        min-width: 0;
+    }
+
     .stat-time {
         font-size: 0.55rem;
         letter-spacing: -0.02em;
@@ -2213,7 +2267,7 @@ const exportCSV = async () => {
     .custom-range-picker .flex {
         flex-direction: column;
         align-items: stretch;
-        gap: 1rem;
+        gap: 0.75rem;
     }
 
     .date-input-group {
@@ -2225,6 +2279,8 @@ const exportCSV = async () => {
 
     .date-input {
         width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
     }
 
     .btn-apply {
@@ -2251,6 +2307,62 @@ const exportCSV = async () => {
 
     .value-number {
         font-size: 0.95rem;
+        word-break: break-word;
+    }
+
+    .pq-grid {
+        grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)) !important;
+        gap: var(--space-2);
+    }
+}
+
+@media (max-width: 480px) {
+    .card.p-6 {
+        padding: var(--space-3);
+    }
+
+    .feeder-box {
+        padding: 0.75rem;
+    }
+
+    .frequency-display {
+        font-size: 1.6rem;
+    }
+
+    .pq-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    .pq-value-row {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .grid-cols-2 {
+        grid-template-columns: 1fr !important;
+    }
+
+    .weather-metric {
+        padding: 0.75rem;
+    }
+
+    .values-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: var(--space-2);
+    }
+
+    .value-number {
+        font-size: 0.85rem;
+        word-break: break-word;
+    }
+
+    .value-label {
+        font-size: 0.65rem;
+    }
+
+    .stats-bar {
+        gap: 0.75rem;
+        padding: var(--space-3);
     }
 }
 </style>

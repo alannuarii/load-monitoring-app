@@ -35,17 +35,24 @@ onMounted(async () => {
 .app-layout {
   min-height: 100vh;
   background: var(--gray-50);
+  overflow-x: clip;
 }
 
 .main-wrapper {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: clip;
 }
 
 .app-content {
   flex: 1;
   padding-top: calc(var(--header-height) + var(--space-6));
   padding-bottom: var(--space-8);
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
 }
 </style>
